@@ -11,10 +11,6 @@ $additionalColumns = array(
 			'maxitems' => 20,
 			'items' => array(
 				array(
-					'LLL:EXT:lang/locallang_general.xlf:LGL.hide_at_login',
-					-1
-				),
-				array(
 					'LLL:EXT:lang/locallang_general.xlf:LGL.any_login',
 					-2
 				),
