@@ -1,6 +1,6 @@
 <?php
 if (!defined('TYPO3_MODE')) {
-	die('Access denied.');
+	die ('Access denied.');
 }
 
 // add TypoScript for the asset serving
@@ -17,12 +17,22 @@ if (!defined('TYPO3_MODE')) {
 		10 = USER
 		10.userFunc = BeechIt\FalSecuredownload\Resource\FileDelivery->deliver
 	}
-	'
+');
+
+\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+	'BeechIt.' . $_EXTKEY,
+	'Filetree',
+	array(
+		'FileTree' => 'tree',
+	),
+	// non-cacheable actions
+	array(
+	)
 );
 
 \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
-'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
-\TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
-'BeechIt\\FalSecuredownload\\Security\\PublicUrlAspect',
-'generatePublicUrl'
+	'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
+	\TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
+	'BeechIt\\FalSecuredownload\\Security\\PublicUrlAspect',
+	'generatePublicUrl'
 );

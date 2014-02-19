@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2014-02-19T09:16:58Z" product-name="fal_securedownload">
+		<header/>
+		<body>
+
+			<trans-unit id="flexform.sheetTitle">
+				<source>FileTree settings</source>
+			</trans-unit>
+			<trans-unit id="flexform.storage">
+				<source>Storage</source>
+			</trans-unit>
+			<trans-unit id="flexform.storage.empty">
+				<source>- Select storage -</source>
+			</trans-unit>
+			<trans-unit id="flexform.folder">
+				<source>Folder</source>
+			</trans-unit>
+			<trans-unit id="flexform.folder.selectStorage">
+				<source>- First select a storage -</source>
+			</trans-unit>
+
+		</body>
+	</file>
+</xliff>

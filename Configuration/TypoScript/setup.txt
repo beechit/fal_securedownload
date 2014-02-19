@@ -1,0 +1,8 @@
+
+plugin.tx_falsecuredownload {
+	view {
+		templateRootPath = {$plugin.tx_falsecuredownload.view.templateRootPath}
+		partialRootPath = {$plugin.tx_falsecuredownload.view.partialRootPath}
+		layoutRootPath = {$plugin.tx_falsecuredownload.view.layoutRootPath}
+	}
+}

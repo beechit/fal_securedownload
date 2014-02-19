@@ -1,13 +1,34 @@
 <?php
 namespace BeechIt\FalSecuredownload\Security;
 
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 20014 Frans Saris <frans@beech.it>
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
+
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\PathUtility;
-/*
- * This source file is proprietary property of Beech Applications B.V.
- * Date: 18-02-2014 09:08
- * All code (c) Beech Applications B.V. all rights reserved
+/**
+ * Generate special public url for files in non-public storages
  */
 class PublicUrlAspect {
 
@@ -43,7 +64,6 @@ class PublicUrlAspect {
 			// $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
 			$urlData['publicUrl'] =  $publicUrl;
 		}
-		$recursive = FALSE;
 	}
 
 	/**

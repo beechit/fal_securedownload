@@ -1,0 +1,59 @@
+<T3DataStructure>
+	<meta>
+		<langDisable>1</langDisable>
+	</meta>
+	<sheets>
+		<sDEF>
+			<ROOT>
+
+				<TCEforms>
+					<sheetTitle>LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.sheetTitle</sheetTitle>
+				</TCEforms>
+				<type>array</type>
+				<el>
+
+					<settings.storage>
+						<TCEforms>
+							<label>LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage</label>
+							<onChange>reload</onChange>
+							<config>
+								<type>select</type>
+								<internal_type>db</internal_type>
+								<size>1</size>
+								<maxitems>1</maxitems>
+								<minitems>1</minitems>
+								<items type="array">
+									<numIndex index="0">
+										<numIndex index="0">LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage.empty</numIndex>
+										<numIndex index="1"></numIndex>
+									</numIndex>
+								</items>
+								<foreign_table>sys_file_storage</foreign_table>
+								<foreign_table_where>ORDER BY sys_file_storage.name</foreign_table_where>
+							</config>
+						</TCEforms>
+					</settings.storage>
+
+					<settings.folder>
+						<TCEforms>
+							<label>LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.folder</label>
+							<displayCond>FIELD:settings.storage:REQ:true</displayCond>
+							<config>
+								<type>select</type>
+								<items>
+									<numIndex index="0" type="array">
+										<numIndex index="0">LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.folder.selectStorage</numIndex>
+										<numIndex index="1"></numIndex>
+									</numIndex>
+								</items>
+								<itemsProcFunc>BeechIt\FalSecuredownload\Service\UserFileMountService->renderFlexFormSelectDropdown</itemsProcFunc>
+							</config>
+						</TCEforms>
+					</settings.folder>
+
+				</el>
+
+			</ROOT>
+		</sDEF>
+	</sheets>
+</T3DataStructure>

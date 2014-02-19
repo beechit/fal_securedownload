@@ -1,0 +1,16 @@
+<f:layout name="Default" />
+
+<f:section name="main">
+
+	<f:if condition="{folder}">
+		<f:then>
+			<h3>{folder.name}</h3>
+			<f:render partial="FileTree/Leef" arguments="{folder:folder}" />
+		</f:then>
+
+		<f:else>
+			<f:translate key="noFolderSelected">No folder selected</f:translate>
+		</f:else>
+	</f:if>
+
+</f:section>

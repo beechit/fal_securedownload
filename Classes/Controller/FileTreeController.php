@@ -1,5 +1,5 @@
 <?php
-namespace BeechIt\FalSecuredownload\Domain\Repository;
+namespace BeechIt\FalSecuredownload\Controller;
 
 /***************************************************************
  *  Copyright notice
@@ -25,27 +25,19 @@ namespace BeechIt\FalSecuredownload\Domain\Repository;
  ***************************************************************/
 
 /**
- * ProcessedFileRepository
+ * FileTreeController
  *
- * @package BeechIt\FalSecuredownload\Domain\Repository
+ * @package BeechIt\FalSecuredownload\Controller
  */
-class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepository {
+class FileTreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
 
 	/**
-	 * Find ProcessedFile by Uid
-	 * @param int $uid
-	 * @return object|\TYPO3\CMS\Core\Resource\ProcessedFile
-	 * @throws \RuntimeException
-	 * @throws \InvalidArgumentException
+	 * Render file tree
 	 */
-	public function findByUid($uid) {
-		if (!\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($uid)) {
-			throw new \InvalidArgumentException('uid has to be integer.', 1316779798);
-		}
-		$row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->table, 'uid=' . (int)$uid);
-		if (empty($row) || !is_array($row)) {
-			throw new \RuntimeException('Could not find row with uid "' . $uid . '" in table ' . $this->table, 1314354065);
-		}
-		return $this->createDomainObject($row);
+	public function treeAction() {
+		$resourceFactory = \BeechIt\MediaLibrary\Resource\ResourceFactory::getInstance();
+		$folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'].':'.$this->settings['folder']);
+
+		$this->view->assign('folder', $folder);
 	}
 }

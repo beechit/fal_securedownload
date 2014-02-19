@@ -27,6 +27,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 
+/**
+ * FileDeliverys
+ *
+ * @package BeechIt\FalSecuredownload\Resource
+ */
 class FileDelivery {
 
 	/**

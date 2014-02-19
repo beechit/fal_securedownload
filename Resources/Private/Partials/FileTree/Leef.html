@@ -1,0 +1,11 @@
+
+<ul>
+	<f:for each="{folder.subFolders}" as="subFolder">
+		<li><span class="icon-folder"></span>{subFolder.name}
+			<f:render partial="FileTree/Leef" arguments="{folder:subFolder}" />
+		</li>
+	</f:for>
+	<f:for each="{folder.files}" as="file">
+		<li><span class="icon-file icon-file-{file.extension}"></span><a href="{file.publicUrl}" target="_blank">{file.name}</a></li>
+	</f:for>
+</ul>
