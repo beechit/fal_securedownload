@@ -23,8 +23,8 @@ namespace BeechIt\FalSecuredownload\Resource;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 
 /**
@@ -141,35 +141,30 @@ class FileDelivery {
 	 * @return bool
 	 */
 	protected function checkFileAccess() {
-		$feGroups = $this->originalFile->getProperty('fe_groups');
-		if ($feGroups !== '') {
 
-			// no login then no access
-			if (!$this->feUser->user) {
-				return FALSE;
-			}
-			// enabled for all loggedIn Users
-			if (strpos($feGroups, '-2') !== FALSE) {
-				return TRUE;
-			}
-			// user not member of any group then no access
-			if (!is_array($GLOBALS['TSFE']->fe_user->groupData['uid'])) {
-				return FALSE;
-			}
+		/** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
+		$checkPermissionsService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
 
-			foreach (explode(',', $feGroups) as $feGroupUid) {
-				if (in_array(trim($feGroupUid), $GLOBALS['TSFE']->fe_user->groupData['uid'])) {
-					return TRUE;
-				}
+		$userFeGroups = !$this->feUser->user ? FALSE : $this->feUser->groupData['uid'];
+
+		// check folder access
+		if ($checkPermissionsService->checkFolderRootLineAccess($this->originalFile->getParentFolder(), $userFeGroups)) {
+			$feGroups = $this->originalFile->getProperty('fe_groups');
+			if ($feGroups !== '') {
+				return $checkPermissionsService->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
 			}
+			return TRUE;
 		}
-		return TRUE;
+
+		return FALSE;
 	}
 
 	/**
 	 * Deliver file
 	 */
 	public function deliver() {
+
+		// todo: remove 'if' when https://review.typo3.org/#/c/27760/ is in
 		if ($this->file instanceof ProcessedFile) {
 
 			$fileInfo = $this->file->getStorage()->getFileInfoByIdentifier($this->file->getIdentifier(), array('mimetype', 'size', 'mtime'));

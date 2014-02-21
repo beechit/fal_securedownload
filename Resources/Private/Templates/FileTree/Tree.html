@@ -1,3 +1,4 @@
+{namespace sd=BeechIt\FalSecuredownload\ViewHelpers}
 <f:layout name="Default" />
 
 <f:section name="main">
@@ -5,7 +6,9 @@
 	<f:if condition="{folder}">
 		<f:then>
 			<h3>{folder.name}</h3>
-			<f:render partial="FileTree/Leef" arguments="{folder:folder}" />
+			<sd:security.assetAccess folder="{folder}">
+				<f:render partial="FileTree/Leef" arguments="{folder:folder}" />
+			</sd:security.assetAccess>
 		</f:then>
 
 		<f:else>

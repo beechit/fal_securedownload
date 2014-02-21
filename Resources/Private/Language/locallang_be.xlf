@@ -20,6 +20,10 @@
 				<source>- First select a storage -</source>
 			</trans-unit>
 
+			<trans-unit id="clickmenu.folderpermissions">
+				<source>Folder permissions</source>
+			</trans-unit>
+
 		</body>
 	</file>
 </xliff>

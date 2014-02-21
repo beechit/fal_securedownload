@@ -4,7 +4,7 @@ if (!defined('TYPO3_MODE')) {
 }
 
 // add TypoScript for the asset serving
-// todo: move typeNum to extension configuration
+// todo: remove when https://review.typo3.org/#/c/27760/ is in and create a hook for eID dumpFile
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTypoScript('fal_securedownload', 'setup',
 	'
 	FalSecuredownload = PAGE
@@ -30,6 +30,7 @@ if (!defined('TYPO3_MODE')) {
 	)
 );
 
+// todo: remove when https://review.typo3.org/#/c/27760/ is in and create a hook for eID dumpFile
 \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
 	'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 	\TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,

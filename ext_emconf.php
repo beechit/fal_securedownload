@@ -11,8 +11,8 @@
  ***************************************************************/
 
 $EM_CONF[$_EXTKEY] = array(
-	'title' => 'Secure file download',
-	'description' => 'Secure file download.',
+	'title' => 'FAL Secure Download',
+	'description' => 'Secure download of assets',
 	'category' => 'plugin',
 	'author' => 'Frans Saris',
 	'author_email' => 't3ext@beech.it',

@@ -29,6 +29,8 @@ use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\PathUtility;
 /**
  * Generate special public url for files in non-public storages
+ *
+ * todo: remove when https://review.typo3.org/#/c/27760/ is in and create a hook for eID dumpFile
  */
 class PublicUrlAspect {
 
@@ -47,7 +49,6 @@ class PublicUrlAspect {
 		if ($this->urlSubstitutionNeeded($storage, $driver, $file)) {
 
 			// create public url
-			// todo: move type as setting to extension configuration
 			$publicUrl = 'index.php?type=1337';
 
 			$identifier = ($file instanceof ProcessedFile ? 'p' : 'f').':'.$file->getUid();
