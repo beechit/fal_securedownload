@@ -49,7 +49,9 @@ class ClickMenuOptions {
 			$folderObject = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()
 				->retrieveFileOrFolderObject($combinedIdentifier);
 
-			if ($folderObject && $folderObject instanceof \TYPO3\CMS\Core\Resource\Folder && in_array($folderObject->getRole(), array(\TYPO3\CMS\Core\Resource\Folder::ROLE_DEFAULT, \TYPO3\CMS\Core\Resource\Folder::ROLE_USERUPLOAD))) {
+			if ($folderObject && $folderObject instanceof \TYPO3\CMS\Core\Resource\Folder
+				&& !$folderObject->getStorage()->isPublic()
+				&& in_array($folderObject->getRole(), array(\TYPO3\CMS\Core\Resource\Folder::ROLE_DEFAULT, \TYPO3\CMS\Core\Resource\Folder::ROLE_USERUPLOAD))) {
 
 				/** @var \BeechIt\FalSecuredownload\Service\Utility $utility */
 				$utility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');

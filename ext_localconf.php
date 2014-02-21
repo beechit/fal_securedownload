@@ -37,3 +37,20 @@ if (!defined('TYPO3_MODE')) {
 	'BeechIt\\FalSecuredownload\\Security\\PublicUrlAspect',
 	'generatePublicUrl'
 );
+
+// extend the FileList FolderTree to change the icons
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Filelist\\FileListFolderTree'] = array(
+	'className' => 'BeechIt\\FalSecuredownload\\Xclass\\FileListFolderTree'
+);
+// extend the FolderTreeView to change the icons
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['\TYPO3\\CMS\\Backend\\Tree\\View\\FolderTreeView'] = array(
+	'className' => 'BeechIt\\FalSecuredownload\\Xclass\\FolderTreeView'
+);
+// extend the FileList to change the icons
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Filelist\\FileList'] = array(
+	'className' => 'BeechIt\\FalSecuredownload\\Xclass\\FileList'
+);
+// extend the FileList to change the icons
+$GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TBE_FolderTree'] = array(
+	'className' => 'BeechIt\\FalSecuredownload\\Xclass\\TBE_FolderTree'
+);
