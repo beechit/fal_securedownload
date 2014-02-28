@@ -3,8 +3,8 @@
 <ul>
 	<f:for each="{folder.subFolders}" as="subFolder">
 		<sd:security.assetAccess folder="{subFolder}">
-			<li><span class="icon-folder"></span>{subFolder.name}
-				<f:render partial="FileTree/Leef" arguments="{folder:subFolder}" />
+			<li><span class="icon-folder {sd:leaveState(folder:'{subFolder}', then:'icon-folder-open')}" data-folder="{subFolder.combinedIdentifier}">{subFolder.name}</span>
+				<f:render partial="FileTree/Leaf" arguments="{folder:subFolder}" />
 			</li>
 		</sd:security.assetAccess>
 	</f:for>

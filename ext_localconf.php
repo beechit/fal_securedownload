@@ -30,6 +30,10 @@ if (!defined('TYPO3_MODE')) {
 	)
 );
 
+// FileTree leaf open/close state dispatcher
+$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] =
+	'EXT:fal_securedownload/Resources/Public/Php/FileTreeState.php';
+
 // todo: remove when https://review.typo3.org/#/c/27760/ is in and create a hook for eID dumpFile
 \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
 	'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
@@ -54,3 +58,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TYPO3\\CMS\\Filelist\\FileList'] 
 $GLOBALS['TYPO3_CONF_VARS']['SYS']['Objects']['TBE_FolderTree'] = array(
 	'className' => 'BeechIt\\FalSecuredownload\\Xclass\\TBE_FolderTree'
 );
+
+// Resource Icon hook
+//$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['overrideResourceIcon']['FalSecuredownload'] =
+//	'BeechIt\\FalSecuredownload\\Hooks\\IconUtility';
+

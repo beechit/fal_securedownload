@@ -34,6 +34,7 @@ class Utility implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * Get folder configuration record
 	 *
+	 * @param Folder $folder
 	 * @return array
 	 */
 	public function getFolderRecord(Folder $folder) {

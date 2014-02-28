@@ -167,6 +167,8 @@ class FileDelivery {
 		// todo: remove 'if' when https://review.typo3.org/#/c/27760/ is in
 		if ($this->file instanceof ProcessedFile) {
 
+			header('Content-Disposition: attachment; filename=' . $this->file->getName());
+
 			$fileInfo = $this->file->getStorage()->getFileInfoByIdentifier($this->file->getIdentifier(), array('mimetype', 'size', 'mtime'));
 			header('Content-Type: ' . $fileInfo['mimetype']);
 			header('Content-Length: ' . $fileInfo['size']);
@@ -185,7 +187,7 @@ class FileDelivery {
 			exit();
 
 		} else {
-			$this->file->getStorage()->dumpFileContents($this->file);
+			$this->file->getStorage()->dumpFileContents($this->file, TRUE);
 		}
 	}
 }
