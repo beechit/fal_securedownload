@@ -43,10 +43,8 @@ class LeafStateService implements \TYPO3\CMS\Core\SingletonInterface {
 	public function saveLeafStateForUser(FrontendUserAuthentication $user, $folder, $open) {
 
 		// check if folder exists
-		// todo: fix this when https://review.typo3.org/#/c/27760/ is merged
-//		$resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
-//		$folderObject = $resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
-		$folderObject = TRUE;
+		$resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+		$folderObject = $resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
 
 		if ($folderObject) {
 			$folderState = $this->getFolderState($user);
