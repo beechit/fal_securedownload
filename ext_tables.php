@@ -25,5 +25,7 @@ if (TYPO3_MODE === 'BE') {
 }
 
 \TYPO3\CMS\Backend\Sprite\SpriteManager::addSingleIcons(array(
-		'folder' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/folder.png'
+		'folder' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/folder.png',
+		'overlay-permissions' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/permissions-set-in-root-line.png'
 	), 'fal_securedownload');
+

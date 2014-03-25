@@ -41,16 +41,28 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
 			/** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
 			$checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
 
+			$currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
+			$resource->getStorage()->setEvaluatePermissions(FALSE);
+
 			if ($resource instanceof \TYPO3\CMS\Core\Resource\Folder) {
 				$folder = $resource;
 			} else {
 				$folder = $resource->getParentFolder();
 			}
 
-			// check if there are access restrictions in the rootline of this folder
-			if (!$checkPermissionsService->checkFolderRootLineAccess($folder, FALSE)) {
+			if ($resource instanceof \TYPO3\CMS\Core\Resource\File && $resource->getProperty('fe_groups')) {
 				$overlays['status-overlay-access-restricted'] = array();
+
+			// check if there are permissions set on this specific folder
+			} elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== FALSE) {
+				$overlays['status-overlay-access-restricted'] = array();
+
+			// check if there are access restrictions in the root line of this folder
+			} elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, FALSE)) {
+				$overlays['extensions-fal_securedownload-overlay-permissions'] = array();
 			}
+
+			$resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
 		}
 	}
 

@@ -68,6 +68,21 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
+	 * Get permissions set on folder (no root line check)
+	 *
+	 * @param Folder $folder
+	 * @return bool|string FALSE or comma separated list of fe_group uids
+	 */
+	public function getFolderPermissions(Folder $folder) {
+		$permissions = FALSE;
+		$folderRecord = $this->utilityService->getFolderRecord($folder);
+		if ($folderRecord) {
+			$permissions = $folderRecord['fe_groups'] ?: FALSE;
+		}
+		return $permissions;
+	}
+
+	/**
 	 * Get all folders in root line of given folder
 	 *
 	 * @param Folder $folder
@@ -75,18 +90,17 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface {
 	 */
 	public function getFolderRootLine(Folder $folder) {
 		$rootLine = array($folder);
-
+		$parentFolder = $folder->getParentFolder();
 		$count = 0;
-		while ($folder->getStorage()->getRootLevelFolder()->getIdentifier() !== $folder->getIdentifier()) {
-			$folder = $folder->getParentFolder();
-			$rootLine[] = $folder;
-
+		while ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {
+			$rootLine[] = $parentFolder;
 			$count++;
 			if ($count > 999) {
 				break;
 			}
+			$folder = $parentFolder;
+			$parentFolder = $parentFolder->getParentFolder();
 		}
-
 		return array_reverse($rootLine);
 	}
 
