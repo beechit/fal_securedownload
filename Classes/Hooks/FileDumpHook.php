@@ -64,6 +64,12 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 		if (!$this->checkPermissions()) {
 			$this->exitScript('No access!');
 		}
+
+		// todo: find a nicer way to force the download. Other hooks are blocked by this
+		if (isset($_REQUEST['download'])) {
+			$file->getStorage()->dumpFileContents($file, TRUE);
+			exit;
+		}
 	}
 
 	/**

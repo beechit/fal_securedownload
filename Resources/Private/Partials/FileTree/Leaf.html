@@ -10,7 +10,7 @@
 	</f:for>
 	<f:for each="{folder.files}" as="file">
 		<sd:security.assetAccess folder="{folder}" file="{file}">
-			<li><span class="icon-file icon-file-{file.extension}"></span><a href="{file.publicUrl}" target="_blank">{file.name}</a></li>
+			<li><span class="icon-file icon-file-{file.extension}"></span><sd:downloadLink file="{file}">{file.name}</sd:downloadLink></li>
 		</sd:security.assetAccess>
 	</f:for>
 </ul>
