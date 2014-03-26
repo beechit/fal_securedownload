@@ -19,7 +19,7 @@ if (!defined('TYPO3_MODE')) {
 $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] =
 	'EXT:fal_securedownload/Resources/Public/Php/FileTreeState.php';
 
-// Resource Icon hook
+// FileDumpEID hook
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess']['FalSecuredownload'] =
 	'BeechIt\\FalSecuredownload\\Hooks\\FileDumpHook';
 

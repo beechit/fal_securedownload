@@ -1,13 +1,13 @@
 
 plugin.tx_falsecuredownload {
 	view {
-		templateRootPath = {$plugin.tx_falsecuredownload.view.templateRootPath}
-		partialRootPath = {$plugin.tx_falsecuredownload.view.partialRootPath}
-		layoutRootPath = {$plugin.tx_falsecuredownload.view.layoutRootPath}
+		templateRootPaths.fal_securedownload = {$plugin.tx_falsecuredownload.view.templateRootPath}
+		partialRootPaths.fal_securedownload = {$plugin.tx_falsecuredownload.view.partialRootPath}
+		layoutRootPaths.fal_securedownload = {$plugin.tx_falsecuredownload.view.layoutRootPath}
 	}
 }
 
-# make foldertree colapseable
+# make foldertree collapsible
 page.jsFooterInline.303030 = TEXT
 page.jsFooterInline.303030.wrap =  $(function() {|});
 page.jsFooterInline.303030.value (

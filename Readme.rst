@@ -11,9 +11,9 @@ The access to assets can be set on folder/file bases by setting access to fe_gro
 
 1. Download and install fal_securedownload
 
-2. Un-check the 'public' checkbox in you file storage
+2. Un-check the 'public' checkbox in your file storage
 
-3. Add a .htaccess with "Deny from all"  in you file storage root folder or move your storage outside of your webroot
+3. Add a .htaccess with "Deny from all" in your file storage root folder or move your storage outside of your webroot
 
 **Requirements:**
-    TYPO3 6.2 (master)
+    TYPO3 6.2
