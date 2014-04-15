@@ -33,9 +33,10 @@ class DownloadLinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalV
 	 * Create a link to a file that forces a download
 	 *
 	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+	 * @param bool $uriOnly
 	 * @return string
 	 */
-	public function render(\TYPO3\CMS\Core\Resource\FileInterface $file) {
+	public function render(\TYPO3\CMS\Core\Resource\FileInterface $file, $uriOnly = FALSE) {
 
 		$queryParameterArray = array('eID' => 'dumpFile', 't' => '');
 		if ($file instanceof \TYPO3\CMS\Core\Resource\File) {
@@ -49,6 +50,10 @@ class DownloadLinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalV
 		$queryParameterArray['token'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(implode('|', $queryParameterArray), 'resourceStorageDumpFile');
 		$queryParameterArray['download'] = '';
 		$uri = 'index.php?' . str_replace('+', '%20', http_build_query($queryParameterArray));
+
+		if ($uriOnly) {
+			return $uri;
+		}
 
 		$this->tag->addAttribute('href', $uri);
 		$this->tag->setContent($this->renderChildren());
