@@ -29,6 +29,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['ov
 
 if (TYPO3_MODE === 'BE') {
 
+	// Add FolderPermission button to docheader of filelist
+	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['docHeaderButtonsHook']['FalSecuredownload'] =
+		'BeechIt\\FalSecuredownload\\Hooks\\DocHeaderButtonsHook->addFolderPermissionsButton';
+
 	// refresh file tree after change in tx_falsecuredownload_folder record
 	$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
 		'BeechIt\\FalSecuredownload\\Hooks\\ProcessDatamapHook';
