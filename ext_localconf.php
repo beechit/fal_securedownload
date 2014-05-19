@@ -28,6 +28,13 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['ov
 	'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook';
 
 if (TYPO3_MODE === 'BE') {
+
+	// refresh file tree after change in tx_falsecuredownload_folder record
+	$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
+		'BeechIt\\FalSecuredownload\\Hooks\\ProcessDatamapHook';
+	$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
+		'BeechIt\\FalSecuredownload\\Hooks\\ProcessDatamapHook';
+
 	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PreFolderMove,
