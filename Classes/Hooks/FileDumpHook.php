@@ -73,6 +73,8 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 	}
 
 	/**
+	 * Check if current user has enough permissions to view file
+	 *
 	 * @return bool
 	 */
 	protected function checkPermissions() {
@@ -80,20 +82,12 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 		$this->initializeUserAuthentication();
 
 		/** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
-		$checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
+		$checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
+			'BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
 
 		$userFeGroups = !$this->feUser->user ? FALSE : $this->feUser->groupData['uid'];
 
-		// check folder access
-		if ($checkPermissionsService->checkFolderRootLineAccess($this->originalFile->getParentFolder(), $userFeGroups)) {
-			$feGroups = $this->originalFile->getProperty('fe_groups');
-			if ($feGroups !== '') {
-				return $checkPermissionsService->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
-			}
-			return TRUE;
-		}
-
-		return FALSE;
+		return $checkPermissionsService->checkFileAccess($this->originalFile, $userFeGroups);
 	}
 
 	/**
