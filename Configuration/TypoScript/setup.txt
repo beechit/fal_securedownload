@@ -1,9 +1,9 @@
 
 plugin.tx_falsecuredownload {
 	view {
-		templateRootPaths.fal_securedownload = {$plugin.tx_falsecuredownload.view.templateRootPath}
-		partialRootPaths.fal_securedownload = {$plugin.tx_falsecuredownload.view.partialRootPath}
-		layoutRootPaths.fal_securedownload = {$plugin.tx_falsecuredownload.view.layoutRootPath}
+		templateRootPaths.0 = {$plugin.tx_falsecuredownload.view.templateRootPath}
+		partialRootPaths.0 = {$plugin.tx_falsecuredownload.view.partialRootPath}
+		layoutRootPaths.0 = {$plugin.tx_falsecuredownload.view.layoutRootPath}
 	}
 }
 
