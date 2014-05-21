@@ -35,7 +35,7 @@ class FileTreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 	 * Render file tree
 	 */
 	public function treeAction() {
-		$resourceFactory = \BeechIt\MediaLibrary\Resource\ResourceFactory::getInstance();
+		$resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
 		$folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'].':'.$this->settings['folder']);
 
 		$this->view->assign('folder', $folder);
