@@ -65,8 +65,8 @@ return array(
 			'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.fe_group',
 			'config' => array(
 				'type' => 'select',
-				'size' => 5,
-				'maxitems' => 20,
+				'size' => 20,
+				'maxitems' => 40,
 				'items' => array(
 					array(
 						'LLL:EXT:lang/locallang_general.xlf:LGL.any_login',
