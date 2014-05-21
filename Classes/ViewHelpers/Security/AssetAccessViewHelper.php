@@ -74,7 +74,6 @@ class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCon
 	/**
 	 * Determines whether the currently logged in FE user belongs to the specified usergroup
 	 *
-	 * @param string $role The usergroup (either the usergroup uid or its title)
 	 * @return boolean|array FALSE when not logged in or else $GLOBALS['TSFE']->fe_user->groupData['uid']
 	 */
 	protected function getFeUserGroups() {
