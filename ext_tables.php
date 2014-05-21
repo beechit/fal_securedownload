@@ -6,7 +6,7 @@ if (!defined('TYPO3_MODE')) {
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
 	$_EXTKEY,
 	'Filetree',
-	'FileTree'
+	'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:plugin.title'
 );
 
 $pluginSignature = str_replace('_', '', $_EXTKEY) . '_filetree';
