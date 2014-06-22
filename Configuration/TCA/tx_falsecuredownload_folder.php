@@ -6,11 +6,11 @@ if (!defined('TYPO3_MODE')) {
 return array(
 	'ctrl' => array(
 		'title' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:tx_falsecuredownload_folder',
-		'label' => 'identifier',
+		'label' => 'folder',
 		'tstamp' => 'tstamp',
 		'hideTable' => TRUE,
 		'rootLevel' => TRUE,
-		'default_sortby' => 'ORDER BY identifier ASC',
+		'default_sortby' => 'ORDER BY folder ASC',
 		'dividers2tabs' => FALSE,
 		'security' => array(
 			'ignoreWebMountRestriction' => TRUE,
