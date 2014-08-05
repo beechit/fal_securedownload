@@ -24,6 +24,8 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * FileDumpHook
  */
@@ -38,6 +40,20 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 	 * @var \TYPO3\CMS\Core\Resource\File
 	 */
 	protected $originalFile;
+
+	/**
+	 * @var string
+	 */
+	protected $redirectUrl;
+
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+		if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'])) {
+			$this->redirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'];
+		}
+	}
 
 	/**
 	 * Perform custom security/access when accessing file
@@ -62,7 +78,11 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 		}
 
 		if (!$this->checkPermissions()) {
-			$this->exitScript('No access!');
+			if (!$this->isLoggedIn() && $this->redirectUrl !== NULL) {
+				$this->redirectToLogin();
+			} else {
+				$this->exitScript('No access!');
+			}
 		}
 
 		// todo: find a nicer way to force the download. Other hooks are blocked by this
@@ -70,6 +90,16 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 			$file->getStorage()->dumpFileContents($file, TRUE);
 			exit;
 		}
+	}
+
+	/**
+	 * Check if user is logged in
+	 *
+	 * @return bool
+	 */
+	protected function isLoggedIn() {
+		$this->initializeUserAuthentication();
+		return is_array($this->feUser->user) && $this->feUser->user['uid'] ? TRUE : FALSE;
 	}
 
 	/**
@@ -94,11 +124,15 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 	 * Initialise feUser
 	 */
 	protected function initializeUserAuthentication() {
-		$this->feUser = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
-		$this->feUser->fetchGroupData();
+		if ($this->feUser === NULL) {
+			$this->feUser = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
+			$this->feUser->fetchGroupData();
+		}
 	}
 
 	/**
+	 * Exit with a error message
+	 *
 	 * @param string $message
 	 */
 	protected function exitScript($message) {
@@ -106,4 +140,16 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 		exit($message);
 	}
 
+	/**
+	 * Redirect to login page
+	 */
+	protected function redirectToLogin() {
+		$login_redirect_uri = str_replace(
+			'###REQUEST_URI###',
+			rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
+			$this->redirectUrl
+		);
+		header('location: ' . $login_redirect_uri);
+		exit;
+	}
 }

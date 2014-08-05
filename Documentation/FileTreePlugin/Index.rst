@@ -19,7 +19,7 @@ Templates
 
 The default templates can be found like any other extbase/fluid based extension in:
 
-::
+.. code-block:: ts
 
    fal_securedownload/Resources/Private/Layouts
    fal_securedownload/Resources/Private/Partials
@@ -27,7 +27,7 @@ The default templates can be found like any other extbase/fluid based extension 
 
 If you want to override these you can set
 
-::
+.. code-block:: ts
 
    plugin.tx_falsecuredownload {
     view {
