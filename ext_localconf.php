@@ -29,6 +29,18 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['ov
 
 if (TYPO3_MODE === 'BE') {
 
+	// Public url rendering in BE context
+	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
+		\TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
+		'BeechIt\\FalSecuredownload\\Aspects\\PublicUrlAspect',
+		'generatePublicUrl'
+	);
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerAjaxHandler (
+		'FalSecuredownload::publicUrl',
+		'BeechIt\\FalSecuredownload\\Controller\\BePublicUrlController->dumpFile'
+	);
+
 	// Page module hook
 	$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree'][$_EXTKEY] =
 		'BeechIt\\FalSecuredownload\\Hooks\\CmsLayout->getExtensionSummary';
