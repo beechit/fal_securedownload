@@ -44,14 +44,22 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 	/**
 	 * @var string
 	 */
-	protected $redirectUrl;
+	protected $loginRedirectUrl;
+
+	/**
+	 * @var string
+	 */
+	protected $noAccessRedirectUrl;
 
 	/**
 	 * Constructor
 	 */
 	public function __construct() {
 		if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'])) {
-			$this->redirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'];
+			$this->loginRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'];
+		}
+		if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'])) {
+			$this->noAccessRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'];
 		}
 	}
 
@@ -72,10 +80,18 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 		}
 
 		if (!$this->checkPermissions()) {
-			if (!$this->isLoggedIn() && $this->redirectUrl !== NULL) {
-				$this->redirectToLogin();
+			if (!$this->isLoggedIn()) {
+				if ($this->loginRedirectUrl !== NULL) {
+					$this->redirectToUrl($this->loginRedirectUrl);
+				} else {
+					$this->exitScript('Authentication required!', 401);
+				}
 			} else {
-				$this->exitScript('No access!');
+				if ($this->noAccessRedirectUrl !== NULL) {
+					$this->redirectToUrl($this->noAccessRedirectUrl);
+				} else {
+					$this->exitScript('No access!', 403);
+				}
 			}
 		}
 
@@ -128,22 +144,23 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 	 * Exit with a error message
 	 *
 	 * @param string $message
+	 * @param int $httpCode
 	 */
-	protected function exitScript($message) {
-		header('HTTP/1.1 403 Forbidden');
+	protected function exitScript($message, $httpCode = 403) {
+		header('HTTP/1.1 ' . (int)$httpCode . ' Forbidden');
 		exit($message);
 	}
 
 	/**
-	 * Redirect to login page
+	 * Redirect to url
 	 */
-	protected function redirectToLogin() {
-		$login_redirect_uri = str_replace(
+	protected function redirectToUrl($url) {
+		$redirect_uri = str_replace(
 			'###REQUEST_URI###',
 			rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
-			$this->redirectUrl
+			$url
 		);
-		header('location: ' . $login_redirect_uri);
+		header('location: ' . $redirect_uri);
 		exit;
 	}
 }

@@ -11,13 +11,26 @@
 Login redirect
 ==============
 
-Instead of throwing a "Access denied" message you can redirect the user to a certain page so he can login.
+Instead of throwing a "Authentication required!" message you can redirect the user to a certain page so he can login.
 
 Add following to your ext_localconf.php or typo3conf/AdditionalConfiguration.php
 
 .. code-block:: php
 
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'] = '/login/?redirect_url=###REQUEST_URI###';
+
+
+
+No Access redirect
+==================
+
+Instead of throwing a "Access denied" message you can redirect the user to a certain page to inform the user about the access denied with optional some extra info.
+
+Add following to your ext_localconf.php or typo3conf/AdditionalConfiguration.php
+
+.. code-block:: php
+
+    $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'] = '/no-access/?redirect_url=###REQUEST_URI###';
 
 
 Known issues
@@ -39,6 +52,7 @@ Todo
 ====
 
 Complete this document
+
 
 Further development
 ===================
