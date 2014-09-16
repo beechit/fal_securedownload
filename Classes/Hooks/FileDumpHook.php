@@ -65,12 +65,6 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 	 */
 	public function checkFileAccess(\TYPO3\CMS\Core\Resource\ResourceInterface $file) {
 
-		// if BE login no access check
-		// Todo: in eID context BE_USER isn't available determine of this is needed/required.
-		if (!empty($GLOBALS['BE_USER'])) {
-			return;
-		}
-
 		if (!$file instanceof \TYPO3\CMS\Core\Resource\File) {
 			$this->originalFile = $file->getOriginalFile();
 		} else {
