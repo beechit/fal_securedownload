@@ -60,7 +60,9 @@ class BePublicUrlController {
 				HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_404);
 			}
 
+			ob_start();
 			$file->getStorage()->dumpFileContents($file);
+			exit;
 		} else {
 			HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
 		}
