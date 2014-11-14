@@ -37,7 +37,7 @@ class FileTreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
 	public function treeAction() {
 		$resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
 		try {
-		$folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'].':'.$this->settings['folder']);
+			$folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'].':'.$this->settings['folder']);
 		} catch(\TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException $exception) {
 			// folder not found
 		}

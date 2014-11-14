@@ -13,6 +13,12 @@ This extension (fal_securedownload) aims to be a general solution to secure your
 
 When you storage is marked as non-public all links to files from that storage are replaced (also for processed files).
 
-The access to assets can be set on folder/file bases by setting access to fe_groups in the file module.
+The permissions for assets can be set on folder/file bases by setting access to fe_groups in the file module.
 
 There is also a plugin to show your files as a tree on your website.
+
+.. figure:: ../Images/set-folder-permissions.png
+   :width: 400px
+   :alt: Set FE permissions for folder
+
+   **Image 1:** Set FE permissions for folder
