@@ -51,6 +51,11 @@ class DownloadLinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalV
 		$queryParameterArray['download'] = '';
 		$uri = 'index.php?' . str_replace('+', '%20', http_build_query($queryParameterArray));
 
+		// Add absRefPrefix
+		if (!empty($GLOBALS['TSFE'])) {
+			$uri = $GLOBALS['TSFE']->absRefPrefix . $uri;
+		}
+
 		if ($uriOnly) {
 			return $uri;
 		}
