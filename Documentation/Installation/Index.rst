@@ -15,7 +15,7 @@ Installation
 
    Download and install fal_securedownload through extension manager or clone from https://github.com/beechit/fal_securedownload.git in typo3conf/ext/
 
-#. **Create non public file storage**
+#. **Create non public file storage (under rootlevel)**
 
    Un-check the 'public' checkbox for your existing file storage or create a new file storage and set it to non public
 
