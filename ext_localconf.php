@@ -91,5 +91,9 @@ if (TYPO3_MODE === 'BE') {
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'postFolderRename'
 	);
+
+	// register custom indexer hook
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
+	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
 }
 
