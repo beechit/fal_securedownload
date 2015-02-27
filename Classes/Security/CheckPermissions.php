@@ -24,8 +24,12 @@ namespace BeechIt\FalSecuredownload\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Utility functions to check permissions
@@ -126,10 +130,10 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface {
 	/**
 	 * Get permissions set on folder (no root line check)
 	 *
-	 * @param Folder $folder
+	 * @param FolderInterface $folder
 	 * @return bool|string FALSE or comma separated list of fe_group uids
 	 */
-	public function getFolderPermissions(Folder $folder) {
+	public function getFolderPermissions(FolderInterface $folder) {
 		$permissions = FALSE;
 		$folderRecord = $this->utilityService->getFolderRecord($folder);
 		if ($folderRecord) {
@@ -139,12 +143,43 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface {
 	}
 
 	/**
+	 * Get FeGroups that are allowed to view a file/folder (checks full rootline)
+	 *
+	 * @param ResourceInterface $resource
+	 * @return string
+	 */
+	public function getPermissions(ResourceInterface $resource) {
+		$feGroups = array();
+		// loop trough the root line of an folder and check the permissions of every folder
+		foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
+
+			// fetch folder permissions record
+			$folderRecord = $this->utilityService->getFolderRecord($folder);
+
+			// if record found check permissions
+			if ($folderRecord) {
+				if ($feGroups === array()) {
+					$feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], TRUE);
+				}
+				if ($folderRecord['fe_groups']) {
+					$feGroups = GeneralUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
+				}
+				break;
+			}
+		}
+		if ($resource instanceof File && $resource->getProperty('fe_groups')) {
+			$feGroups = GeneralUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
+		}
+		return implode(',', $feGroups);
+	}
+
+	/**
 	 * Get all folders in root line of given folder
 	 *
-	 * @param Folder $folder
+	 * @param FolderInterface $folder
 	 * @return Folder[]
 	 */
-	public function getFolderRootLine(Folder $folder) {
+	public function getFolderRootLine(FolderInterface $folder) {
 		$rootLine = array($folder);
 		$parentFolder = $folder->getParentFolder();
 		$count = 0;
