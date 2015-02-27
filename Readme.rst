@@ -17,3 +17,5 @@ The access to assets can be set on folder/file bases by setting access to fe_gro
 
 **Requirements:**
     TYPO3 6.2
+
+    EXT:ke_search v1.8.4 (optional)

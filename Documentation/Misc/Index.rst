@@ -33,6 +33,12 @@ Add following to your ext_localconf.php or typo3conf/AdditionalConfiguration.php
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'] = '/no-access/?redirect_url=###REQUEST_URI###';
 
 
+EXT:ke_search support
+=====================
+
+To have proper support for ke_search you need at least version 1.8.4 of ke_search and 0.0.8 of fal_secure_download.
+
+
 Known issues
 ============
 
