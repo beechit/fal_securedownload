@@ -1,4 +1,4 @@
-﻿.. ==================================================
+﻿﻿.. ==================================================
 .. FOR YOUR INFORMATION
 .. --------------------------------------------------
 .. -*- coding: utf-8 -*- with BOM.
@@ -11,6 +11,7 @@
 =============================================================
 FAL Secure Download
 =============================================================
+
 
 
 :Classification:
@@ -48,15 +49,14 @@ The content of this document is related to TYPO3,
 a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
 
 
-
-	**Table of Contents**
+**Table of Contents**
 
 .. toctree::
 	:maxdepth: 5
 	:titlesonly:
-		:glob:
+	:glob:
 
-		Introduction/Index
-		Installation/Index
-		FileTreePlugin/Index
-		Misc/Index
+	Introduction/Index
+	Installation/Index
+	FileTreePlugin/Index
+	Misc/Index
