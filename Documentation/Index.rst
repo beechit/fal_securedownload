@@ -12,41 +12,41 @@
 FAL Secure Download
 =============================================================
 
-.. only:: html
 
-	:Classification:
+:Classification:
 		fal_securedownload
 
-	:Version:
+:Version:
 		|release|
 
-	:Language:
+:Language:
 		en
 
-	:Description:
+:Description:
 		Secure download of assets.
 
-	:Keywords:
+:Keywords:
 		fal,download,secure download,filelist,filetree
 
-	:Copyright:
+:Copyright:
 		2014
 
-	:Author:
+:Author:
 		Frans Saris
 
-	:Email:
+:Email:
 		t3ext@beech.it
 
-	:License:
+:License:
 		This document is published under the Open Content License
 		available from http://www.opencontent.org/opl.shtml
 
-	:Rendered:
+:Rendered:
 		|today|
 
-	The content of this document is related to TYPO3,
-	a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
+The content of this document is related to TYPO3,
+a GNU/GPL CMS/Framework available from `www.typo3.org <http://www.typo3.org/>`_.
+
 
 
 	**Table of Contents**
@@ -54,9 +54,9 @@ FAL Secure Download
 .. toctree::
 	:maxdepth: 5
 	:titlesonly:
-	:glob:
+		:glob:
 
-	Introduction/Index
-	Installation/Index
-	FileTreePlugin/Index
-	Misc/Index
+		Introduction/Index
+		Installation/Index
+		FileTreePlugin/Index
+		Misc/Index

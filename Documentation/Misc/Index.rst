@@ -49,7 +49,7 @@ To have correct urls to indexed files you need to add/adjust following ext:solr 
 	plugin.tx_solr.index.queue._FILES.default.filePublicUrl = public_url
 	plugin.tx_solr.index.queue._FILES.default.url = public_url
 
-*This feature id sponsored by: STIMME DER HOFFNUNG Adventist Media Center*
+*This feature is sponsored by: STIMME DER HOFFNUNG Adventist Media Center*
 
 
 Known issues
