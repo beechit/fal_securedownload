@@ -26,12 +26,39 @@ namespace BeechIt\FalSecuredownload\Aspects;
 
 use TYPO3\CMS\Core\Resource;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Class PublicUrlAspect
  */
-class PublicUrlAspect {
+class PublicUrlAspect implements SingletonInterface {
+
+	/**
+	 * Flag to en-/disable rendering of BE user link instead of FE link
+	 *
+	 * @var bool
+	 */
+	protected $enabled = TRUE;
+
+	/**
+	 * Get enabled
+	 *
+	 * @return boolean
+	 */
+	public function getEnabled() {
+		return $this->enabled;
+	}
+
+	/**
+	 * Set enabled
+	 *
+	 * @param boolean $enabled
+	 */
+	public function setEnabled($enabled) {
+		$this->enabled = $enabled;
+	}
 
 	/**
 	 * Generate public url for file
@@ -46,7 +73,7 @@ class PublicUrlAspect {
 	public function generatePublicUrl(Resource\ResourceStorage $storage, Resource\Driver\DriverInterface $driver, Resource\FileInterface $file, $relativeToCurrentScript, array $urlData) {
 
 		// We only render special links for non-public files
-		if (!$storage->isPublic()) {
+		if ($this->enabled && !$storage->isPublic()) {
 			$queryParameterArray = array('eID' => 'dumpFile', 't' => '');
 			if ($file instanceof Resource\File) {
 				$queryParameterArray['f'] = $file->getUid();

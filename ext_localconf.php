@@ -29,8 +29,11 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['ov
 
 if (TYPO3_MODE === 'BE') {
 
+	/** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
+	$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
+
 	// Public url rendering in BE context
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+	$signalSlotDispatcher->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
 		'BeechIt\\FalSecuredownload\\Aspects\\PublicUrlAspect',
@@ -55,45 +58,53 @@ if (TYPO3_MODE === 'BE') {
 	$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
 		'BeechIt\\FalSecuredownload\\Hooks\\ProcessDatamapHook';
 
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+	$signalSlotDispatcher->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PreFolderMove,
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'preFolderMove'
 	);
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+	$signalSlotDispatcher->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderMove,
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'postFolderMove'
 	);
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+	$signalSlotDispatcher->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PreFolderDelete,
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'preFolderDelete'
 	);
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+	$signalSlotDispatcher->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderDelete,
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'postFolderDelete'
 	);
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+	$signalSlotDispatcher->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PreFolderRename,
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'preFolderRename'
 	);
-	\TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher')->connect(
+	$signalSlotDispatcher->connect(
 		'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
 		\TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderRename,
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'postFolderRename'
 	);
 
-	// register custom indexer hook
+	// ext:ke_search custom indexer hook
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
+
+	// ext:solrfal enrich metadata and generate correct public url slot
+	$signalSlotDispatcher->connect(
+		'TYPO3\\Solr\\Solrfal\\Indexing\\DocumentFactory',
+		'fileMetaDataRetrieved',
+		'BeechIt\\FalSecuredownload\\Aspects\\SolrFalAspect',
+		'fileMetaDataRetrieved'
+	);
 }
 

@@ -39,6 +39,19 @@ EXT:ke_search support
 To have proper support for ke_search you need at least version 1.8.4 of ke_search and 0.0.8 of fal_secure_download.
 
 
+EXT:solrfal support
+===================
+
+To have correct urls to indexed files you need to add/adjust following ext:solr typoscript configuration.
+
+.. code-block:: ts
+
+	plugin.tx_solr.index.queue._FILES.default.filePublicUrl = public_url
+	plugin.tx_solr.index.queue._FILES.default.url = public_url
+
+*This feature id sponsored by: STIMME DER HOFFNUNG Adventist Media Center*
+
+
 Known issues
 ============
 
@@ -47,7 +60,7 @@ Known issues
 	The hook that is used to check if you have permissions to access the asset will force a download when this parameter is set.
 	Problem with this is that all other FileDumpEID hooks registered after fal_securedownload will not be executed anymore then.
 * I got javascript errors after including the provided typoscript template
-	This is proberly because you do not have jQuery availible on the FE. You can easily disable the provided javascript be adding this line to you typoscript templete
+	This is properly because you do not have jQuery available on the FE. You can easily disable the provided javascript be adding this line to you typoscript template
 
 .. code-block:: ts
 
