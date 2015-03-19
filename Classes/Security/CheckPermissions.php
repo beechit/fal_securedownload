@@ -149,6 +149,9 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface {
 	 * @return string
 	 */
 	public function getPermissions(ResourceInterface $resource) {
+		$currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
+		$resource->getStorage()->setEvaluatePermissions(FALSE);
+
 		$feGroups = array();
 		// loop trough the root line of an folder and check the permissions of every folder
 		foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
@@ -170,6 +173,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface {
 		if ($resource instanceof File && $resource->getProperty('fe_groups')) {
 			$feGroups = GeneralUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
 		}
+		$resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
 		return implode(',', $feGroups);
 	}
 
