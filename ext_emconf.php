@@ -21,7 +21,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'modify_tables' => '',
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
-	'version' => '0.0.8-dev',
+	'version' => '0.0.8',
 	'constraints' => array(
 		'depends' => array(
 			'typo3' => '6.2.2 - 6.2.99',
@@ -29,7 +29,8 @@ $EM_CONF[$_EXTKEY] = array(
 		'conflicts' => array(
 		),
 		'suggests' => array(
-			'ke_search' => '1.8.4'
+			'ke_search' => '1.8.4',
+			'solrfal' => '2.0.1',
 		),
 	),
 );
