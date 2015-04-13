@@ -95,6 +95,10 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 			}
 		}
 
+		/** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
+		$signalSlotDispatcher = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\SignalSlot\Dispatcher');
+		$signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', array($file, $this));
+
 		// todo: find a nicer way to force the download. Other hooks are blocked by this
 		if (isset($_REQUEST['download'])) {
 			$file->getStorage()->dumpFileContents($file, TRUE);

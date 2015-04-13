@@ -52,6 +52,29 @@ To have correct urls to indexed files you need to add/adjust following ext:solr 
 *This feature is sponsored by: STIMME DER HOFFNUNG Adventist Media Center*
 
 
+Signals and slots
+=================
+
+BeforeFileDump
+--------------
+
+This signal will be fired everytime a file is going to download or display. This signal will not be fired, if
+access to requested file is restricted for current logged in frontend user. BeforeFileDump is useful for e.g. tracking access of downloaded files.
+
+Example of how to register a slot for this signal (in your ext_localconf.php):
+
+.. code-block:: php
+
+	/** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
+	$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
+	$signalSlotDispatcher->connect(
+		'BeechIt\FalSecuredownload\Hooks\FileDumpHook',
+		'BeforeFileDump',
+		'Vendor\ExtensionName\Slot\BeforeFileDumpSlot',
+		'logFileDump'
+	);
+
+
 Known issues
 ============
 
