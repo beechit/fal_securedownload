@@ -74,6 +74,18 @@ Example of how to register a slot for this signal (in your ext_localconf.php):
 		'logFileDump'
 	);
 
+EXT:fal_securedownload vs EXT:naw_securedl
+==========================================
+
+* fal_securedownload uses the FAL API to create secure links instead of checking/changing all links found in the HTML output.
+* fal_securedownload supports remote storages.
+* fal_securedownload requires proper use of the FAL API so extensions that do not use `$file->getPublicUrl()` to create links to your files or not `secured`. But that would also mean remote and non public storages are not supported.
+* With fal_securedownload editors can set the permissions for files/folders by fe_group in the BE File list module.
+* Links created by fal_securedownload are exchangeable with other users without the risk that people get access to files they are not allowed to access as a FE login is required to get access.
+
+  * fal_securedownload 'secured' links don't have a expiration date and are only usable for users with a FE login.
+  * Links do not change over time.
+
 
 Known issues
 ============
