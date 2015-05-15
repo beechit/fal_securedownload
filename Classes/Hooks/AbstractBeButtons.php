@@ -24,8 +24,11 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
+use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Backend\Utility\IconUtility;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -46,9 +49,11 @@ abstract class AbstractBeButtons {
 		// In some folder copy/move actions in file list a invalid id is passed
 		try {
 			/** @var $file \TYPO3\CMS\Core\Resource\Folder */
-			$folder = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()
+			$folder = ResourceFactory::getInstance()
 				->retrieveFileOrFolderObject($combinedIdentifier);
-		} catch(\TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException $exception) {
+		} catch (ResourceDoesNotExistException $exception) {
+			$folder = NULL;
+		} catch (InsufficientFolderAccessPermissionsException $exception) {
 			$folder = NULL;
 		}
 
@@ -61,7 +66,7 @@ abstract class AbstractBeButtons {
 		) {
 
 			/** @var \BeechIt\FalSecuredownload\Service\Utility $utility */
-			$utility = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
+			$utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
 			$folderRecord = $utility->getFolderRecord($folder);
 
 			$menuItems[] = 'spacer';
