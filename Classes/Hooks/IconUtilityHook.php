@@ -66,7 +66,7 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
                 $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
             }
         }
-        /** @param ResourceInterface $folderObject
+        * @param ResourceInterface $folderObject
         * @param string $size
         * @param array $options
         * @param string $iconIdentifier
