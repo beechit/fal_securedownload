@@ -103,6 +103,6 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
                         }
                     }
                 }
+            }
             return array($folderObject, $size, $options, $iconIdentifier, $overlayIdentifier);
-        }
-}
+    }
