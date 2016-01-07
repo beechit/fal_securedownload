@@ -94,13 +94,6 @@ if (TYPO3_MODE === 'BE') {
 		'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
 		'postFolderRename'
 	);
-    // File tree icon adjustments for TYPO3 => 7.5
-    $signalSlotDispatcher->connect(
-        'TYPO3\\CMS\\Core\\Imaging\\IconFactory',
-        'buildIconForResourceSignal',
-        'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook',
-        'buildIconForResource'
-    );
 
 	// ext:ke_search custom indexer hook
 	$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
