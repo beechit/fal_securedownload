@@ -110,7 +110,7 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
             if (self::$mediaFolders === null) {
                 /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
                 $utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
-                self::$mediaFolders = $utility->getStorageFolders();
+                self::$mediaFolders = $utility->getFolderRecord();
             }
             return self::$mediaFolders;
         }
