@@ -30,3 +30,78 @@ use TYPO3\CMS\Core\Resource\Folder;
 /**
  * IconUtility Hook to add overlay icons when file/folder isn't public
  */
+class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideResourceIconHookInterface
+    {
+      /**
+      * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resource
+      * @param $iconName
+      * @param array $options
+      * @param array $overlays
+      */
+        public function overrideResourceIcon(\TYPO3\CMS\Core\Resource\ResourceInterface $resource, &$iconName, array &$options, array &$overlays) {
+            if (!$resource->getStorage()->isPublic()) {
+                /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
+                $checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
+                $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
+                $resource->getStorage()->setEvaluatePermissions(FALSE);
+                
+                if ($resource instanceof \TYPO3\CMS\Core\Resource\Folder) {
+                    $folder = $resource;
+                } else {
+                    $folder = $resource->getParentFolder();
+                }
+                
+                if ($resource instanceof \TYPO3\CMS\Core\Resource\File && $resource->getProperty('fe_groups')) {
+                    $overlays['status-overlay-access-restricted'] = array();
+                    
+                    // check if there are permissions set on this specific folder
+                } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== FALSE) {
+                    $overlays['status-overlay-access-restricted'] = array();
+                    
+                    // check if there are access restrictions in the root line of this folder
+                } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, FALSE)) {
+                    $overlays['extensions-fal_securedownload-overlay-permissions'] = array();
+                }
+                
+                $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
+            }
+        }
+        * @param ResourceInterface $folderObject
+        * @param string $size
+        * @param array $options
+        * @param string $iconIdentifier
+        * @param string $overlayIdentifier
+        * @return array
+        */
+        public function buildIconForResource(ResourceInterface $folderObject, $size, array $options, $iconIdentifier, $overlayIdentifier)
+        {
+            if ($folderObject && $folderObject instanceof Folder
+                && in_array($folderObject->getRole(), array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD))
+                ) {
+                $mediaFolders = self::getMediaFolders();
+                if (count($mediaFolders)) {
+                    /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
+                    $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
+                    $collections = $utility->findFileCollectionRecordsForFolder(
+                                                                                $folderObject->getStorage()->getUid(),
+                                                                                $folderObject->getIdentifier(),
+                                                                                array_keys($mediaFolders)
+                                                                                );
+                    if ($collections) {
+                        $iconIdentifier = 'tcarecords-sys_file_collection-folder';
+                        $hidden = TRUE;
+                        foreach ($collections as $collection) {
+                            if ((int)$collection['hidden'] === 0) {
+                                $hidden = FALSE;
+                                break;
+                            }
+                        }
+                        if ($hidden) {
+                            $overlayIdentifier = 'overlay-hidden';
+                        }
+                    }
+                }
+            }
+            return array($folderObject, $size, $options, $iconIdentifier, $overlayIdentifier);
+        }
+    }
