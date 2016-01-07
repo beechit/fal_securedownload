@@ -83,7 +83,7 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
                 $mediaFolders = self::getMediaFolders();
                 if (count($mediaFolders)) {
                     /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility*/
-                    $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
+                    $utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
                     $collections = $utility->findFileCollectionRecordsForFolder(
                                                                                 $folderObject->getStorage()->getUid(),
                                                                                 $folderObject->getIdentifier(),
@@ -109,7 +109,7 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
         {
             if (self::$mediaFolders === null) {
                 /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
-                $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
+                $utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
                 self::$mediaFolders = $utility->getStorageFolders();
             }
             return self::$mediaFolders;
