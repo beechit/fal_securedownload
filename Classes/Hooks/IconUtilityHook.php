@@ -105,13 +105,4 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
                 }
             return array($folderObject, $size, $options, $iconIdentifier, $overlayIdentifier);
         }
-        protected static function getMediaFolders()
-        {
-            if (self::$mediaFolders === null) {
-                /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
-                $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
-                self::$mediaFolders = $utility->getStorageFolders();
-            }
-            return self::$mediaFolders;
-        }
 }
