@@ -23,7 +23,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -60,50 +60,17 @@ class DocHeaderButtonsHook extends AbstractBeButtons {
 	 * @param string $icon
 	 * @param string $url
 	 * @param bool $addReturnUrl
-	 * @return string|array
+	 * @return string
 	 */
-	protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = TRUE)
-    {
-            if (!GeneralUtility::compat_version('7.4')) {
-                if (strpos($url, 'alert') === 0) {
-                    $url = 'javascript:' . $url;
-                        }
-                    $link = '';
-                    $link .= '<a href=\'' . $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : '') . '\'';
-                    $link .= ' title="' . htmlspecialchars($title) . '">';
-                    $link .= $icon;
-                    $link .= '</a>';
-                } else {
-                    $link = [
-                    'title' => $title,
-                    'icon' => $icon,
-                    'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : '')
-                ];
-
+	protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = TRUE) {
+		if (strpos($url, 'alert') === 0) {
+			$url = 'javascript:' . $url;
 		}
-				return $link;
+		$link = '';
+		$link .= '<a href=\'' . $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : '') . '\'';
+		$link .= ' title="' . htmlspecialchars($title) . '">';
+		$link .= $icon;
+		$link .= '</a>';
+		return $link;
 	}
-    /**
-     +     * Get buttons
-     +     *
-     +     * @param array $params
-     +     * @param ButtonBar $buttonBar
-     +     * @return array
-     +     */
-    public function moduleTemplateDocHeaderGetButtons($params, ButtonBar $buttonBar)
-    {
-        $buttons = $params['buttons'];
-    
-        if (GeneralUtility::_GP('M') === 'file_FilelistList') {
-            foreach ($this->generateButtons(GeneralUtility::_GP('id')) as $buttonInfo) {
-                $button = $buttonBar->makeLinkButton();
-                $button->setIcon($buttonInfo['icon']);
-                $button->setTitle($buttonInfo['title']);
-                $button->setHref($buttonInfo['url']);
-                $buttons['left'][2][] = $button;
-                }
-            }
-    
-            return $buttons;
-        }
 }
