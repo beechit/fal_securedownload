@@ -72,7 +72,7 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
         * @param string $iconIdentifier
         * @param string $overlayIdentifier
         * @return array
-        
+        */
         public function buildIconForResource(ResourceInterface $folderObject, $size, array $options, $iconIdentifier, $overlayIdentifier)
         {
             if ($folderObject && $folderObject instanceof Folder
@@ -80,7 +80,7 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
                 ) {
                 $mediaFolders = self::getMediaFolders();
                 if (count($mediaFolders)) {
-                    /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility
+                    /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
                     $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
                     $collections = $utility->findFileCollectionRecordsForFolder(
                                                                                 $folderObject->getStorage()->getUid(),
@@ -103,5 +103,5 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
                 }
             }
             return array($folderObject, $size, $options, $iconIdentifier, $overlayIdentifier);
-        }*/
+        }
     }
