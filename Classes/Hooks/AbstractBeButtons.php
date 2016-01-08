@@ -26,6 +26,9 @@ namespace BeechIt\FalSecuredownload\Hooks;
 
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -56,15 +59,12 @@ abstract class AbstractBeButtons {
 		} catch (InsufficientFolderAccessPermissionsException $exception) {
 			$folder = NULL;
 		}
-
-		if ($folder && $folder instanceof Folder
-			&& !$folder->getStorage()->isPublic()
-			&& in_array(
+        if ($folder && $folder instanceof Folder &&
+            in_array(
 				$folder->getRole(),
 				array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD)
 			)
 		) {
-
 			/** @var \BeechIt\FalSecuredownload\Service\Utility $utility */
 			$utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
 			$folderRecord = $utility->getFolderRecord($folder);
@@ -76,7 +76,7 @@ abstract class AbstractBeButtons {
 					$this->sL('clickmenu.folderpermissions'),
 					$this->sL('clickmenu.folderpermissions'),
 					IconUtility::getSpriteIcon('extensions-fal_securedownload-folder', array(), array('status-overlay-access-restricted' => '')),
-					"alt_doc.php?edit[tx_falsecuredownload_folder][" . $folderRecord['uid'] . "]=edit"
+                    $this->buildEditUrl($collection['uid'])
 				);
 
 			} else {
@@ -84,7 +84,7 @@ abstract class AbstractBeButtons {
 					$this->sL('clickmenu.folderpermissions'),
 					$this->sL('clickmenu.folderpermissions'),
 					IconUtility::getSpriteIcon('extensions-fal_securedownload-folder', array(), array('extensions-fal_securedownload-overlay-permissions' => '')),
-					"alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&defVals[tx_falsecuredownload_folder][folder_hash]=".$folder->getHashedIdentifier()."&defVals[tx_falsecuredownload_folder][storage]=".$folder->getStorage()->getUid()."&defVals[tx_falsecuredownload_folder][folder]=".$folder->getIdentifier()
+					$this->buildAddUrl($uid, $parentUid, $folder)
 				);
 			}
 		}
@@ -104,6 +104,20 @@ abstract class AbstractBeButtons {
 	abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = TRUE);
 
 	/**
+     * @param string $name
+     +     * @return string|Icon
+     +     */
+    protected function getIcon($name)
+    {
+        if (!GeneralUtility::compat_version('7.4')) {
+                $icon = IconUtility::getSpriteIcon('extensions-fs_media_gallery-' . $name);
+            } else {
+                    $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+                    $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
+                }
+            return $icon;
+        }
+    /**
 	 * @return \TYPO3\CMS\Lang\LanguageService
 	 */
 	protected function getLangService() {
@@ -120,4 +134,4 @@ abstract class AbstractBeButtons {
 	protected function sL($key, $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf') {
 		return $this->getLangService()->sL($languageFile . ':' . $key);
 	}
-}
+    
