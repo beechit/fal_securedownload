@@ -83,7 +83,7 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
                 if (count($mediaFolders)) {
         
                         /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
-                        $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
+                        $utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
                         $collections = $utility->findFileCollectionRecordsForFolder(
                                                 $folderObject->getStorage()->getUid(),
                                                 $folderObject->getIdentifier(),
