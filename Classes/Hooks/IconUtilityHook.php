@@ -66,5 +66,45 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
 			$resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
 		}
 	}
+    * @param ResourceInterface $folderObject
+        * @param string $size
+        * @param array $options
+        * @param string $iconIdentifier
+        * @param string $overlayIdentifier
+        * @return array
+        */
+    public function buildIconForResource(ResourceInterface $folderObject, $size, array $options, $iconIdentifier, $overlayIdentifier) {
+            if ($folderObject && $folderObject instanceof Folder
+                    && in_array($folderObject->getRole(), array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD))
+                    ) {
+    
+                $mediaFolders = self::getMediaFolders();
+    
+                if (count($mediaFolders)) {
+        
+                        /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
+                        $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
+                        $collections = $utility->findFileCollectionRecordsForFolder(
+                                                $folderObject->getStorage()->getUid(),
+                                                $folderObject->getIdentifier(),
+                                                array_keys($mediaFolders)
+                                                                            );
+                        if ($collections) {
+                            $iconIdentifier = 'tcarecords-sys_file_collection-folder';
+                            $hidden = TRUE;
+                                foreach ($collections as $collection) {
+                                        if ((int)$collection['hidden'] === 0) {
+                                            $hidden = FALSE;
+                                        break;
+                                    }
+                                }
+                                if ($hidden) {
+                                    $overlayIdentifier = 'overlay-hidden';
+                                }
+                        }
+                }
+         }
+        return array($folderObject, $size, $options, $iconIdentifier, $overlayIdentifier);
+    }
 
 }
