@@ -26,6 +26,8 @@ namespace BeechIt\FalSecuredownload\Hooks;
 
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -102,8 +104,24 @@ abstract class AbstractBeButtons {
 	 * @return string
 	 */
 	abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = TRUE);
-
-	/**
+    /**
+    * @param string $name
+    * @return string|Icon
+    */
+    protected function getIcon($name)
+    {
+        if (!GeneralUtility::compat_version('7.4')) {
+            $icon = IconUtility::getSpriteIcon('extensions-fal_securedownload-' . $name);
+                }
+        else
+                {
+                    $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+                    $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
+                }
+                return $icon;
+        }
+    /**
+	
 	 * @return \TYPO3\CMS\Lang\LanguageService
 	 */
 	protected function getLangService() {

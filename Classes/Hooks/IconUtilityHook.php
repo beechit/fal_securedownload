@@ -24,8 +24,9 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
-/**
+use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Resource\Folder;/**
  * IconUtility Hook to add overlay icons when file/folder isn't public
  */
 class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideResourceIconHookInterface {
@@ -66,4 +67,46 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
 		}
 	}
 
+    /**
+     +	 * @param ResourceInterface $folderObject
+     +	 * @param string $size
+     +	 * @param array $options
+     +	 * @param string $iconIdentifier
+     +	 * @param string $overlayIdentifier
+     +	 * @return array
+     +	 */
+public function buildIconForResource(ResourceInterface $folderObject, $size, array $options, $iconIdentifier, $overlayIdentifier) {
+        if ($folderObject && $folderObject instanceof Folder
+                        && in_array($folderObject->getRole(), array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD))
+                    		) {
+            
+            $mediaFolders = self::getMediaFolders();
+
+                if (count($mediaFolders)) {
+    
+                        /** @var \MiniFranske\FsMediaGallery\Service\Utility $utility */
+                        $utility = GeneralUtility::makeInstance('MiniFranske\\FsMediaGallery\\Service\\Utility');
+                        $collections = $utility->findFileCollectionRecordsForFolder(
+                                                $folderObject->getStorage()->getUid(),
+                                                $folderObject->getIdentifier(),
+                                                array_keys($mediaFolders)
+                                                );
+
+                        if ($collections) {
+                                $iconIdentifier = 'tcarecords-sys_file_collection-folder';
+                                $hidden = TRUE;
+                                foreach ($collections as $collection) {
+                                        if ((int)$collection['hidden'] === 0) {
+                                                $hidden = FALSE;
+                                                break;
+                                            }
+                                    }
+                                if ($hidden) {
+                                        $overlayIdentifier = 'overlay-hidden';
+                                    }
+                            }
+                    }
+            }
+        return array($folderObject, $size, $options, $iconIdentifier, $overlayIdentifier);
+    }
 }
