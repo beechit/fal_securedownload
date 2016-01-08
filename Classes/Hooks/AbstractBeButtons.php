@@ -28,6 +28,7 @@ use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsExcepti
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -75,7 +76,7 @@ abstract class AbstractBeButtons {
 					$this->sL('clickmenu.folderpermissions'),
 					$this->sL('clickmenu.folderpermissions'),
 					IconUtility::getSpriteIcon('extensions-fal_securedownload-folder', array(), array('status-overlay-access-restricted' => '')),
-					"alt_doc.php?edit[tx_falsecuredownload_folder][" . $folderRecord['uid'] . "]=edit"
+                    $this->buildEditUrl($collection['uid'])
 				);
 
 			} else {
@@ -83,7 +84,7 @@ abstract class AbstractBeButtons {
 					$this->sL('clickmenu.folderpermissions'),
 					$this->sL('clickmenu.folderpermissions'),
 					IconUtility::getSpriteIcon('extensions-fal_securedownload-folder', array(), array('extensions-fal_securedownload-overlay-permissions' => '')),
-					"alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&defVals[tx_falsecuredownload_folder][folder_hash]=".$folder->getHashedIdentifier()."&defVals[tx_falsecuredownload_folder][storage]=".$folder->getStorage()->getUid()."&defVals[tx_falsecuredownload_folder][folder]=".$folder->getIdentifier()
+					$this->buildAddUrl($uid, $parentUid, $folder)
 				);
 			}
 		}
