@@ -1,7 +1,6 @@
 <?php
 namespace BeechIt\FalSecuredownload\Hooks;
 
-
 /***************************************************************
  *  Copyright notice
  *
@@ -28,42 +27,48 @@ namespace BeechIt\FalSecuredownload\Hooks;
 /**
  * IconUtility Hook to add overlay icons when file/folder isn't public
  */
-class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideResourceIconHookInterface {
+class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideResourceIconHookInterface
+{
 
-	/**
-	 * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resource
-	 * @param $iconName
-	 * @param array $options
-	 * @param array $overlays
-	 */
-	public function overrideResourceIcon(\TYPO3\CMS\Core\Resource\ResourceInterface $resource, &$iconName, array &$options, array &$overlays) {
-		if (!$resource->getStorage()->isPublic()) {
-			/** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
-			$checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
+    /**
+     * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resource
+     * @param $iconName
+     * @param array $options
+     * @param array $overlays
+     */
+    public function overrideResourceIcon(
+        \TYPO3\CMS\Core\Resource\ResourceInterface $resource,
+        &$iconName,
+        array &$options,
+        array &$overlays
+    ) {
+        if (!$resource->getStorage()->isPublic()) {
+            /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
+            $checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
 
-			$currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
-			$resource->getStorage()->setEvaluatePermissions(FALSE);
+            $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
+            $resource->getStorage()->setEvaluatePermissions(false);
 
-			if ($resource instanceof \TYPO3\CMS\Core\Resource\Folder) {
-				$folder = $resource;
-			} else {
-				$folder = $resource->getParentFolder();
-			}
+            if ($resource instanceof \TYPO3\CMS\Core\Resource\Folder) {
+                $folder = $resource;
+            } else {
+                $folder = $resource->getParentFolder();
+            }
 
-			if ($resource instanceof \TYPO3\CMS\Core\Resource\File && $resource->getProperty('fe_groups')) {
-				$overlays['status-overlay-access-restricted'] = array();
+            if ($resource instanceof \TYPO3\CMS\Core\Resource\File && $resource->getProperty('fe_groups')) {
+                $overlays['status-overlay-access-restricted'] = array();
 
-			// check if there are permissions set on this specific folder
-			} elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== FALSE) {
-				$overlays['status-overlay-access-restricted'] = array();
+                // check if there are permissions set on this specific folder
+            } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== false) {
+                $overlays['status-overlay-access-restricted'] = array();
 
-			// check if there are access restrictions in the root line of this folder
-			} elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, FALSE)) {
-				$overlays['extensions-fal_securedownload-overlay-permissions'] = array();
-			}
+                // check if there are access restrictions in the root line of this folder
+            } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, false)) {
+                $overlays['extensions-fal_securedownload-overlay-permissions'] = array();
+            }
 
-			$resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
-		}
-	}
+            $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
+        }
+    }
 
 }

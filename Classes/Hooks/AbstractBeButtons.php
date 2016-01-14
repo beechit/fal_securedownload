@@ -35,89 +35,101 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * Abstract utility class for classes that want to add album add/edit buttons
  * somewhere like a ClickMenuOptions class.
  */
-abstract class AbstractBeButtons {
+abstract class AbstractBeButtons
+{
+    /**
+     * Generate album add/edit buttons for click menu or toolbar
+     *
+     * @param string $combinedIdentifier
+     * @return array
+     */
+    protected function generateButtons($combinedIdentifier)
+    {
+        $buttons = array();
 
-	/**
-	 * Generate album add/edit buttons for click menu or toolbar
-	 *
-	 * @param string $combinedIdentifier
-	 * @return array
-	 */
-	protected function generateButtons($combinedIdentifier) {
-		$buttons = array();
+        // In some folder copy/move actions in file list a invalid id is passed
+        try {
+            /** @var $file \TYPO3\CMS\Core\Resource\Folder */
+            $folder = ResourceFactory::getInstance()
+                ->retrieveFileOrFolderObject($combinedIdentifier);
+        } catch (ResourceDoesNotExistException $exception) {
+            $folder = null;
+        } catch (InsufficientFolderAccessPermissionsException $exception) {
+            $folder = null;
+        }
 
-		// In some folder copy/move actions in file list a invalid id is passed
-		try {
-			/** @var $file \TYPO3\CMS\Core\Resource\Folder */
-			$folder = ResourceFactory::getInstance()
-				->retrieveFileOrFolderObject($combinedIdentifier);
-		} catch (ResourceDoesNotExistException $exception) {
-			$folder = NULL;
-		} catch (InsufficientFolderAccessPermissionsException $exception) {
-			$folder = NULL;
-		}
+        if ($folder && $folder instanceof Folder
+            && !$folder->getStorage()->isPublic()
+            && in_array(
+                $folder->getRole(),
+                array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD)
+            )
+        ) {
+            /** @var \BeechIt\FalSecuredownload\Service\Utility $utility */
+            $utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
+            $folderRecord = $utility->getFolderRecord($folder);
 
-		if ($folder && $folder instanceof Folder
-			&& !$folder->getStorage()->isPublic()
-			&& in_array(
-				$folder->getRole(),
-				array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD)
-			)
-		) {
+            $menuItems[] = 'spacer';
 
-			/** @var \BeechIt\FalSecuredownload\Service\Utility $utility */
-			$utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
-			$folderRecord = $utility->getFolderRecord($folder);
+            if ($folderRecord) {
+                $buttons[] = $this->createLink(
+                    $this->sL('clickmenu.folderpermissions'),
+                    $this->sL('clickmenu.folderpermissions'),
+                    IconUtility::getSpriteIcon(
+                        'extensions-fal_securedownload-folder',
+                        array(),
+                        array('status-overlay-access-restricted' => '')
+                    ),
+                    "alt_doc.php?edit[tx_falsecuredownload_folder][" . $folderRecord['uid'] . "]=edit"
+                );
 
-			$menuItems[] = 'spacer';
+            } else {
+                $buttons[] = $this->createLink(
+                    $this->sL('clickmenu.folderpermissions'),
+                    $this->sL('clickmenu.folderpermissions'),
+                    IconUtility::getSpriteIcon(
+                        'extensions-fal_securedownload-folder',
+                        array(),
+                        array('extensions-fal_securedownload-overlay-permissions' => '')
+                    ),
+                    "alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&defVals[tx_falsecuredownload_folder][folder_hash]=" . $folder->getHashedIdentifier() . "&defVals[tx_falsecuredownload_folder][storage]=" . $folder->getStorage()->getUid() . "&defVals[tx_falsecuredownload_folder][folder]=" . $folder->getIdentifier()
+                );
+            }
+        }
+        return $buttons;
+    }
 
-			if ($folderRecord) {
-				$buttons[] = $this->createLink(
-					$this->sL('clickmenu.folderpermissions'),
-					$this->sL('clickmenu.folderpermissions'),
-					IconUtility::getSpriteIcon('extensions-fal_securedownload-folder', array(), array('status-overlay-access-restricted' => '')),
-					"alt_doc.php?edit[tx_falsecuredownload_folder][" . $folderRecord['uid'] . "]=edit"
-				);
+    /**
+     * Create link/button
+     *
+     * @param string $title
+     * @param string $shortTitle
+     * @param string $icon
+     * @param string $url
+     * @param bool $addReturnUrl
+     * @return string
+     */
+    abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true);
 
-			} else {
-				$buttons[] = $this->createLink(
-					$this->sL('clickmenu.folderpermissions'),
-					$this->sL('clickmenu.folderpermissions'),
-					IconUtility::getSpriteIcon('extensions-fal_securedownload-folder', array(), array('extensions-fal_securedownload-overlay-permissions' => '')),
-					"alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&defVals[tx_falsecuredownload_folder][folder_hash]=".$folder->getHashedIdentifier()."&defVals[tx_falsecuredownload_folder][storage]=".$folder->getStorage()->getUid()."&defVals[tx_falsecuredownload_folder][folder]=".$folder->getIdentifier()
-				);
-			}
-		}
-		return $buttons;
-	}
+    /**
+     * @return \TYPO3\CMS\Lang\LanguageService
+     */
+    protected function getLangService()
+    {
+        return $GLOBALS['LANG'];
+    }
 
-	/**
-	 * Create link/button
-	 *
-	 * @param string $title
-	 * @param string $shortTitle
-	 * @param string $icon
-	 * @param string $url
-	 * @param bool $addReturnUrl
-	 * @return string
-	 */
-	abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = TRUE);
-
-	/**
-	 * @return \TYPO3\CMS\Lang\LanguageService
-	 */
-	protected function getLangService() {
-		return $GLOBALS['LANG'];
-	}
-
-	/**
-	 * Get language string
-	 *
-	 * @param string $key
-	 * @param string $languageFile
-	 * @return string
-	 */
-	protected function sL($key, $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf') {
-		return $this->getLangService()->sL($languageFile . ':' . $key);
-	}
+    /**
+     * Get language string
+     *
+     * @param string $key
+     * @param string $languageFile
+     * @return string
+     */
+    protected function sL(
+        $key,
+        $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf'
+    ) {
+        return $this->getLangService()->sL($languageFile . ':' . $key);
+    }
 }

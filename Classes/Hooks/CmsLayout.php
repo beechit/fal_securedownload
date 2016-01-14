@@ -29,120 +29,130 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Hook to display verbose information about fileTree plugin in Web>Page module
  */
-class CmsLayout {
+class CmsLayout
+{
 
-	/**
-	 * Table information
-	 *
-	 * @var array
-	 */
-	public $tableData = array();
+    /**
+     * Table information
+     *
+     * @var array
+     */
+    public $tableData = array();
 
-	/**
-	 * Flexform information
-	 *
-	 * @var array
-	 */
-	public $flexformData = array();
+    /**
+     * Flexform information
+     *
+     * @var array
+     */
+    public $flexformData = array();
 
-	/**
-	 * Returns information about this extension's pi1 plugin
-	 *
-	 * @param array $params Parameters to the hook
-	 * @return string Information about pi1 plugin
-	 */
-	public function getExtensionSummary(array $params) {
+    /**
+     * Returns information about this extension's pi1 plugin
+     *
+     * @param array $params Parameters to the hook
+     * @return string Information about pi1 plugin
+     */
+    public function getExtensionSummary(array $params)
+    {
 
-		$result = '<u><strong>' . $this->sL('plugin.title') . '</strong></u>';
+        $result = '<u><strong>' . $this->sL('plugin.title') . '</strong></u>';
 
-		if ($params['row']['list_type'] === 'falsecuredownload_filetree') {
-			$this->flexformData = GeneralUtility::xml2array($params['row']['pi_flexform']);
+        if ($params['row']['list_type'] === 'falsecuredownload_filetree') {
+            $this->flexformData = GeneralUtility::xml2array($params['row']['pi_flexform']);
 
-			// Storage
-			$storageName = '';
-			try {
-				$storageUid = $this->getFieldFromFlexform('settings.storage');
-				$storageName = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getStorageObject($storageUid)->getName();
-			} catch (\Exception $exception) {};
+            // Storage
+            $storageName = '';
+            try {
+                $storageUid = $this->getFieldFromFlexform('settings.storage');
+                $storageName = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getStorageObject($storageUid)->getName();
+            } catch (\Exception $exception) {
+            };
 
-			if ($storageName) {
-				$this->tableData[] = array(
-					$this->sL('flexform.storage'),
-					$storageName
-				);
-			}
+            if ($storageName) {
+                $this->tableData[] = array(
+                    $this->sL('flexform.storage'),
+                    $storageName
+                );
+            }
 
-			// Folder
-			$folder = $this->getFieldFromFlexform('settings.folder');
-			$this->tableData[] = array(
-				$this->sL('flexform.folder'),
-				$folder
-			);
+            // Folder
+            $folder = $this->getFieldFromFlexform('settings.folder');
+            $this->tableData[] = array(
+                $this->sL('flexform.folder'),
+                $folder
+            );
 
-			$result .= $this->renderSettingsAsTable();
-			$result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';
-		}
+            $result .= $this->renderSettingsAsTable();
+            $result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';
+        }
 
-		return $result;
-	}
+        return $result;
+    }
 
-	/**
-	 * Render the settings as table for Web>Page module
-	 * System settings are displayed in mono font
-	 *
-	 * @return string
-	 */
-	protected function renderSettingsAsTable() {
-		if (count($this->tableData) == 0) {
-			return '';
-		}
+    /**
+     * Render the settings as table for Web>Page module
+     * System settings are displayed in mono font
+     *
+     * @return string
+     */
+    protected function renderSettingsAsTable()
+    {
+        if (count($this->tableData) == 0) {
+            return '';
+        }
 
-		$content = '';
-		foreach ($this->tableData as $line) {
-			$content .= '<tr><td><em><strong>' . $line[0] . '</strong></em></td><td>&nbsp; ' . ' ' .$line[1] . '</td></tr>';
-		}
+        $content = '';
+        foreach ($this->tableData as $line) {
+            $content .= '<tr><td><em><strong>' . $line[0] . '</strong></em></td><td>&nbsp; ' . ' ' . $line[1] . '</td></tr>';
+        }
 
-		return '<table style="margin-top: 4px;">' . $content . '</table>';
-	}
+        return '<table style="margin-top: 4px;">' . $content . '</table>';
+    }
 
-	/**
-	 * Get field value from flexform configuration,
-	 * including checks if flexform configuration is available
-	 *
-	 * @param string $key name of the key
-	 * @param string $sheet name of the sheet
-	 * @return string|NULL if nothing found, value if found
-	 */
-	protected function getFieldFromFlexform($key, $sheet = 'sDEF') {
-		$flexform = $this->flexformData;
-		if (isset($flexform['data'])) {
-			$flexform = $flexform['data'];
-			if (is_array($flexform) && is_array($flexform[$sheet]) && is_array($flexform[$sheet]['lDEF'])
-				&& is_array($flexform[$sheet]['lDEF'][$key]) && isset($flexform[$sheet]['lDEF'][$key]['vDEF'])
-			) {
-				return $flexform[$sheet]['lDEF'][$key]['vDEF'];
-			}
-		}
-		return NULL;
-	}
+    /**
+     * Get field value from flexform configuration,
+     * including checks if flexform configuration is available
+     *
+     * @param string $key name of the key
+     * @param string $sheet name of the sheet
+     * @return string|NULL if nothing found, value if found
+     */
+    protected function getFieldFromFlexform($key, $sheet = 'sDEF')
+    {
+        $flexform = $this->flexformData;
+        if (isset($flexform['data'])) {
+            $flexform = $flexform['data'];
+            if (is_array($flexform) && is_array($flexform[$sheet]) && is_array($flexform[$sheet]['lDEF'])
+                && is_array($flexform[$sheet]['lDEF'][$key]) && isset($flexform[$sheet]['lDEF'][$key]['vDEF'])
+            ) {
+                return $flexform[$sheet]['lDEF'][$key]['vDEF'];
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Get language string
-	 *
-	 * @param string $key
-	 * @param string $languageFile
-	 * @param bool $hsc If set, the return value is htmlspecialchar'ed
-	 * @return string
-	 */
-	protected function sL($key, $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf', $hsc = TRUE) {
-		return $this->getLangService()->sL($languageFile . ':' . $key, $hsc);
-	}
+    /**
+     * Get language string
+     *
+     * @param string $key
+     * @param string $languageFile
+     * @param bool $hsc If set, the return value is htmlspecialchar'ed
+     * @return string
+     */
+    protected function sL(
+        $key,
+        $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf',
+        $hsc = true
+    ) {
+        return $this->getLangService()->sL($languageFile . ':' . $key, $hsc);
+    }
 
-	/**
-	 * @return \TYPO3\CMS\Lang\LanguageService
-	 */
-	protected function getLangService() {
-		return $GLOBALS['LANG'];
-	}
+    /**
+     * @return \TYPO3\CMS\Lang\LanguageService
+     */
+    protected function getLangService()
+    {
+        return $GLOBALS['LANG'];
+    }
 
 }

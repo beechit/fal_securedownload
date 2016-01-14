@@ -31,69 +31,74 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
  *
  * @package BeechIt\FalSecuredownload\Service
  */
-class LeafStateService implements \TYPO3\CMS\Core\SingletonInterface {
+class LeafStateService implements \TYPO3\CMS\Core\SingletonInterface
+{
 
-	/**
-	 * Save new leave state in user session
-	 *
-	 * @param FrontendUserAuthentication $user
-	 * @param string $folder
-	 * @param bool $open
-	 */
-	public function saveLeafStateForUser(FrontendUserAuthentication $user, $folder, $open) {
+    /**
+     * Save new leave state in user session
+     *
+     * @param FrontendUserAuthentication $user
+     * @param string $folder
+     * @param bool $open
+     */
+    public function saveLeafStateForUser(FrontendUserAuthentication $user, $folder, $open)
+    {
 
-		// check if folder exists
-		$resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
-		$folderObject = $resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
+        // check if folder exists
+        $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+        $folderObject = $resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
 
-		if ($folderObject) {
-			$folderState = $this->getFolderState($user);
-			if ($open) {
-				$folderState[$folder] = TRUE;
-			} else {
-				unset($folderState[$folder]);
-			}
-			$this->saveFolderState($user, $folderState);
-		}
-	}
+        if ($folderObject) {
+            $folderState = $this->getFolderState($user);
+            if ($open) {
+                $folderState[$folder] = true;
+            } else {
+                unset($folderState[$folder]);
+            }
+            $this->saveFolderState($user, $folderState);
+        }
+    }
 
-	/**
-	 * Get leaf state from user session
-	 *
-	 * @param FrontendUserAuthentication $user
-	 * @param string $folder
-	 * @return bool
-	 */
-	public function getLeafStateForUser(FrontendUserAuthentication $user, $folder) {
-		$folderStates = $this->getFolderState($user);
-		return !empty($folderStates[$folder]);
-	}
+    /**
+     * Get leaf state from user session
+     *
+     * @param FrontendUserAuthentication $user
+     * @param string $folder
+     * @return bool
+     */
+    public function getLeafStateForUser(FrontendUserAuthentication $user, $folder)
+    {
+        $folderStates = $this->getFolderState($user);
+        return !empty($folderStates[$folder]);
+    }
 
-	/**
-	 * Get leaf states from user session
-	 *
-	 * @param FrontendUserAuthentication $user
-	 * @return array|mixed
-	 */
-	protected function getFolderState(FrontendUserAuthentication $user) {
-		$folderStates = $user->getKey($user->user['uid'] ? 'user' : 'ses', 'LeafStateService');
-		if ($folderStates) {
-			$folderStates = unserialize($folderStates);
-		}
-		if (!is_array($folderStates)) {
-			$folderStates = array();
-		}
-		return $folderStates;
-	}
+    /**
+     * Get leaf states from user session
+     *
+     * @param FrontendUserAuthentication $user
+     * @return array|mixed
+     */
+    protected function getFolderState(FrontendUserAuthentication $user)
+    {
+        $folderStates = $user->getKey($user->user['uid'] ? 'user' : 'ses', 'LeafStateService');
+        if ($folderStates) {
+            $folderStates = unserialize($folderStates);
+        }
+        if (!is_array($folderStates)) {
+            $folderStates = array();
+        }
+        return $folderStates;
+    }
 
-	/**
-	 * Save leaf states in user session
-	 *
-	 * @param FrontendUserAuthentication $user
-	 * @param array $folderState
-	 */
-	protected function saveFolderState(FrontendUserAuthentication $user, array $folderState) {
-		$user->setKey($user->user['uid'] ? 'user' : 'ses', 'LeafStateService', serialize($folderState));
-		$user->storeSessionData();
-	}
+    /**
+     * Save leaf states in user session
+     *
+     * @param FrontendUserAuthentication $user
+     * @param array $folderState
+     */
+    protected function saveFolderState(FrontendUserAuthentication $user, array $folderState)
+    {
+        $user->setKey($user->user['uid'] ? 'user' : 'ses', 'LeafStateService', serialize($folderState));
+        $user->storeSessionData();
+    }
 }

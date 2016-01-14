@@ -36,204 +36,210 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
  *
  * @package BeechIt\FalSecuredownload\Security
  */
-class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface {
+class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
+{
 
-	/**
-	 * @var \BeechIt\FalSecuredownload\Service\Utility
-	 */
-	protected $utilityService;
+    /**
+     * @var \BeechIt\FalSecuredownload\Service\Utility
+     */
+    protected $utilityService;
 
-	/**
-	 * @var array check folder root-line access cache
-	 */
-	protected $checkFolderRootLineAccessCache = array();
+    /**
+     * @var array check folder root-line access cache
+     */
+    protected $checkFolderRootLineAccessCache = array();
 
-	/**
-	 * Constructor
-	 */
-	public function __construct() {
-		$this->utilityService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
-	}
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->utilityService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
+    }
 
-	/**
-	 * Check file access for current FeUser
-	 *
-	 * @param \TYPO3\CMS\Core\Resource\File $file
-	 * @return bool
-	 */
-	public function checkFileAccessForCurrentFeUser($file) {
-		$userFeGroups = !isset($GLOBALS['TSFE']->fe_user->user) ? FALSE : $GLOBALS['TSFE']->fe_user->groupData['uid'];
-		return $this->checkFileAccess($file, $userFeGroups);
-	}
+    /**
+     * Check file access for current FeUser
+     *
+     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @return bool
+     */
+    public function checkFileAccessForCurrentFeUser($file)
+    {
+        $userFeGroups = !isset($GLOBALS['TSFE']->fe_user->user) ? false : $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        return $this->checkFileAccess($file, $userFeGroups);
+    }
 
-	/**
-	 * Check file access for given FeGroups combination
-	 *
-	 * @param \TYPO3\CMS\Core\Resource\File $file
-	 * @param bool|array $userFeGroups FALSE = no login, array() fe groups of user
-	 * @return bool
-	 */
-	public function checkFileAccess($file, $userFeGroups) {
+    /**
+     * Check file access for given FeGroups combination
+     *
+     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @param bool|array $userFeGroups FALSE = no login, array() fe groups of user
+     * @return bool
+     */
+    public function checkFileAccess($file, $userFeGroups)
+    {
 
-		// all files in public storage are accessible
-		if ($file->getStorage()->isPublic()) {
-			return TRUE;
+        // all files in public storage are accessible
+        if ($file->getStorage()->isPublic()) {
+            return true;
 
-			// check folder access
-		} elseif ($this->checkFolderRootLineAccess($file->getParentFolder(), $userFeGroups)) {
+            // check folder access
+        } elseif ($this->checkFolderRootLineAccess($file->getParentFolder(), $userFeGroups)) {
+            // access to folder then check file privileges if present
+            $feGroups = $file->getProperty('fe_groups');
+            if ($feGroups !== '') {
+                return $this->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
+            }
+            return true;
+        }
+        return false;
+    }
 
-			// access to folder then check file privileges if present
-			$feGroups = $file->getProperty('fe_groups');
-			if ($feGroups !== '') {
-				return $this->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
-			}
-			return TRUE;
-		}
-		return FALSE;
-	}
+    /**
+     * Check if given FeGroups have enough rights to access given folder
+     *
+     * @param Folder $folder
+     * @param bool|array $userFeGroups FALSE = no login, array() is the groups of the user
+     * @return bool
+     */
+    public function checkFolderRootLineAccess(Folder $folder, $userFeGroups)
+    {
 
-	/**
-	 * Check if given FeGroups have enough rights to access given folder
-	 *
-	 * @param Folder $folder
-	 * @param bool|array $userFeGroups FALSE = no login, array() is the groups of the user
-	 * @return bool
-	 */
-	public function checkFolderRootLineAccess(Folder $folder, $userFeGroups) {
+        $cacheIdentifier = sha1(
+            $folder->getHashedIdentifier() .
+            serialize($userFeGroups)
+        );
 
-		$cacheIdentifier = sha1(
-			$folder->getHashedIdentifier() .
-			serialize($userFeGroups)
-		);
+        if (!isset($this->checkFolderRootLineAccessCache[$cacheIdentifier])) {
+            $this->checkFolderRootLineAccessCache[$cacheIdentifier] = true;
 
-		if (!isset($this->checkFolderRootLineAccessCache[$cacheIdentifier])) {
-			$this->checkFolderRootLineAccessCache[$cacheIdentifier] = TRUE;
+            // loop trough the root line of an folder and check the permissions of every folder
+            foreach ($this->getFolderRootLine($folder) as $folder) {
+                // fetch folder permissions record
+                $folderRecord = $this->utilityService->getFolderRecord($folder);
 
-			// loop trough the root line of an folder and check the permissions of every folder
-			foreach ($this->getFolderRootLine($folder) as $folder) {
+                // if record found check permissions
+                if ($folderRecord) {
+                    if (!$this->matchFeGroupsWithFeUser($folderRecord['fe_groups'], $userFeGroups)) {
+                        $this->checkFolderRootLineAccessCache[$cacheIdentifier] = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return $this->checkFolderRootLineAccessCache[$cacheIdentifier];
+    }
 
-				// fetch folder permissions record
-				$folderRecord = $this->utilityService->getFolderRecord($folder);
+    /**
+     * Get permissions set on folder (no root line check)
+     *
+     * @param FolderInterface $folder
+     * @return bool|string FALSE or comma separated list of fe_group uids
+     */
+    public function getFolderPermissions(FolderInterface $folder)
+    {
+        $permissions = false;
+        $folderRecord = $this->utilityService->getFolderRecord($folder);
+        if ($folderRecord) {
+            $permissions = $folderRecord['fe_groups'] ?: false;
+        }
+        return $permissions;
+    }
 
-				// if record found check permissions
-				if ($folderRecord) {
-					if (!$this->matchFeGroupsWithFeUser($folderRecord['fe_groups'], $userFeGroups)) {
-						$this->checkFolderRootLineAccessCache[$cacheIdentifier] = FALSE;
-						break;
-					}
-				}
-			}
-		}
-		return $this->checkFolderRootLineAccessCache[$cacheIdentifier];
-	}
+    /**
+     * Get FeGroups that are allowed to view a file/folder (checks full rootline)
+     *
+     * @param ResourceInterface $resource
+     * @return string
+     */
+    public function getPermissions(ResourceInterface $resource)
+    {
+        $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
+        $resource->getStorage()->setEvaluatePermissions(false);
 
-	/**
-	 * Get permissions set on folder (no root line check)
-	 *
-	 * @param FolderInterface $folder
-	 * @return bool|string FALSE or comma separated list of fe_group uids
-	 */
-	public function getFolderPermissions(FolderInterface $folder) {
-		$permissions = FALSE;
-		$folderRecord = $this->utilityService->getFolderRecord($folder);
-		if ($folderRecord) {
-			$permissions = $folderRecord['fe_groups'] ?: FALSE;
-		}
-		return $permissions;
-	}
+        $feGroups = array();
+        // loop trough the root line of an folder and check the permissions of every folder
+        foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
+            // fetch folder permissions record
+            $folderRecord = $this->utilityService->getFolderRecord($folder);
 
-	/**
-	 * Get FeGroups that are allowed to view a file/folder (checks full rootline)
-	 *
-	 * @param ResourceInterface $resource
-	 * @return string
-	 */
-	public function getPermissions(ResourceInterface $resource) {
-		$currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
-		$resource->getStorage()->setEvaluatePermissions(FALSE);
+            // if record found check permissions
+            if ($folderRecord) {
+                if ($feGroups === array()) {
+                    $feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], true);
+                }
+                if ($folderRecord['fe_groups']) {
+                    $feGroups = GeneralUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
+                }
+                break;
+            }
+        }
+        if ($resource instanceof File && $resource->getProperty('fe_groups')) {
+            $feGroups = GeneralUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
+        }
+        $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
+        return implode(',', $feGroups);
+    }
 
-		$feGroups = array();
-		// loop trough the root line of an folder and check the permissions of every folder
-		foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
+    /**
+     * Get all folders in root line of given folder
+     *
+     * @param FolderInterface $folder
+     * @return Folder[]
+     */
+    public function getFolderRootLine(FolderInterface $folder)
+    {
+        $rootLine = array($folder);
+        $parentFolder = $folder->getParentFolder();
+        $count = 0;
+        while ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {
+            $rootLine[] = $parentFolder;
+            $count++;
+            if ($count > 999) {
+                break;
+            }
+            $folder = $parentFolder;
+            $parentFolder = $parentFolder->getParentFolder();
+        }
+        return array_reverse($rootLine);
+    }
 
-			// fetch folder permissions record
-			$folderRecord = $this->utilityService->getFolderRecord($folder);
+    /**
+     * Check if given groups match with the groups of a user
+     *
+     * @param string $groups
+     * @param bool|array $userFeGroups FALSE = no login, array() is the groups of the user
+     * @return bool
+     */
+    public function matchFeGroupsWithFeUser($groups, $userFeGroups)
+    {
 
-			// if record found check permissions
-			if ($folderRecord) {
-				if ($feGroups === array()) {
-					$feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], TRUE);
-				}
-				if ($folderRecord['fe_groups']) {
-					$feGroups = GeneralUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
-				}
-				break;
-			}
-		}
-		if ($resource instanceof File && $resource->getProperty('fe_groups')) {
-			$feGroups = GeneralUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
-		}
-		$resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
-		return implode(',', $feGroups);
-	}
+        // no groups specified everyone has access
+        if ($groups === '') {
+            return true;
+        }
 
-	/**
-	 * Get all folders in root line of given folder
-	 *
-	 * @param FolderInterface $folder
-	 * @return Folder[]
-	 */
-	public function getFolderRootLine(FolderInterface $folder) {
-		$rootLine = array($folder);
-		$parentFolder = $folder->getParentFolder();
-		$count = 0;
-		while ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {
-			$rootLine[] = $parentFolder;
-			$count++;
-			if ($count > 999) {
-				break;
-			}
-			$folder = $parentFolder;
-			$parentFolder = $parentFolder->getParentFolder();
-		}
-		return array_reverse($rootLine);
-	}
+        // no login then no access
+        if ($userFeGroups === false) {
+            return false;
+        }
 
-	/**
-	 * Check if given groups match with the groups of a user
-	 *
-	 * @param string $groups
-	 * @param bool|array $userFeGroups FALSE = no login, array() is the groups of the user
-	 * @return bool
-	 */
-	public function matchFeGroupsWithFeUser($groups, $userFeGroups) {
+        // enabled for all loggedIn Users
+        if (strpos($groups, '-2') !== false) {
+            return true;
+        }
 
-		// no groups specified everyone has access
-		if ($groups === '') {
-			return TRUE;
-		}
+        // user not member of any group then no access
+        if (!is_array($userFeGroups)) {
+            return false;
+        }
 
-		// no login then no access
-		if ($userFeGroups === FALSE) {
-			return FALSE;
-		}
+        foreach (explode(',', $groups) as $feGroupUid) {
+            if (in_array(trim($feGroupUid), $userFeGroups)) {
+                return true;
+            }
+        }
 
-		// enabled for all loggedIn Users
-		if (strpos($groups, '-2') !== FALSE) {
-			return TRUE;
-		}
-
-		// user not member of any group then no access
-		if (!is_array($userFeGroups)) {
-			return FALSE;
-		}
-
-		foreach (explode(',', $groups) as $feGroupUid) {
-			if (in_array(trim($feGroupUid), $userFeGroups)) {
-				return TRUE;
-			}
-		}
-
-		return FALSE;
-	}
+        return false;
+    }
 }

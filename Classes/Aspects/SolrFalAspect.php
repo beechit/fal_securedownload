@@ -16,51 +16,57 @@ use TYPO3\Solr\Solrfal\Queue\Item;
 /**
  * Class SolrFalAspect
  */
-class SolrFalAspect implements SingletonInterface {
+class SolrFalAspect implements SingletonInterface
+{
 
-	/**
-	 * @var CheckPermissions
-	 */
-	protected $checkPermissionsService;
+    /**
+     * @var CheckPermissions
+     */
+    protected $checkPermissionsService;
 
-	/**
-	 * @var PublicUrlAspect
-	 */
-	protected $publicUrlAspect;
+    /**
+     * @var PublicUrlAspect
+     */
+    protected $publicUrlAspect;
 
-	/**
-	 * Contructor
-	 */
-	public function __construct() {
-		$this->checkPermissionsService = GeneralUtility::makeInstance(
-			'BeechIt\\FalSecuredownload\\Security\\CheckPermissions'
-		);
-		$this->publicUrlAspect = GeneralUtility::makeInstance(
-			'BeechIt\\FalSecuredownload\\Aspects\\PublicUrlAspect'
-		);
-	}
+    /**
+     * Contructor
+     */
+    public function __construct()
+    {
+        $this->checkPermissionsService = GeneralUtility::makeInstance(
+            'BeechIt\\FalSecuredownload\\Security\\CheckPermissions'
+        );
+        $this->publicUrlAspect = GeneralUtility::makeInstance(
+            'BeechIt\\FalSecuredownload\\Aspects\\PublicUrlAspect'
+        );
+    }
 
-	/**
-	 * Add correct fe_group info and public_url
-	 *
-	 * @param Item $item
-	 * @param \ArrayObject $metadata
-	 */
-	public function fileMetaDataRetrieved(Item $item, \ArrayObject $metadata) {
+    /**
+     * Add correct fe_group info and public_url
+     *
+     * @param Item $item
+     * @param \ArrayObject $metadata
+     */
+    public function fileMetaDataRetrieved(Item $item, \ArrayObject $metadata)
+    {
 
-		if ($item->getFile() instanceof File && !$item->getFile()->getStorage()->isPublic()) {
-			$resourcePermissions = $this->checkPermissionsService->getPermissions($item->getFile());
-			// If there are already permissions set, refine these with actual file permissions
-			if ($metadata['fe_groups']) {
-				$metadata['fe_groups'] = implode(',', GeneralUtility::keepItemsInArray(explode(',', $resourcePermissions), $metadata['fe_groups']));
-			} else {
-				$metadata['fe_groups'] = $resourcePermissions;
-			}
-		}
+        if ($item->getFile() instanceof File && !$item->getFile()->getStorage()->isPublic()) {
+            $resourcePermissions = $this->checkPermissionsService->getPermissions($item->getFile());
+            // If there are already permissions set, refine these with actual file permissions
+            if ($metadata['fe_groups']) {
+                $metadata['fe_groups'] = implode(
+                    ',',
+                    GeneralUtility::keepItemsInArray(explode(',', $resourcePermissions), $metadata['fe_groups'])
+                );
+            } else {
+                $metadata['fe_groups'] = $resourcePermissions;
+            }
+        }
 
-		// Re-generate public url
-		$this->publicUrlAspect->setEnabled(FALSE);
-		$metadata['public_url'] = $item->getFile()->getPublicUrl();
-		$this->publicUrlAspect->setEnabled(TRUE);
-	}
+        // Re-generate public url
+        $this->publicUrlAspect->setEnabled(false);
+        $metadata['public_url'] = $item->getFile()->getPublicUrl();
+        $this->publicUrlAspect->setEnabled(true);
+    }
 }

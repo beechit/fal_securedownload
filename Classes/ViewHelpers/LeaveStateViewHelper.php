@@ -32,25 +32,27 @@ use TYPO3\CMS\Core\Resource\Folder;
  *
  * @package BeechIt\FalSecuredownload\ViewHelpers
  */
-class LeaveStateViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
+class LeaveStateViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper
+{
 
-	/**
-	 * renders <f:then> child if the current visitor ...
-	 * otherwise renders <f:else> child.
-	 *
-	 * @param Folder $folder
-	 * @return string
-	 */
-	public function render(Folder $folder) {
+    /**
+     * renders <f:then> child if the current visitor ...
+     * otherwise renders <f:else> child.
+     *
+     * @param Folder $folder
+     * @return string
+     */
+    public function render(Folder $folder)
+    {
 
-		/** @var $leafStateService \BeechIt\FalSecuredownload\Service\LeafStateService */
-		$leafStateService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\LeafStateService');
-		$feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : FALSE;
+        /** @var $leafStateService \BeechIt\FalSecuredownload\Service\LeafStateService */
+        $leafStateService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\LeafStateService');
+        $feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : false;
 
-		if ($feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier())) {
-			return $this->renderThenChild();
-		} else {
-			return $this->renderElseChild();
-		}
-	}
+        if ($feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier())) {
+            return $this->renderThenChild();
+        } else {
+            return $this->renderElseChild();
+        }
+    }
 }

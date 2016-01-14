@@ -29,19 +29,21 @@ namespace BeechIt\FalSecuredownload\Controller;
  *
  * @package BeechIt\FalSecuredownload\Controller
  */
-class FileTreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController {
+class FileTreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController
+{
 
-	/**
-	 * Render file tree
-	 */
-	public function treeAction() {
-		$resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
-		try {
-			$folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'].':'.$this->settings['folder']);
-		} catch(\TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException $exception) {
-			// folder not found
-		}
+    /**
+     * Render file tree
+     */
+    public function treeAction()
+    {
+        $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+        try {
+            $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
+        } catch (\TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException $exception) {
+            // folder not found
+        }
 
-		$this->view->assign('folder', $folder);
-	}
+        $this->view->assign('folder', $folder);
+    }
 }

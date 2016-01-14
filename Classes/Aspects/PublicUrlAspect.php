@@ -33,62 +33,74 @@ use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 /**
  * Class PublicUrlAspect
  */
-class PublicUrlAspect implements SingletonInterface {
+class PublicUrlAspect implements SingletonInterface
+{
 
-	/**
-	 * Flag to en-/disable rendering of BE user link instead of FE link
-	 *
-	 * @var bool
-	 */
-	protected $enabled = TRUE;
+    /**
+     * Flag to en-/disable rendering of BE user link instead of FE link
+     *
+     * @var bool
+     */
+    protected $enabled = true;
 
-	/**
-	 * Get enabled
-	 *
-	 * @return boolean
-	 */
-	public function getEnabled() {
-		return $this->enabled;
-	}
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
 
-	/**
-	 * Set enabled
-	 *
-	 * @param boolean $enabled
-	 */
-	public function setEnabled($enabled) {
-		$this->enabled = $enabled;
-	}
+    /**
+     * Set enabled
+     *
+     * @param boolean $enabled
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+    }
 
-	/**
-	 * Generate public url for file
-	 *
-	 * @param Resource\ResourceStorage $storage
-	 * @param Resource\Driver\DriverInterface $driver
-	 * @param Resource\FileInterface $file
-	 * @param $relativeToCurrentScript
-	 * @param array $urlData
-	 * @return void
-	 */
-	public function generatePublicUrl(Resource\ResourceStorage $storage, Resource\Driver\DriverInterface $driver, Resource\FileInterface $file, $relativeToCurrentScript, array $urlData) {
+    /**
+     * Generate public url for file
+     *
+     * @param Resource\ResourceStorage $storage
+     * @param Resource\Driver\DriverInterface $driver
+     * @param Resource\FileInterface $file
+     * @param $relativeToCurrentScript
+     * @param array $urlData
+     * @return void
+     */
+    public function generatePublicUrl(
+        Resource\ResourceStorage $storage,
+        Resource\Driver\DriverInterface $driver,
+        Resource\FileInterface $file,
+        $relativeToCurrentScript,
+        array $urlData
+    ) {
 
-		// We only render special links for non-public files
-		if ($this->enabled && !$storage->isPublic()) {
-			$queryParameterArray = array('eID' => 'dumpFile', 't' => '');
-			if ($file instanceof Resource\File) {
-				$queryParameterArray['f'] = $file->getUid();
-				$queryParameterArray['t'] = 'f';
-			} elseif ($file instanceof Resource\ProcessedFile) {
-				$queryParameterArray['p'] = $file->getUid();
-				$queryParameterArray['t'] = 'p';
-			}
-			$queryParameterArray['token'] = GeneralUtility::hmac(implode('|', $queryParameterArray), 'BeResourceStorageDumpFile');
+        // We only render special links for non-public files
+        if ($this->enabled && !$storage->isPublic()) {
+            $queryParameterArray = array('eID' => 'dumpFile', 't' => '');
+            if ($file instanceof Resource\File) {
+                $queryParameterArray['f'] = $file->getUid();
+                $queryParameterArray['t'] = 'f';
+            } elseif ($file instanceof Resource\ProcessedFile) {
+                $queryParameterArray['p'] = $file->getUid();
+                $queryParameterArray['t'] = 'p';
+            }
+            $queryParameterArray['token'] = GeneralUtility::hmac(
+                implode('|', $queryParameterArray),
+                'BeResourceStorageDumpFile'
+            );
 
-			// $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
-			$urlData['publicUrl'] = BackendUtility::getAjaxUrl(
-				'FalSecuredownload::publicUrl',
-				$queryParameterArray
-			);
-		}
-	}
+            // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
+            $urlData['publicUrl'] = BackendUtility::getAjaxUrl(
+                'FalSecuredownload::publicUrl',
+                $queryParameterArray
+            );
+        }
+    }
 }

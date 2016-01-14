@@ -27,43 +27,46 @@ namespace BeechIt\FalSecuredownload\ViewHelpers;
 /**
  * Download link view helper. Generates links that force a download action.
  */
-class DownloadLinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalViewHelper {
+class DownloadLinkViewHelper extends \TYPO3\CMS\Fluid\ViewHelpers\Link\ExternalViewHelper
+{
 
-	/**
-	 * Create a link to a file that forces a download
-	 *
-	 * @param \TYPO3\CMS\Core\Resource\FileInterface $file
-	 * @param bool $uriOnly
-	 * @return string
-	 */
-	public function render(\TYPO3\CMS\Core\Resource\FileInterface $file, $uriOnly = FALSE) {
+    /**
+     * Create a link to a file that forces a download
+     *
+     * @param \TYPO3\CMS\Core\Resource\FileInterface $file
+     * @param bool $uriOnly
+     * @return string
+     */
+    public function render(\TYPO3\CMS\Core\Resource\FileInterface $file, $uriOnly = false)
+    {
 
-		$queryParameterArray = array('eID' => 'dumpFile', 't' => '');
-		if ($file instanceof \TYPO3\CMS\Core\Resource\File) {
-			$queryParameterArray['f'] = $file->getUid();
-			$queryParameterArray['t'] = 'f';
-		} elseif ($file instanceof \TYPO3\CMS\Core\Resource\ProcessedFile) {
-			$queryParameterArray['p'] = $file->getUid();
-			$queryParameterArray['t'] = 'p';
-		}
+        $queryParameterArray = array('eID' => 'dumpFile', 't' => '');
+        if ($file instanceof \TYPO3\CMS\Core\Resource\File) {
+            $queryParameterArray['f'] = $file->getUid();
+            $queryParameterArray['t'] = 'f';
+        } elseif ($file instanceof \TYPO3\CMS\Core\Resource\ProcessedFile) {
+            $queryParameterArray['p'] = $file->getUid();
+            $queryParameterArray['t'] = 'p';
+        }
 
-		$queryParameterArray['token'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(implode('|', $queryParameterArray), 'resourceStorageDumpFile');
-		$queryParameterArray['download'] = '';
-		$uri = 'index.php?' . str_replace('+', '%20', http_build_query($queryParameterArray));
+        $queryParameterArray['token'] = \TYPO3\CMS\Core\Utility\GeneralUtility::hmac(implode('|', $queryParameterArray),
+            'resourceStorageDumpFile');
+        $queryParameterArray['download'] = '';
+        $uri = 'index.php?' . str_replace('+', '%20', http_build_query($queryParameterArray));
 
-		// Add absRefPrefix
-		if (!empty($GLOBALS['TSFE'])) {
-			$uri = $GLOBALS['TSFE']->absRefPrefix . $uri;
-		}
+        // Add absRefPrefix
+        if (!empty($GLOBALS['TSFE'])) {
+            $uri = $GLOBALS['TSFE']->absRefPrefix . $uri;
+        }
 
-		if ($uriOnly) {
-			return $uri;
-		}
+        if ($uriOnly) {
+            return $uri;
+        }
 
-		$this->tag->addAttribute('href', $uri);
-		$this->tag->setContent($this->renderChildren());
-		$this->tag->forceClosingTag(TRUE);
+        $this->tag->addAttribute('href', $uri);
+        $this->tag->setContent($this->renderChildren());
+        $this->tag->forceClosingTag(true);
 
-		return $this->tag->render();
-	}
+        return $this->tag->render();
+    }
 }

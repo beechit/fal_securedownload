@@ -12,59 +12,61 @@ use TYPO3\CMS\Core\Utility\HttpUtility;
 /**
  * Ajax controller for public url in BE
  */
-class BePublicUrlController {
+class BePublicUrlController
+{
 
-	/**
-	 * Dump file content
-	 *
-	 * Copy from /sysext/core/Resources/PHP/FileDumpEID.php
-	 *
-	 * @param array $params
-	 * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj
-	 */
-	public function dumpFile($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = NULL) {
+    /**
+     * Dump file content
+     * Copy from /sysext/core/Resources/PHP/FileDumpEID.php
+     *
+     * @param array $params
+     * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj
+     */
+    public function dumpFile($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = null)
+    {
+        $parameters = array('eID' => 'dumpFile');
+        if (GeneralUtility::_GP('t')) {
+            $parameters['t'] = GeneralUtility::_GP('t');
+        }
+        if (GeneralUtility::_GP('f')) {
+            $parameters['f'] = (int)GeneralUtility::_GP('f');
+        }
+        if (GeneralUtility::_GP('p')) {
+            $parameters['p'] = (int)GeneralUtility::_GP('p');
+        }
 
-		$parameters = array('eID' => 'dumpFile');
-		if (GeneralUtility::_GP('t')) {
-			$parameters['t'] = GeneralUtility::_GP('t');
-		}
-		if (GeneralUtility::_GP('f')) {
-			$parameters['f'] = (int)GeneralUtility::_GP('f');
-		}
-		if (GeneralUtility::_GP('p')) {
-			$parameters['p'] = (int)GeneralUtility::_GP('p');
-		}
+        if (GeneralUtility::hmac(implode('|', $parameters),
+                'BeResourceStorageDumpFile') === GeneralUtility::_GP('token')
+        ) {
+            if (isset($parameters['f'])) {
+                $file = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getFileObject($parameters['f']);
+                if ($file->isDeleted() || $file->isMissing()) {
+                    $file = null;
+                }
+                $orgFile = $file;
+            } else {
+                /** @var \TYPO3\CMS\Core\Resource\ProcessedFile $file */
+                $file = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository')->findByUid($parameters['p']);
+                if ($file->isDeleted()) {
+                    $file = null;
+                }
+                $orgFile = $file->getOriginalFile();
+            }
 
-		if (GeneralUtility::hmac(implode('|', $parameters), 'BeResourceStorageDumpFile') === GeneralUtility::_GP('token')) {
-			if (isset($parameters['f'])) {
-				$file = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getFileObject($parameters['f']);
-				if ($file->isDeleted() || $file->isMissing()) {
-					$file = NULL;
-				}
-				$orgFile = $file;
-			} else {
-				/** @var \TYPO3\CMS\Core\Resource\ProcessedFile $file */
-				$file = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository')->findByUid($parameters['p']);
-				if ($file->isDeleted()) {
-					$file = NULL;
-				}
-				$orgFile = $file->getOriginalFile();
-			}
+            // Check file read permissions
+            if (!$orgFile->getStorage()->checkFileActionPermission('read', $orgFile)) {
+                HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
+            }
 
-			// Check file read permissions
-			if (!$orgFile->getStorage()->checkFileActionPermission('read', $orgFile)) {
-				HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
-			}
+            if ($file === null) {
+                HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_404);
+            }
 
-			if ($file === NULL) {
-				HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_404);
-			}
-
-			ob_start();
-			$file->getStorage()->dumpFileContents($file);
-			exit;
-		} else {
-			HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
-		}
-	}
+            ob_start();
+            $file->getStorage()->dumpFileContents($file);
+            exit;
+        } else {
+            HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
+        }
+    }
 }

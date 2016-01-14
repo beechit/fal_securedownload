@@ -31,60 +31,76 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Class KeSearchFilesHook
  */
-class KeSearchFilesHook implements SingletonInterface {
+class KeSearchFilesHook implements SingletonInterface
+{
+    /**
+     * @var CheckPermissions
+     */
+    protected $checkPermissionsService;
 
-	/**
-	 * @var CheckPermissions
-	 */
-	protected $checkPermissionsService;
+    /**
+     * Contructor
+     */
+    public function __construct()
+    {
+        $this->checkPermissionsService = GeneralUtility::makeInstance(
+            'BeechIt\\FalSecuredownload\\Security\\CheckPermissions'
+        );
+    }
 
-	/**
-	 * Contructor
-	 */
-	public function __construct() {
-		$this->checkPermissionsService = GeneralUtility::makeInstance(
-			'BeechIt\\FalSecuredownload\\Security\\CheckPermissions'
-		);
-	}
+    /**
+     * Check file permissions
+     *
+     * @param $fileObject
+     * @param string $content
+     * @param \tx_kesearch_indexer_types_file $fileIndexerObject
+     * @param string $feGroups
+     * @param array $ttContentRow
+     * @param int $storagePid
+     * @param string $title
+     * @param string $tags
+     * @param string $abstract
+     * @param array $additionalFields
+     */
+    public function modifyFileIndexEntryFromContentIndexer(
+        $fileObject,
+        $content,
+        $fileIndexerObject,
+        &$feGroups,
+        $ttContentRow,
+        $storagePid,
+        $title,
+        $tags,
+        $abstract,
+        $additionalFields
+    ) {
+        if ($fileObject instanceof File && !$fileObject->getStorage()->isPublic()) {
+            $resourcePermissions = $this->checkPermissionsService->getPermissions($fileObject);
+            // If there are already permissions set, refine these with actual file permissions
+            if ($feGroups) {
+                $feGroups = implode(
+                    ',',
+                    GeneralUtility::keepItemsInArray(explode(',', $resourcePermissions), $feGroups)
+                );
+            } else {
+                $feGroups = $resourcePermissions;
+            }
+        }
+    }
 
-	/**
-	 * Check file permissions
-	 *
-	 * @param $fileObject
-	 * @param string $content
-	 * @param \tx_kesearch_indexer_types_file $fileIndexerObject
-	 * @param string $feGroups
-	 * @param array $ttContentRow
-	 * @param int $storagePid
-	 * @param string $title
-	 * @param string $tags
-	 * @param string $abstract
-	 * @param array $additionalFields
-	 */
-	public function modifyFileIndexEntryFromContentIndexer($fileObject, $content, $fileIndexerObject, &$feGroups, $ttContentRow, $storagePid, $title, $tags, $abstract, $additionalFields) {
-		if ($fileObject instanceof File && !$fileObject->getStorage()->isPublic()) {
-			$resourcePermissions = $this->checkPermissionsService->getPermissions($fileObject);
-			// If there are already permissions set, refine these with actual file permissions
-			if ($feGroups) {
-				$feGroups = implode(',', GeneralUtility::keepItemsInArray(explode(',', $resourcePermissions), $feGroups));
-			} else {
-				$feGroups = $resourcePermissions;
-			}
-		}
-	}
-
-	/**
-	 * Get user permissions
-	 *
-	 * @param string|File $file
-	 * @param string $content
-	 * @param array $additionalFields
-	 * @param array $indexRecordValues
-	 * @param \tx_kesearch_indexer_types_file $indexer
-	 */
-	public function modifyFileIndexEntry($file, $content, $additionalFields, &$indexRecordValues, $indexer) {
-		if ($file instanceof File && !$file->getStorage()->isPublic()) {
-			$indexRecordValues['fe_group'] = $this->checkPermissionsService->getPermissions($file);
-		}
-	}
+    /**
+     * Get user permissions
+     *
+     * @param string|File $file
+     * @param string $content
+     * @param array $additionalFields
+     * @param array $indexRecordValues
+     * @param \tx_kesearch_indexer_types_file $indexer
+     */
+    public function modifyFileIndexEntry($file, $content, $additionalFields, &$indexRecordValues, $indexer)
+    {
+        if ($file instanceof File && !$file->getStorage()->isPublic()) {
+            $indexRecordValues['fe_group'] = $this->checkPermissionsService->getPermissions($file);
+        }
+    }
 }

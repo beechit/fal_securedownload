@@ -33,67 +33,69 @@ use TYPO3\CMS\Core\Resource\File;
  *
  * @package BeechIt\FalSecuredownload\ViewHelpers\Security
  */
-class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper {
+class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper
+{
 
-	/**
-	 * renders <f:then> child if the current logged in FE user has access to the given asset
-	 * otherwise renders <f:else> child.
-	 *
-	 * @param Folder $folder
-	 * @param File $file
-	 * @return bool|string
-	 */
-	public function render(Folder $folder, File $file = NULL) {
+    /**
+     * renders <f:then> child if the current logged in FE user has access to the given asset
+     * otherwise renders <f:else> child.
+     *
+     * @param Folder $folder
+     * @param File $file
+     * @return bool|string
+     */
+    public function render(Folder $folder, File $file = null)
+    {
+        if (self::evaluateCondition(array('folder' => $folder, 'file' => $file))) {
+            return $this->renderThenChild();
+        } else {
+            return $this->renderElseChild();
+        }
+    }
 
-		if (self::evaluateCondition(array('folder' => $folder, 'file' => $file))) {
-			return $this->renderThenChild();
-		} else {
-			return $this->renderElseChild();
-		}
-	}
+    /**
+     * Evaluate access
+     *
+     * @param array $arguments
+     * @return bool
+     */
+    protected static function evaluateCondition($arguments = null)
+    {
+        $folder = $arguments['folder'];
+        $file = $arguments['file'];
 
-	/**
-	 * Evaluate access
-	 *
-	 * @param array $arguments
-	 * @return bool
-	 */
-	protected static function evaluateCondition($arguments = null) {
-		$folder = $arguments['folder'];
-		$file = $arguments['file'];
+        /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
+        $checkPermissionsService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
+        $userFeGroups = self::getFeUserGroups();
+        $access = false;
 
-		/** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
-		$checkPermissionsService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
-		$userFeGroups = self::getFeUserGroups();
-		$access = FALSE;
+        // check folder access
+        if ($checkPermissionsService->checkFolderRootLineAccess($folder, $userFeGroups)) {
+            if ($file === null) {
+                $access = true;
+            } else {
+                $feGroups = $file->getProperty('fe_groups');
+                if ($feGroups !== '') {
+                    $access = $checkPermissionsService->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
+                } else {
+                    $access = true;
+                }
+            }
+        }
 
-		// check folder access
-		if ($checkPermissionsService->checkFolderRootLineAccess($folder, $userFeGroups)) {
-			if ($file === NULL) {
-				$access = TRUE;
-			} else {
-				$feGroups = $file->getProperty('fe_groups');
-				if ($feGroups !== '') {
-					$access = $checkPermissionsService->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
-				} else {
-					$access = TRUE;
-				}
-			}
-		}
+        return $access;
+    }
 
-		return $access;
-	}
-
-
-	/**
-	 * Determines whether the currently logged in FE user belongs to the specified usergroup
-	 *
-	 * @return boolean|array FALSE when not logged in or else $GLOBALS['TSFE']->fe_user->groupData['uid']
-	 */
-	protected static function getFeUserGroups() {
-		if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
-			return FALSE;
-		}
-		return $GLOBALS['TSFE']->fe_user->groupData['uid'];
-	}
+    /**
+     * Determines whether the currently logged in FE user belongs to the specified usergroup
+     *
+     * @return boolean|array FALSE when not logged in or else $GLOBALS['TSFE']->fe_user->groupData['uid']
+     */
+    protected static function getFeUserGroups()
+    {
+        if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
+            return false;
+        }
+        return $GLOBALS['TSFE']->fe_user->groupData['uid'];
+    }
 }
