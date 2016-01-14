@@ -45,9 +45,26 @@ class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCon
 	 */
 	public function render(Folder $folder, File $file = NULL) {
 
+		if (self::evaluateCondition(array('folder' => $folder, 'file' => $file))) {
+			return $this->renderThenChild();
+		} else {
+			return $this->renderElseChild();
+		}
+	}
+
+	/**
+	 * Evaluate access
+	 *
+	 * @param array $arguments
+	 * @return bool
+	 */
+	protected static function evaluateCondition($arguments = null) {
+		$folder = $arguments['folder'];
+		$file = $arguments['file'];
+
 		/** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
 		$checkPermissionsService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
-		$userFeGroups = $this->getFeUserGroups();
+		$userFeGroups = self::getFeUserGroups();
 		$access = FALSE;
 
 		// check folder access
@@ -64,19 +81,16 @@ class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCon
 			}
 		}
 
-		if ($access) {
-			return $this->renderThenChild();
-		} else {
-			return $this->renderElseChild();
-		}
+		return $access;
 	}
+
 
 	/**
 	 * Determines whether the currently logged in FE user belongs to the specified usergroup
 	 *
 	 * @return boolean|array FALSE when not logged in or else $GLOBALS['TSFE']->fe_user->groupData['uid']
 	 */
-	protected function getFeUserGroups() {
+	protected static function getFeUserGroups() {
 		if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
 			return FALSE;
 		}
