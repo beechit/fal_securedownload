@@ -96,4 +96,34 @@ class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCon
 		}
 		return $GLOBALS['TSFE']->fe_user->groupData['uid'];
 	}
+
+	/**
+	 * The compiled ViewHelper adds two new ViewHelper arguments: __thenClosure and __elseClosure.
+	 * These contain closures which are be executed to render the then(), respectively else() case.
+	 *
+	 * @param string $argumentsVariableName
+	 * @param string $renderChildrenClosureVariableName
+	 * @param string $initializationPhpCode
+	 * @param \TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\AbstractNode $syntaxTreeNode
+	 * @param \TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler $templateCompiler
+	 * @return string
+	 * @internal
+	 */
+	public function compile(
+		$argumentsVariableName,
+		$renderChildrenClosureVariableName,
+		&$initializationPhpCode,
+		\TYPO3\CMS\Fluid\Core\Parser\SyntaxTree\AbstractNode $syntaxTreeNode,
+		\TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler $templateCompiler
+	) {
+		parent::compile(
+			$argumentsVariableName,
+			$renderChildrenClosureVariableName,
+			$initializationPhpCode,
+			$syntaxTreeNode,
+			$templateCompiler
+		);
+
+		return \TYPO3\CMS\Fluid\Core\Compiler\TemplateCompiler::SHOULD_GENERATE_VIEWHELPER_INVOCATION;
+	}
 }
