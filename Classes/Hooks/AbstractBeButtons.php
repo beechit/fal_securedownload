@@ -72,6 +72,10 @@ abstract class AbstractBeButtons
             $menuItems[] = 'spacer';
 
             if ($folderRecord) {
+                $link = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('record_edit', array(
+                    'edit[tx_falsecuredownload_folder][' . $folderRecord['uid'] . ']' => 'edit'
+                ));
+                
                 $buttons[] = $this->createLink(
                     $this->sL('clickmenu.folderpermissions'),
                     $this->sL('clickmenu.folderpermissions'),
@@ -80,10 +84,17 @@ abstract class AbstractBeButtons
                         array(),
                         array('status-overlay-access-restricted' => '')
                     ),
-                    "alt_doc.php?edit[tx_falsecuredownload_folder][" . $folderRecord['uid'] . "]=edit"
+                    $link
                 );
 
             } else {
+                $link = \TYPO3\CMS\Backend\Utility\BackendUtility::getModuleUrl('record_edit', array(
+                    'edit[tx_falsecuredownload_folder][0]' => 'new',
+                    'defVals[tx_falsecuredownload_folder][folder_hash]' => $folder->getHashedIdentifier(),
+                    'defVals[tx_falsecuredownload_folder][storage]' => $folder->getStorage()->getUid(),
+                    'defVals[tx_falsecuredownload_folder][folder]' => $folder->getIdentifier()
+                ));
+                
                 $buttons[] = $this->createLink(
                     $this->sL('clickmenu.folderpermissions'),
                     $this->sL('clickmenu.folderpermissions'),
@@ -92,7 +103,7 @@ abstract class AbstractBeButtons
                         array(),
                         array('extensions-fal_securedownload-overlay-permissions' => '')
                     ),
-                    "alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&defVals[tx_falsecuredownload_folder][folder_hash]=" . $folder->getHashedIdentifier() . "&defVals[tx_falsecuredownload_folder][storage]=" . $folder->getStorage()->getUid() . "&defVals[tx_falsecuredownload_folder][folder]=" . $folder->getIdentifier()
+                    $link    
                 );
             }
         }
