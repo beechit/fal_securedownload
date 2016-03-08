@@ -24,7 +24,28 @@ if (TYPO3_MODE === 'BE') {
     );
 }
 
-\TYPO3\CMS\Backend\Sprite\SpriteManager::addSingleIcons(array(
-    'folder' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/folder.png',
-    'overlay-permissions' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/permissions-set-in-root-line.png'
-), 'fal_securedownload');
+if (class_exists('TYPO3\\CMS\\Core\\Imaging\\IconRegistry')) {
+    // Initiate
+    $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
+    $iconRegistry->registerIcon(
+        'action-folder',
+        \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+        array(
+            'source' => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/folder.svg',
+        )
+    );
+    $iconRegistry->registerIcon(
+        'overlay-inherited-permissions',
+        \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+        array(
+            'source' => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/overlay-inherited-permissions.svg',
+        )
+    );
+
+// Fallback for < 7.6
+} else {
+    \TYPO3\CMS\Backend\Sprite\SpriteManager::addSingleIcons(array(
+        'folder' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/folder.png',
+        'overlay-permissions' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath($_EXTKEY) . 'Resources/Public/Icons/permissions-set-in-root-line.png'
+    ), 'fal_securedownload');
+}

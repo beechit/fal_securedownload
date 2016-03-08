@@ -46,8 +46,14 @@ if (TYPO3_MODE === 'BE') {
         'BeechIt\\FalSecuredownload\\Hooks\\CmsLayout->getExtensionSummary';
 
     // Add FolderPermission button to docheader of filelist
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['docHeaderButtonsHook']['FalSecuredownload'] =
-        'BeechIt\\FalSecuredownload\\Hooks\\DocHeaderButtonsHook->addFolderPermissionsButton';
+    if (!\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version(7.6)) {
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['docHeaderButtonsHook']['FalSecuredownload'] =
+            'BeechIt\\FalSecuredownload\\Hooks\\DocHeaderButtonsHook->addFolderPermissionsButton';
+    } else {
+        // Add FolderPermission button to docheader of filelist
+        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload'] =
+            'BeechIt\\FalSecuredownload\\Hooks\\DocHeaderButtonsHook->getButtons';
+    }
 
     // refresh file tree after change in tx_falsecuredownload_folder record
     $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
@@ -90,6 +96,13 @@ if (TYPO3_MODE === 'BE') {
         \TYPO3\CMS\Core\Resource\ResourceStorageInterface::SIGNAL_PostFolderRename,
         'BeechIt\\FalSecuredownload\\Hooks\\FolderChangedSlot',
         'postFolderRename'
+    );
+    // File tree icon adjustments for TYPO3 => 7.5
+    $signalSlotDispatcher->connect(
+        'TYPO3\\CMS\\Core\\Imaging\\IconFactory',
+        'buildIconForResourceSignal',
+        'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook',
+        'buildIconForResource'
     );
 
     // ext:ke_search custom indexer hook

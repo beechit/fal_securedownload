@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="100%"
+   height="100%"
+   viewBox="0 0 16 16"
+   id="svg2">
+  <metadata
+     id="metadata14">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs12" />
+  <g
+     id="g4">
+    <path
+       d="m 4.392369,12.471088 -3.86678643,-0.01877 -4e-8,-11.1310884 5.04934727,4e-7 2.046018,1.9897056 7.9025092,-0.018771 0.01877,9.0475294 0,0"
+       id="path4129"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <g
+       transform="translate(0,-1)"
+       id="g3088">
+      <g
+         id="g3070">
+        <path
+           d="M 12,14 H 7 l 1.25,-2 1.25,-2 1.25,2 1.25,2 z"
+           id="path3076"
+           style="fill:#ffffff" />
+        <path
+           d="M 14,14 H 9 L 10.25,12.5 11.5,11 12.75,12.5 14,14 z"
+           id="path3078"
+           style="fill:#ffffff" />
+        <circle
+           cx="13"
+           cy="9"
+           r="1"
+           id="circle3080"
+           style="fill:#ffffff" />
+      </g>
+    </g>
+    <path
+       d="m 11.223611,10.237362 c -0.335,0.362 -0.804,0.6 -1.204,0.6 1.07,-0.022 2.055,-1.4079999 2.154,-2.3999999 v -1.4 c 0,-1 -0.8,-1.8 -1.9,-1.8 H 9.7736112 c -1,0 -1.9,0.8 -1.9,1.8 v 1.4 c 0,0.622 0.387,1.4 0.945,1.8979999 -0.015,0.96 -0.24,1.31 -0.32,1.532 -0.058,-0.01 -0.086,-0.02 -0.075,-0.03 -0.7,0.3 -1.5,0.7 -2.5,1 0,0 -0.9,0.5 -0.9,2.4 H 15.023612 c -0.300001,-2 -1.100001,-2.4 -1.100001,-2.4 -1.03,-0.28 -1.71,-0.65 -2.366,-0.94 -0.057,-0.23 -0.335,-0.65 -0.335,-1.66 z"
+       id="path8" />
+  </g>
+</svg>

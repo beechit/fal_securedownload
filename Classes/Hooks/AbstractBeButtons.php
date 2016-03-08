@@ -24,11 +24,14 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -75,28 +78,90 @@ abstract class AbstractBeButtons
                 $buttons[] = $this->createLink(
                     $this->sL('clickmenu.folderpermissions'),
                     $this->sL('clickmenu.folderpermissions'),
-                    IconUtility::getSpriteIcon(
-                        'extensions-fal_securedownload-folder',
-                        array(),
-                        array('status-overlay-access-restricted' => '')
-                    ),
-                    "alt_doc.php?edit[tx_falsecuredownload_folder][" . $folderRecord['uid'] . "]=edit"
+                    $this->getIcon('folder'),
+                    $this->buildEditUrl($folderRecord['uid'])
                 );
 
             } else {
                 $buttons[] = $this->createLink(
                     $this->sL('clickmenu.folderpermissions'),
                     $this->sL('clickmenu.folderpermissions'),
-                    IconUtility::getSpriteIcon(
-                        'extensions-fal_securedownload-folder',
-                        array(),
-                        array('extensions-fal_securedownload-overlay-permissions' => '')
-                    ),
-                    "alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&defVals[tx_falsecuredownload_folder][folder_hash]=" . $folder->getHashedIdentifier() . "&defVals[tx_falsecuredownload_folder][storage]=" . $folder->getStorage()->getUid() . "&defVals[tx_falsecuredownload_folder][folder]=" . $folder->getIdentifier()
+                    $this->getIcon('folder'),
+                    $this->buildAddUrl($folder)
                 );
             }
         }
         return $buttons;
+    }
+
+    /**
+     * @param string $name
+     * @return string|Icon
+     */
+    protected function getIcon($name)
+    {
+        if (!GeneralUtility::compat_version('7.4')) {
+            $icon = IconUtility::getSpriteIcon('extensions-fs_media_gallery-' . $name);
+        } else {
+            $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+            $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
+        }
+
+        return $icon;
+    }
+
+    /**
+     * Build edit url
+     *
+     * @param int $uid Media album uid
+     * @return string
+     */
+    protected function buildEditUrl($uid)
+    {
+        if (!GeneralUtility::compat_version('7.4')) {
+            return 'alt_doc.php?edit[tx_falsecuredownload_folder][' . $uid . ']=edit';
+        } else {
+            return BackendUtility::getModuleUrl('record_edit', array(
+                'edit' => array(
+                    'tx_falsecuredownload_folder' => array(
+                        $uid => 'edit'
+                    )
+                ),
+                'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI')
+            ));
+        }
+    }
+
+    /**
+     * Build Add new media album url
+     *
+     * @param Folder $folder
+     * @return string
+     */
+    protected function buildAddUrl(Folder $folder)
+    {
+        if (!GeneralUtility::compat_version('7.4')) {
+            return 'alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&' .
+                   'defVals[tx_falsecuredownload_folder][folder_hash]=' . $folder->getHashedIdentifier() .
+                   '&defVals[tx_falsecuredownload_folder][storage]=' . $folder->getStorage()->getUid() .
+                   '&defVals[tx_falsecuredownload_folder][folder]=' . $folder->getIdentifier();
+        } else {
+            return BackendUtility::getModuleUrl('record_edit', array(
+                'edit' => array(
+                    'tx_falsecuredownload_folder' => array(
+                        0 => 'new'
+                    )
+                ),
+                'defVals' => array(
+                    'tx_falsecuredownload_folder' => array(
+                        'storage' => $folder->getStorage()->getUid(),
+                        'folder' => $folder->getIdentifier(),
+                        'folder_hash' => $folder->getHashedIdentifier(),
+                    )
+                ),
+                'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI')
+            ));
+        }
     }
 
     /**
