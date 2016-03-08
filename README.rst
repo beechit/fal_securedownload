@@ -16,7 +16,7 @@ The access to assets can be set on folder/file bases by setting access to fe_gro
 3. Add a .htaccess with "Deny from all" in your file storage root folder or move your storage outside of your webroot
 
 **Requirements:**
-    TYPO3 6.2
+    TYPO3 6.2, TYPO3 7 LTS
 
 **Suggestions:**
     EXT:ke_search v1.8.4
