@@ -4,7 +4,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2014 Frans Saris <franssaris@gmail.com>
+ *  (c) 2014 Frans Saris <frans@beech.it>
  *
  *  All rights reserved
  *

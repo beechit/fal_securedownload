@@ -4,7 +4,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 20014 Frans Saris <franssaris@gmail.com>
+ *  (c) 2014 Frans Saris <frans@beech.it>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
