@@ -101,7 +101,7 @@ abstract class AbstractBeButtons
     protected function getIcon($name)
     {
         if (!GeneralUtility::compat_version('7.4')) {
-            $icon = IconUtility::getSpriteIcon('extensions-fs_media_gallery-' . $name);
+            $icon = IconUtility::getSpriteIcon('extensions-fal_securedownload-' . $name);
         } else {
             $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
             $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
