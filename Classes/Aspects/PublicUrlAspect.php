@@ -68,7 +68,7 @@ class PublicUrlAspect implements SingletonInterface
      *
      * @param Resource\ResourceStorage $storage
      * @param Resource\Driver\DriverInterface $driver
-     * @param Resource\FileInterface $file
+     * @param Resource\ResourceInterface $resourceObject
      * @param $relativeToCurrentScript
      * @param array $urlData
      * @return void
@@ -76,19 +76,19 @@ class PublicUrlAspect implements SingletonInterface
     public function generatePublicUrl(
         Resource\ResourceStorage $storage,
         Resource\Driver\DriverInterface $driver,
-        Resource\FileInterface $file,
+        Resource\ResourceInterface $resourceObject,
         $relativeToCurrentScript,
         array $urlData
     ) {
 
         // We only render special links for non-public files
-        if ($this->enabled && !$storage->isPublic()) {
+        if ($this->enabled && $resourceObject instanceof Resource\FileInterface && !$storage->isPublic()) {
             $queryParameterArray = array('eID' => 'dumpFile', 't' => '');
-            if ($file instanceof Resource\File) {
-                $queryParameterArray['f'] = $file->getUid();
+            if ($resourceObject instanceof Resource\File) {
+                $queryParameterArray['f'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'f';
-            } elseif ($file instanceof Resource\ProcessedFile) {
-                $queryParameterArray['p'] = $file->getUid();
+            } elseif ($resourceObject instanceof Resource\ProcessedFile) {
+                $queryParameterArray['p'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'p';
             }
             $queryParameterArray['token'] = GeneralUtility::hmac(
