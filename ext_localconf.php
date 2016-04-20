@@ -109,11 +109,20 @@ if (TYPO3_MODE === 'BE') {
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
 
-    // ext:solrfal enrich metadata and generate correct public url slot
-    $signalSlotDispatcher->connect(
-        'TYPO3\\Solr\\Solrfal\\Indexing\\DocumentFactory',
-        'fileMetaDataRetrieved',
-        'BeechIt\\FalSecuredownload\\Aspects\\SolrFalAspect',
-        'fileMetaDataRetrieved'
-    );
+    if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('solrfal')) {
+        $solrfalVersion = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('solrfal');
+        if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($solrfalVersion) >= 2001000) {
+            // Namespace change in Solrfal 2.1
+            $solrfalDocumentFactoryClassName = 'ApacheSolrForTypo3\\Solrfal\\Indexing\\DocumentFactory';
+        } else {
+            $solrfalDocumentFactoryClassName = 'TYPO3\\Solr\\Solrfal\\Indexing\\DocumentFactory';
+        }
+        // ext:solrfal enrich metadata and generate correct public url slot
+        $signalSlotDispatcher->connect(
+            $solrfalDocumentFactoryClassName,
+            'fileMetaDataRetrieved',
+            'BeechIt\\FalSecuredownload\\Aspects\\SolrFalAspect',
+            'fileMetaDataRetrieved'
+        );
+    }
 }
