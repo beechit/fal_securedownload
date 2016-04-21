@@ -1,13 +1,26 @@
 {
   "name": "beechit/fal-securedownload",
-  "description": "Secure download of assets. Makes it possible to secure FE use of assets/files by setting permissions to folders/files for fe_groups.",
   "type": "typo3-cms-extension",
+  "description": "Secure download of assets. Makes it possible to secure FE use of assets/files by setting permissions to folders/files for fe_groups.",
+  "keywords": [
+    "TYPO3",
+    "extension",
+    "secure",
+    "download"
+  ],
   "version": "1.0.2",
+  "homepage": "https://github.com/beechit/fal_securedownload/",
+  "support": {
+    "issues": "https://github.com/beechit/fal_securedownload/issues/"
+  },
   "require": {
-    "typo3/cms-core": ">=6.2.2,<8.0"
+    "typo3/cms-core": "^6.2.14|^7.6.0|^8.0",
+    "typo3/cms": "dev-master"
   },
   "require-dev": {
-    "typo3/cms": "^7.6"
+    "namelesscoder/typo3-repository-client": "1.1.x-dev",
+    "mikey179/vfsStream": "1.4.*@dev",
+    "phpunit/phpunit": "~4.7.0"
   },
   "replace": {
     "fal_securedownload": "self.version",
@@ -18,8 +31,27 @@
       "BeechIt\\FalSecuredownload\\": "Classes/"
     }
   },
-  "homepage": "https://github.com/beechit/fal_securedownload/",
-  "support": {
-    "issues": "https://github.com/beechit/fal_securedownload/issues/"
+  "autoload-dev": {
+    "psr-4": {
+      "BeechIt\\FalSecuredownload\\Tests\\": "Tests",
+      "TYPO3\\CMS\\Core\\Tests\\": ".Build/vendor/typo3/cms/typo3/sysext/core/Tests/",
+      "TYPO3\\CMS\\Fluid\\Tests\\": ".Build/vendor/typo3/cms/typo3/sysext/fluid/Tests/"
+    }
+  },
+  "config": {
+    "vendor-dir": ".Build/vendor",
+    "bin-dir": ".Build/bin"
+  },
+  "scripts": {
+    "post-autoload-dump": [
+      "mkdir -p .Build/Web/typo3conf/ext/",
+      "[ -L .Build/Web/typo3conf/ext/fal_securedownload ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/fal_securedownload"
+    ]
+  },
+  "extra": {
+    "typo3/cms": {
+      "cms-package-dir": "{$vendor-dir}/typo3/cms",
+      "web-dir": ".Build/Web"
+    }
   }
 }
