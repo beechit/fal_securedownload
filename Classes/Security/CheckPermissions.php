@@ -114,9 +114,9 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
             $this->checkFolderRootLineAccessCache[$cacheIdentifier] = true;
 
             // loop trough the root line of an folder and check the permissions of every folder
-            foreach ($this->getFolderRootLine($folder) as $folder) {
+            foreach ($this->getFolderRootLine($folder) as $subFolder) {
                 // fetch folder permissions record
-                $folderRecord = $this->utilityService->getFolderRecord($folder);
+                $folderRecord = $this->utilityService->getFolderRecord($subFolder);
 
                 // if record found check permissions
                 if ($folderRecord) {
