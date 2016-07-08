@@ -53,6 +53,16 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
     protected $noAccessRedirectUrl;
 
     /**
+     * @var bool
+     */
+    protected $forceDownload = false;
+
+    /**
+     * @var string
+     */
+    protected $forceDownloadForExt = '';
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -62,6 +72,21 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
         }
         if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'])) {
             $this->noAccessRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'];
+        }
+
+        $extensionConfiguration = array();
+        if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['fal_securedownload'])) {
+            $extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['fal_securedownload']);
+        }
+        if (!empty($extensionConfiguration['login_redirect_url'])) {
+            $this->loginRedirectUrl = $extensionConfiguration['login_redirect_url'];
+        }
+        if (!empty($extensionConfiguration['no_access_redirect_url'])) {
+            $this->noAccessRedirectUrl = $extensionConfiguration['no_access_redirect_url'];
+        }
+        $this->forceDownload = !empty($extensionConfiguration['force_download']);
+        if (!empty($extensionConfiguration['force_download_for_ext'])) {
+            $this->forceDownloadForExt = $extensionConfiguration['force_download_for_ext'];
         }
     }
 
@@ -113,10 +138,30 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
         $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', array($file, $this));
 
         // todo: find a nicer way to force the download. Other hooks are blocked by this
-        if (isset($_REQUEST['download'])) {
+        if ($this->forceDownload($file->getExtension())) {
             $file->getStorage()->dumpFileContents($file, true);
             exit;
         }
+    }
+
+    /**
+     * Determine if we want to force a file download
+     *
+     * @param string $fileExtension
+     * @return bool
+     */
+    protected function forceDownload($fileExtension)
+    {
+        $forceDownload = false;
+        if ($this->forceDownload) {
+            $forceDownload = true;
+        } elseif (isset($_REQUEST['download'])) {
+            $forceDownload = true;
+        } elseif (GeneralUtility::inList(str_replace(' ', '', $this->forceDownloadForExt), $fileExtension)) {
+            $forceDownload = true;
+        }
+
+        return $forceDownload;
     }
 
     /**

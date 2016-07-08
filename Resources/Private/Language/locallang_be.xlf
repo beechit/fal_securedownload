@@ -26,6 +26,19 @@
 				<source>Folder permissions</source>
 			</trans-unit>
 
+			<trans-unit id="extmng.login_redirect_url">
+				<source>Instead of throwing a "Authentication required!" message redirect the user to this url (optional variable = ###REQUEST_URI###)</source>
+			</trans-unit>
+			<trans-unit id="extmng.no_access_redirect_url">
+				<source>Instead of throwing a "Access denied" message redirect the user to this url (optional variable = ###REQUEST_URI###)</source>
+			</trans-unit>
+			<trans-unit id="extmng.force_download">
+				<source>Force download of all files from protected/non-public storages</source>
+			</trans-unit>
+			<trans-unit id="extmng.force_download_for_ext">
+				<source>Force download for these file extensions (comma separated list)</source>
+			</trans-unit>
+
 		</body>
 	</file>
 </xliff>
