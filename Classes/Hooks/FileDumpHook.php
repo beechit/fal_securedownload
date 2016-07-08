@@ -66,6 +66,16 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
     }
 
     /**
+     * Get feUser
+     *
+     * @return \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication
+     */
+    public function getFeUser()
+    {
+        return $this->feUser;
+    }
+
+    /**
      * Perform custom security/access when accessing file
      * Method should issue 403 if access is rejected
      * or 401 if authentication is required
