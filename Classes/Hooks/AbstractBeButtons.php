@@ -25,7 +25,6 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -118,18 +117,13 @@ abstract class AbstractBeButtons
      */
     protected function buildEditUrl($uid)
     {
-        if (!GeneralUtility::compat_version('7.4')) {
-            return 'alt_doc.php?edit[tx_falsecuredownload_folder][' . $uid . ']=edit';
-        } else {
-            return BackendUtility::getModuleUrl('record_edit', array(
-                'edit' => array(
-                    'tx_falsecuredownload_folder' => array(
-                        $uid => 'edit'
-                    )
-                ),
-                'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI')
-            ));
-        }
+        return $this->buildUrl(array(
+            'edit' => array(
+                'tx_falsecuredownload_folder' => array(
+                    $uid => 'edit'
+                )
+            )
+        ));
     }
 
     /**
@@ -140,27 +134,35 @@ abstract class AbstractBeButtons
      */
     protected function buildAddUrl(Folder $folder)
     {
+        return $this->buildUrl(array(
+            'edit' => array(
+                'tx_falsecuredownload_folder' => array(
+                    0 => 'new'
+                )
+            ),
+            'defVals' => array(
+                'tx_falsecuredownload_folder' => array(
+                    'storage' => $folder->getStorage()->getUid(),
+                    'folder' => $folder->getIdentifier(),
+                    'folder_hash' => $folder->getHashedIdentifier(),
+                )
+            )
+        ));
+    }
+
+    /**
+     * Build record edit url
+     *
+     * @param array $parameters URL parameters
+     * @return string
+     */
+    protected function buildUrl(array $parameters)
+    {
         if (!GeneralUtility::compat_version('7.4')) {
-            return 'alt_doc.php?edit[tx_falsecuredownload_folder][0]=new&' .
-                   'defVals[tx_falsecuredownload_folder][folder_hash]=' . $folder->getHashedIdentifier() .
-                   '&defVals[tx_falsecuredownload_folder][storage]=' . $folder->getStorage()->getUid() .
-                   '&defVals[tx_falsecuredownload_folder][folder]=' . $folder->getIdentifier();
+            return 'alt_doc.php?' . ltrim(GeneralUtility::implodeArrayForUrl('', $parameters), '&');
         } else {
-            return BackendUtility::getModuleUrl('record_edit', array(
-                'edit' => array(
-                    'tx_falsecuredownload_folder' => array(
-                        0 => 'new'
-                    )
-                ),
-                'defVals' => array(
-                    'tx_falsecuredownload_folder' => array(
-                        'storage' => $folder->getStorage()->getUid(),
-                        'folder' => $folder->getIdentifier(),
-                        'folder_hash' => $folder->getHashedIdentifier(),
-                    )
-                ),
-                'returnUrl' => GeneralUtility::getIndpEnv('REQUEST_URI')
-            ));
+            $parameters['returnUrl'] = GeneralUtility::getIndpEnv('REQUEST_URI');
+            return BackendUtility::getModuleUrl('record_edit', $parameters);
         }
     }
 
