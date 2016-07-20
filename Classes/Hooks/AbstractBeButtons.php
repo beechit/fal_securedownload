@@ -103,7 +103,7 @@ abstract class AbstractBeButtons
         if (!GeneralUtility::compat_version('7.4')) {
             $icon = IconUtility::getSpriteIcon('extensions-fal_securedownload-' . $name);
         } else {
-            $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+            $iconFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Imaging\\IconFactory');
             $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
         }
 

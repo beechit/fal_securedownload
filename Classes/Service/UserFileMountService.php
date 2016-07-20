@@ -41,7 +41,7 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
      * @param Object $tceformsObj Parent object
      * @throws \TYPO3\CMS\Core\Exception
      */
-    public function renderFlexFormSelectDropdown(&$PA, &$tceformsObj)
+    public function renderFlexFormSelectDropdown(&$PA, $tceformsObj)
     {
         $storageUid = 0;
 
