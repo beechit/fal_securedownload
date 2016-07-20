@@ -26,17 +26,17 @@ if (TYPO3_MODE === 'BE') {
 
 if (class_exists('TYPO3\\CMS\\Core\\Imaging\\IconRegistry')) {
     // Initiate
-    $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Imaging\IconRegistry::class);
+    $iconRegistry = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Imaging\\IconRegistry');
     $iconRegistry->registerIcon(
         'action-folder',
-        \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+        'TYPO3\\CMS\\Core\\Imaging\\IconProvider\\SvgIconProvider',
         array(
             'source' => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/folder.svg',
         )
     );
     $iconRegistry->registerIcon(
         'overlay-inherited-permissions',
-        \TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider::class,
+        'TYPO3\\CMS\\Core\\Imaging\\IconProvider\\SvgIconProvider',
         array(
             'source' => 'EXT:' . $_EXTKEY . '/Resources/Public/Icons/overlay-inherited-permissions.svg',
         )
