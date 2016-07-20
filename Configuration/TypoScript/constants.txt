@@ -1,11 +1,11 @@
 
 plugin.tx_falsecuredownload {
 	view {
-		# cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template root (FE)
-		templateRootPath = EXT:fal_securedownload/Resources/Private/Templates/
-		# cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template partials (FE)
-		partialRootPath = EXT:fal_securedownload/Resources/Private/Partials/
-		# cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template layouts (FE)
-		layoutRootPath = EXT:fal_securedownload/Resources/Private/Layouts/
+		# cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template overrides (FE)
+		templateRootPath =
+		# cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template partial overrides (FE)
+		partialRootPath =
+		# cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template layout overrides (FE)
+		layoutRootPath =
 	}
 }
