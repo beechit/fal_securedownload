@@ -25,16 +25,17 @@ The default templates can be found like any other extbase/fluid based extension 
    fal_securedownload/Resources/Private/Partials
    fal_securedownload/Resources/Private/Templates
 
-If you want to override these you can set
+If you want to override these you can set these constants:
 
 .. code-block:: ts
 
    plugin.tx_falsecuredownload {
-    view {
-     layoutRootPaths.YOUR_KEY = path/to/your/layouts/folder
-     partialRootPaths.YOUR_KEY = path/to/your/partials/folder
-     templateRootPaths.YOUR_KEY = path/to/your/templates/folder
-    }
+     view {
+       layoutRootPath = EXT:your_ext/path/to/your/layouts/folder
+       partialRootPath = EXT:your_ext/path/to/your/partials/folder
+       templateRootPath = EXT:your_ext/path/to/your/templates/folder
+     }
+   }
 
 
 Collapsible FolderTree
