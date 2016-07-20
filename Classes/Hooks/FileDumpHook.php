@@ -24,6 +24,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -110,8 +111,10 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
      */
     public function checkFileAccess(\TYPO3\CMS\Core\Resource\ResourceInterface $file)
     {
-
-        if (!$file instanceof \TYPO3\CMS\Core\Resource\File) {
+        if (!$file instanceof FileInterface) {
+            throw new \RuntimeException('Given $file is not a file.', 1469019515);
+        }
+        if (method_exists($file, 'getOriginalFile')) {
             $this->originalFile = $file->getOriginalFile();
         } else {
             $this->originalFile = $file;
@@ -134,7 +137,7 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
         }
 
         /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\SignalSlot\Dispatcher');
+        $signalSlotDispatcher = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
         $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', array($file, $this));
 
         // todo: find a nicer way to force the download. Other hooks are blocked by this

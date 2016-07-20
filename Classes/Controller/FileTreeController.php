@@ -42,6 +42,7 @@ class FileTreeController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionControl
             $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
         } catch (\TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException $exception) {
             // folder not found
+            $folder = null;
         }
 
         $this->view->assign('folder', $folder);

@@ -22,7 +22,7 @@ class BePublicUrlController
      * @param array $params
      * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj
      */
-    public function dumpFile($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler &$ajaxObj = null)
+    public function dumpFile($params = array(), \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj = null)
     {
         $parameters = array('eID' => 'dumpFile');
         if (GeneralUtility::_GP('t')) {

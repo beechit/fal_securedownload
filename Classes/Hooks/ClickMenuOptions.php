@@ -24,8 +24,6 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Backend\Utility\IconUtility;
-
 /**
  * Add ClickMenuOptions in file list
  */
