@@ -2,7 +2,7 @@
 defined('TYPO3_MODE') or die();
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-    'BeechIt.' . $_EXTKEY,
+    'BeechIt.FalSecuredownload',
     'Filetree',
     array(
         'FileTree' => 'tree',
@@ -42,7 +42,7 @@ if (TYPO3_MODE === 'BE') {
     );
 
     // Page module hook
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree'][$_EXTKEY] =
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree']['fal_securedownload'] =
         'BeechIt\\FalSecuredownload\\Hooks\\CmsLayout->getExtensionSummary';
 
     // Add FolderPermission button to docheader of filelist
@@ -123,6 +123,15 @@ if (TYPO3_MODE === 'BE') {
             'fileMetaDataRetrieved',
             'BeechIt\\FalSecuredownload\\Aspects\\SolrFalAspect',
             'fileMetaDataRetrieved'
+        );
+    }
+
+    if (\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::trackDownloads()) {
+        // register FormEngine node for rendering download statistics in fe_users
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1470920616] = array(
+            'nodeName' => 'falSecureDownloadStats',
+            'priority' => 40,
+            'class' => 'BeechIt\\FalSecuredownload\\FormEngine\\DownloadStatistics',
         );
     }
 }

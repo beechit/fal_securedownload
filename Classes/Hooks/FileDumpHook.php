@@ -25,6 +25,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -137,6 +138,16 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
         $signalSlotDispatcher = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
         $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', array($file, $this));
 
+        if (ExtensionConfiguration::trackDownloads()) {
+            $db = $this->getDatabase();
+            $db->exec_INSERTquery('tx_falsecuredownload_download', array(
+                'tstamp' => time(),
+                'crdate' => time(),
+                'feuser' => $this->feUser->user['uid'],
+                'file' => $this->originalFile->getUid()
+            ));
+        }
+
         // todo: find a nicer way to force the download. Other hooks are blocked by this
         if ($this->forceDownload($file->getExtension())) {
             $file->getStorage()->dumpFileContents($file, true);
@@ -230,5 +241,13 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
         );
         header('location: ' . $redirect_uri);
         exit;
+    }
+
+    /**
+     * @return DatabaseConnection
+     */
+    protected function getDatabase()
+    {
+        return $GLOBALS['TYPO3_DB'];
     }
 }

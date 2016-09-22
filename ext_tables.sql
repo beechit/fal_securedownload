@@ -25,5 +25,23 @@ CREATE TABLE tx_falsecuredownload_folder (
 #
 CREATE TABLE sys_file_metadata (
 	# FE permissions
-	fe_groups tinytext NOT NULL,
+	fe_groups tinytext NOT NULL
+);
+
+CREATE TABLE tx_falsecuredownload_download (
+	uid int(11) NOT NULL auto_increment,
+	pid int(11) DEFAULT '0' NOT NULL,
+
+	tstamp int(11) DEFAULT '0' NOT NULL,
+	crdate int(11) DEFAULT '0' NOT NULL,
+
+	feuser int(11) DEFAULT '0' NOT NULL,
+	file int(11) DEFAULT '0' NOT NULL,
+
+	PRIMARY KEY (uid),
+	KEY user (feuser)
+);
+
+CREATE TABLE fe_users (
+	downloads int(11) DEFAULT '0' NOT NULL
 );

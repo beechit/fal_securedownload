@@ -9,3 +9,6 @@ force_download =
 
 # cat=basic/enable/4; type=string; label=LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:extmng.force_download_for_ext
 force_download_for_ext =
+
+# cat=basic/enable/5; type=boolean; label=LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:extmng.track_downloads
+track_downloads = 0
