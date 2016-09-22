@@ -24,6 +24,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -75,19 +76,15 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
             $this->noAccessRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'];
         }
 
-        $extensionConfiguration = array();
-        if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['fal_securedownload'])) {
-            $extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['fal_securedownload']);
+        if (ExtensionConfiguration::loginRedirectUrl()) {
+            $this->loginRedirectUrl = ExtensionConfiguration::loginRedirectUrl();
         }
-        if (!empty($extensionConfiguration['login_redirect_url'])) {
-            $this->loginRedirectUrl = $extensionConfiguration['login_redirect_url'];
+        if (ExtensionConfiguration::noAccessRedirectUrl()) {
+            $this->noAccessRedirectUrl = ExtensionConfiguration::noAccessRedirectUrl();
         }
-        if (!empty($extensionConfiguration['no_access_redirect_url'])) {
-            $this->noAccessRedirectUrl = $extensionConfiguration['no_access_redirect_url'];
-        }
-        $this->forceDownload = !empty($extensionConfiguration['force_download']);
-        if (!empty($extensionConfiguration['force_download_for_ext'])) {
-            $this->forceDownloadForExt = $extensionConfiguration['force_download_for_ext'];
+        $this->forceDownload = ExtensionConfiguration::forceDownload();
+        if (ExtensionConfiguration::forceDownloadForExt()) {
+            $this->forceDownloadForExt = ExtensionConfiguration::forceDownloadForExt();
         }
     }
 
