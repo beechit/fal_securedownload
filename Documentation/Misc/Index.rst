@@ -17,6 +17,8 @@ In the extension manager you find some options to define some of the behaviour o
 Login redirect
 --------------
 
+*Option name: login_redirect_url*
+
 Instead of throwing a "Authentication required!" message you can redirect the user to a certain page so he can login.
 
 .. code-block::
@@ -26,6 +28,8 @@ Instead of throwing a "Authentication required!" message you can redirect the us
 
 No Access redirect
 ------------------
+
+*Option name: no_access_redirect_url*
 
 Instead of throwing a "Access denied" message you can redirect the user to a certain page to inform the user about the access denied with optional some extra info.
 
@@ -37,10 +41,14 @@ Instead of throwing a "Access denied" message you can redirect the user to a cer
 Force download
 --------------
 
+*Option name: force_download*
+
 Force download of all files from protected/non-public storages
 
 Force download for some file extensions only
 --------------------------------------------
+
+*Option name: force_download_for_ext*
 
 Force download for a given set of file extensions (comma separated list)
 
