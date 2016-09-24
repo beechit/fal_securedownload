@@ -63,6 +63,7 @@ return array(
             'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.fe_group',
             'config' => array(
                 'type' => 'select',
+                'renderType' => 'selectMultipleSideBySide',
                 'size' => 20,
                 'maxitems' => 40,
                 'items' => array(
