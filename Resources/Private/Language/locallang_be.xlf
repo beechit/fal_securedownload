@@ -38,7 +38,16 @@
 			<trans-unit id="extmng.force_download_for_ext">
 				<source>Force download for these file extensions (comma separated list)</source>
 			</trans-unit>
+			<trans-unit id="extmng.track_downloads">
+				<source>Count downloads per user and create statistics (TYPO3 CMS 7+ only)</source>
+			</trans-unit>
 
+			<trans-unit id="downloadStatistics.fileName">
+				<source>File name</source>
+			</trans-unit>
+			<trans-unit id="downloadStatistics.downloads">
+				<source>Number of downloads</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

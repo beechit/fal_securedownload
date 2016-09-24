@@ -52,6 +52,16 @@ Force download for some file extensions only
 
 Force download for a given set of file extensions (comma separated list)
 
+Count downloads per user and create statistics
+----------------------------------------------
+
+*Option name: track_downloads*
+
+This feature is only available in TYPO3 CMS 7 and above.
+
+All downloads are tracked. Each download will be logged and accounted towards the frontend user downloading it.
+The download statistics per user can be inspected when editing the frontend user record.
+
 
 EXT:ke_search support
 =====================
