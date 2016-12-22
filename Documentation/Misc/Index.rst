@@ -145,7 +145,7 @@ Complete this document
 Further development
 ===================
 
-The git repository of `ext:fal_securedonwload <https://github.com/beechit/fal_securedownload>`_ can be found on Github.
+The git repository of `ext:fal_securedownload <https://github.com/beechit/fal_securedownload>`_ can be found on Github.
 
 Pull request and suggestions for improvement are very welcome.
 
