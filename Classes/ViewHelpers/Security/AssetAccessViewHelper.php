@@ -75,7 +75,7 @@ class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCon
                 $access = true;
             } else {
                 $feGroups = $file->getProperty('fe_groups');
-                if ($feGroups !== '') {
+                if ((string)$feGroups !== '') {
                     $access = $checkPermissionsService->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
                 } else {
                     $access = true;

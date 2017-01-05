@@ -77,16 +77,17 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function checkFileAccess($file, $userFeGroups)
     {
-
         // all files in public storage are accessible
         if ($file->getStorage()->isPublic()) {
             return true;
-
-            // check folder access
-        } elseif ($this->checkFolderRootLineAccess($file->getParentFolder(), $userFeGroups)) {
+        }
+        /** @var Folder $parentFolder */
+        $parentFolder = $file->getParentFolder();
+        // check folder access
+        if ($this->checkFolderRootLineAccess($parentFolder, $userFeGroups)) {
             // access to folder then check file privileges if present
             $feGroups = $file->getProperty('fe_groups');
-            if ($feGroups !== '') {
+            if ((string)$feGroups !== '') {
                 return $this->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
             }
             return true;
