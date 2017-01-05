@@ -25,24 +25,32 @@ namespace BeechIt\FalSecuredownload\ViewHelpers;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
  * Class LeaveStateViewHelper
  *
  * @package BeechIt\FalSecuredownload\ViewHelpers
  */
-class LeaveStateViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper
+class LeaveStateViewHelper extends AbstractConditionViewHelper
 {
+
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('folder', 'object', '', true);
+    }
 
     /**
      * renders <f:then> child if the current visitor ...
      * otherwise renders <f:else> child.
-     *
-     * @param Folder $folder
+
      * @return string
      */
-    public function render(Folder $folder)
+    public function render()
     {
+        /** @var Folder $folder */
+        $folder = $this->arguments['folder'];
 
         /** @var $leafStateService \BeechIt\FalSecuredownload\Service\LeafStateService */
         $leafStateService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\LeafStateService');
