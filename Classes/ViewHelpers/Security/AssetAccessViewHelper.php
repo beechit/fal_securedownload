@@ -27,30 +27,31 @@ namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
  * Asset access ViewHelper
  *
  * @package BeechIt\FalSecuredownload\ViewHelpers\Security
  */
-class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper
+class AssetAccessViewHelper extends AbstractConditionViewHelper
 {
+    public function initializeArguments()
+    {
+        parent::initializeArguments();
+        $this->registerArgument('folder', 'object', '', true);
+        $this->registerArgument('file', 'object', '', false, null);
+    }
 
     /**
      * renders <f:then> child if the current logged in FE user has access to the given asset
      * otherwise renders <f:else> child.
      *
-     * @param Folder $folder
-     * @param File $file
-     * @return bool|string
+     * @return string
      */
-    public function render(Folder $folder, File $file = null)
+    public function render()
     {
-        if (self::evaluateCondition(array('folder' => $folder, 'file' => $file))) {
-            return $this->renderThenChild();
-        } else {
-            return $this->renderElseChild();
-        }
+        return self::evaluateCondition($this->arguments) ? $this->renderThenChild() : $this->renderElseChild();
     }
 
     /**
@@ -61,7 +62,9 @@ class AssetAccessViewHelper extends \TYPO3\CMS\Fluid\Core\ViewHelper\AbstractCon
      */
     protected static function evaluateCondition($arguments = null)
     {
+        /** @var Folder $folder */
         $folder = $arguments['folder'];
+        /** @var File $file */
         $file = $arguments['file'];
 
         /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
