@@ -98,7 +98,9 @@ class PublicUrlAspect implements SingletonInterface
             // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
             $urlData['publicUrl'] = BackendUtility::getAjaxUrl(
                 'FalSecuredownload::publicUrl',
-                $queryParameterArray
+                $queryParameterArray,
+                false,
+                true
             );
         }
     }
