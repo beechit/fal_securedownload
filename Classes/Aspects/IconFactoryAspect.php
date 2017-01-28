@@ -1,10 +1,10 @@
 <?php
-namespace BeechIt\FalSecuredownload\Hooks;
+namespace BeechIt\FalSecuredownload\Aspects;
 
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2014 Frans Saris <frans@beech.it>
+ *  (c) 2017 Frans Saris <frans@beech.it>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -23,24 +23,28 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 /**
- * IconUtility Hook to add overlay icons when file/folder isn't public
+ * Class IconFactoryAspect
  */
-class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideResourceIconHookInterface
+class IconFactoryAspect
 {
 
     /**
-     * @param \TYPO3\CMS\Core\Resource\ResourceInterface $resource
-     * @param $iconName
+     * @param ResourceInterface $resource
+     * @param string $size
      * @param array $options
-     * @param array $overlays
+     * @param string $iconIdentifier
+     * @param string $overlayIdentifier
+     * @return array
      */
-    public function overrideResourceIcon(
-        \TYPO3\CMS\Core\Resource\ResourceInterface $resource,
-        &$iconName,
-        array &$options,
-        array &$overlays
+    public function buildIconForResource(
+        ResourceInterface $resource,
+        $size,
+        array $options,
+        $iconIdentifier,
+        $overlayIdentifier
     ) {
         if (!$resource->getStorage()->isPublic()) {
             /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
@@ -56,18 +60,19 @@ class IconUtilityHook implements \TYPO3\CMS\Backend\Utility\IconUtilityOverrideR
             }
 
             if ($resource instanceof \TYPO3\CMS\Core\Resource\File && $resource->getProperty('fe_groups')) {
-                $overlays['status-overlay-access-restricted'] = array();
+                $overlayIdentifier = 'overlay-restricted';
 
                 // check if there are permissions set on this specific folder
             } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== false) {
-                $overlays['status-overlay-access-restricted'] = array();
+                $overlayIdentifier = 'overlay-restricted';
 
                 // check if there are access restrictions in the root line of this folder
             } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, false)) {
-                $overlays['extensions-fal_securedownload-overlay-permissions'] = array();
+                $overlayIdentifier = 'overlay-inherited-permissions';
             }
 
             $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
         }
+        return array($resource, $size, $options, $iconIdentifier, $overlayIdentifier);
     }
 }

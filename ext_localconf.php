@@ -22,7 +22,7 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess'][
     'BeechIt\\FalSecuredownload\\Hooks\\FileDumpHook';
 
 // Resource Icon hook
-if (!GeneralUtility::compat_version('7.4')) {
+if (!\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version(7.6)) {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['overrideResourceIcon']['FalSecuredownload'] =
         'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook';
 }
@@ -103,7 +103,7 @@ if (TYPO3_MODE === 'BE') {
     $signalSlotDispatcher->connect(
         'TYPO3\\CMS\\Core\\Imaging\\IconFactory',
         'buildIconForResourceSignal',
-        'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook',
+        'BeechIt\\FalSecuredownload\\Aspects\\IconFactoryAspect',
         'buildIconForResource'
     );
 
