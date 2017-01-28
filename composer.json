@@ -32,5 +32,10 @@
     "psr-4": {
       "BeechIt\\FalSecuredownload\\": "Classes/"
     }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.x-dev"
+    },
   }
 }
