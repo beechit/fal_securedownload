@@ -22,8 +22,10 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess'][
     'BeechIt\\FalSecuredownload\\Hooks\\FileDumpHook';
 
 // Resource Icon hook
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['overrideResourceIcon']['FalSecuredownload'] =
-    'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook';
+if (!GeneralUtility::compat_version('7.4')) {
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['overrideResourceIcon']['FalSecuredownload'] =
+        'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook';
+}
 
 if (TYPO3_MODE === 'BE') {
     /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
