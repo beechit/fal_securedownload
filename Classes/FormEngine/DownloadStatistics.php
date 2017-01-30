@@ -42,8 +42,11 @@ class DownloadStatistics extends AbstractNode
     public function render()
     {
         $this->resultArray = $this->initializeResultArray();
-
         $row = $this->data['databaseRow'];
+
+        if ((int)$row['uid'] !== $row['uid']) {
+            return $this->resultArray;
+        }
 
         $db = $this->getDatabase();
         $statistics = $db->exec_SELECTgetRows(
