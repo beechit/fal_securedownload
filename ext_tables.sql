@@ -14,7 +14,7 @@ CREATE TABLE tx_falsecuredownload_folder (
 	folder_hash varchar(40) DEFAULT '' NOT NULL,
 
 	# FE permissions
-	fe_groups tinytext NOT NULL,
+	fe_groups tinytext,
 
 	PRIMARY KEY (uid),
 	KEY folder (storage,folder_hash)
@@ -25,7 +25,7 @@ CREATE TABLE tx_falsecuredownload_folder (
 #
 CREATE TABLE sys_file_metadata (
 	# FE permissions
-	fe_groups tinytext NOT NULL
+	fe_groups tinytext,
 );
 
 CREATE TABLE tx_falsecuredownload_download (
