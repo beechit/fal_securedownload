@@ -52,23 +52,30 @@ class DownloadStatistics extends AbstractNode
         $db = $this->getDatabase();
         $statistics = $db->exec_SELECTgetRows(
             'sys_file.name, count(tx_falsecuredownload_download.file) as cnt',
-            'sys_file JOIN tx_falsecuredownload_download ON tx_falsecuredownload_download.file = sys_file.uid',
-            'tx_falsecuredownload_download.feuser = ' . $row['uid']
+            'sys_file JOIN tx_falsecuredownload_download ON tx_falsecuredownload_download.file = sys_file.uid
+                AND tx_falsecuredownload_download.feuser = ' . (int)$row['uid'],
+            '',
+            'sys_file.name'
         );
 
         $lang = $this->getLanguageService();
-        $titleFileName = $lang->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.fileName');
-        $titleDownloads = $lang->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.downloads');
-
         $markup = array();
-        $markup[] = '<table class="table table-bordered">';
-        $markup[] = '<thead><tr><th>' . htmlspecialchars($titleFileName) . '</th><th>' . htmlspecialchars($titleDownloads) . '</th></tr></thead>';
-        $markup[] = '<tbody>';
-        foreach ($statistics as $file) {
-            $markup[] = '<tr><td>' . htmlspecialchars($file['name']) . '</td><td>' . htmlspecialchars($file['cnt']) . '</td></tr>';
+        if ($statistics) {
+            $titleFileName = $lang->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.fileName');
+            $titleDownloads = $lang->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.downloads');
+
+            $markup[] = '<table class="table table-bordered">';
+            $markup[] = '<thead><tr><th>' . htmlspecialchars($titleFileName) . '</th><th>' . htmlspecialchars($titleDownloads) . '</th></tr></thead>';
+            $markup[] = '<tbody>';
+            foreach ($statistics as $file) {
+                $markup[] = '<tr><td>' . htmlspecialchars($file['name']) . '</td><td>' . htmlspecialchars($file['cnt']) . '</td></tr>';
+            }
+            $markup[] = '</tbody>';
+            $markup[] = '</table>';
+        } else {
+            $noDownloads = $lang->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.noDownloads');
+            $markup[] = '<p>' . htmlspecialchars($noDownloads) . '</p>';
         }
-        $markup[] = '</tbody>';
-        $markup[] = '</table>';
 
         $this->resultArray['html'] = implode(LF, $markup);
 
