@@ -27,6 +27,7 @@ namespace BeechIt\FalSecuredownload\FormEngine;
 
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Lang\LanguageService;
 
 class DownloadStatistics extends AbstractNode
@@ -44,7 +45,7 @@ class DownloadStatistics extends AbstractNode
         $this->resultArray = $this->initializeResultArray();
         $row = $this->data['databaseRow'];
 
-        if ((int)$row['uid'] !== $row['uid']) {
+        if (!MathUtility::canBeInterpretedAsInteger($row['uid'])) {
             return $this->resultArray;
         }
 
