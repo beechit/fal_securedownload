@@ -8,6 +8,7 @@ if (!\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::trackDownl
 $additionalColumns = array(
     'downloads' => array(
         'exclude' => 1,
+        'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.label',
         'config' => array(
             'type' => 'input',
             'renderType' => 'falSecureDownloadStats'

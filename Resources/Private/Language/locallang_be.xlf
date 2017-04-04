@@ -42,11 +42,17 @@
 				<source>Count downloads per user and create statistics (TYPO3 CMS 7+ only)</source>
 			</trans-unit>
 
+			<trans-unit id="downloadStatistics.label">
+				<source>Downloaded files</source>
+			</trans-unit>
 			<trans-unit id="downloadStatistics.fileName">
 				<source>File name</source>
 			</trans-unit>
 			<trans-unit id="downloadStatistics.downloads">
 				<source>Number of downloads</source>
+			</trans-unit>
+			<trans-unit id="downloadStatistics.noDownloads">
+				<source>This user did not download anything yet.</source>
 			</trans-unit>
 		</body>
 	</file>
