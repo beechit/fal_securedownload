@@ -9,6 +9,7 @@ namespace BeechIt\FalSecuredownload\Aspects;
 
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\Solr\Solrfal\Queue\Item;
@@ -57,7 +58,7 @@ class SolrFalAspect implements SingletonInterface
             if ($metadata['fe_groups']) {
                 $metadata['fe_groups'] = implode(
                     ',',
-                    GeneralUtility::keepItemsInArray(explode(',', $resourcePermissions), $metadata['fe_groups'])
+                    ArrayUtility::keepItemsInArray(explode(',', $resourcePermissions), $metadata['fe_groups'])
                 );
             } else {
                 $metadata['fe_groups'] = $resourcePermissions;
