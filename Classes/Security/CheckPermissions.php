@@ -25,7 +25,6 @@ namespace BeechIt\FalSecuredownload\Security;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Resource\File;
-use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -134,10 +133,10 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
     /**
      * Get permissions set on folder (no root line check)
      *
-     * @param FolderInterface $folder
+     * @param Folder $folder
      * @return bool|string FALSE or comma separated list of fe_group uids
      */
-    public function getFolderPermissions(FolderInterface $folder)
+    public function getFolderPermissions(Folder $folder)
     {
         $permissions = false;
         $folderRecord = $this->utilityService->getFolderRecord($folder);
@@ -185,12 +184,13 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
     /**
      * Get all folders in root line of given folder
      *
-     * @param FolderInterface $folder
+     * @param Folder $folder
      * @return Folder[]
      */
-    public function getFolderRootLine(FolderInterface $folder)
+    public function getFolderRootLine(Folder $folder)
     {
         $rootLine = array($folder);
+        /** @var $parentFolder \TYPO3\CMS\Core\Resource\Folder; */
         $parentFolder = $folder->getParentFolder();
         $count = 0;
         while ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {

@@ -40,7 +40,7 @@ class KeSearchFilesHook implements SingletonInterface
     protected $checkPermissionsService;
 
     /**
-     * Contructor
+     * Constructor
      */
     public function __construct()
     {

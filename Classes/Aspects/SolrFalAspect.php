@@ -32,7 +32,7 @@ class SolrFalAspect implements SingletonInterface
     protected $publicUrlAspect;
 
     /**
-     * Contructor
+     * Constructor
      */
     public function __construct()
     {
