@@ -27,6 +27,7 @@ namespace BeechIt\FalSecuredownload\Security;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
 
@@ -169,13 +170,13 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
                     $feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], true);
                 }
                 if ($folderRecord['fe_groups']) {
-                    $feGroups = GeneralUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
+                    $feGroups = ArrayUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
                 }
                 break;
             }
         }
         if ($resource instanceof File && $resource->getProperty('fe_groups')) {
-            $feGroups = GeneralUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
+            $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
         }
         $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
         return implode(',', $feGroups);

@@ -43,17 +43,8 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
      */
     public function renderFlexFormSelectDropdown(&$PA, $tceformsObj)
     {
-        $storageUid = 0;
-
         // get storageUid from flexform
-        if (GeneralUtility::compat_version('7.6')) {
-            $storageUid = $PA['row']['settings.storage'][0];
-        } else {
-            $flexform_data = GeneralUtility::xml2array($PA['row']['pi_flexform']);
-            if (is_array($flexform_data) && isset($flexform_data['data']['sDEF']['lDEF']['settings.storage']['vDEF'])) {
-                $storageUid = (int)$flexform_data['data']['sDEF']['lDEF']['settings.storage']['vDEF'];
-            }
-        }
+        $storageUid = $PA['row']['settings.storage'][0];
 
         // if storageUid found get folders
         if ($storageUid > 0) {

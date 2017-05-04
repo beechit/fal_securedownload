@@ -2,7 +2,7 @@
   "name": "beechit/fal-securedownload",
   "description": "Secure download of assets. Makes it possible to secure FE use of assets/files by setting permissions to folders/files for fe_groups.",
   "type": "typo3-cms-extension",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "keywords": ["typo3", "TYPO3 CMS", "FAL", "secure download"],
   "authors": [
     {
@@ -19,7 +19,7 @@
     "source": "https://github.com/beechit/fal_securedownload"
   },
   "require": {
-    "typo3/cms-core": "^6.2.2 || ^7.6 || ^8.0"
+    "typo3/cms-core": "^7.6 || ^8.0"
   },
   "require-dev": {
     "typo3/cms": "^7.6"

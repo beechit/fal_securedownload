@@ -97,6 +97,6 @@ class ExtensionConfiguration
     public static function trackDownloads()
     {
         self::init();
-        return version_compare(TYPO3_branch, '7.5', '>') && self::$trackDownloads;
+        return self::$trackDownloads;
     }
 }
