@@ -14,7 +14,7 @@ return array(
             'ignoreWebMountRestriction' => true,
             'ignoreRootLevelRestriction' => true,
         ),
-        'iconfile' => \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::siteRelPath('fal_securedownload') . 'Resources/Public/Icons/folder.png'
+        'iconfile' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.png'
     ),
     'interface' => array(
         'showRecordFieldList' => 'fe_groups, storage, folder, folder_hash'
