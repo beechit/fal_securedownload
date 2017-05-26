@@ -28,7 +28,6 @@ use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
-use TYPO3\CMS\Backend\Utility\IconUtility;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -99,12 +98,8 @@ abstract class AbstractBeButtons
      */
     protected function getIcon($name)
     {
-        if (!GeneralUtility::compat_version('7.4')) {
-            $icon = IconUtility::getSpriteIcon('extensions-fal_securedownload-' . $name);
-        } else {
-            $iconFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Imaging\\IconFactory');
-            $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
-        }
+       $iconFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Imaging\\IconFactory');
+       $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
 
         return $icon;
     }
@@ -158,12 +153,8 @@ abstract class AbstractBeButtons
      */
     protected function buildUrl(array $parameters)
     {
-        if (!GeneralUtility::compat_version('7.4')) {
-            return 'alt_doc.php?' . ltrim(GeneralUtility::implodeArrayForUrl('', $parameters), '&');
-        } else {
-            $parameters['returnUrl'] = GeneralUtility::getIndpEnv('REQUEST_URI');
-            return BackendUtility::getModuleUrl('record_edit', $parameters);
-        }
+        $parameters['returnUrl'] = GeneralUtility::getIndpEnv('REQUEST_URI');
+        return BackendUtility::getModuleUrl('record_edit', $parameters);
     }
 
     /**

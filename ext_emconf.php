@@ -21,15 +21,15 @@ $EM_CONF[$_EXTKEY] = array(
     'modify_tables' => '',
     'clearCacheOnLoad' => 1,
     'lockType' => '',
-    'version' => '1.2.3',
+    'version' => '2.0.0',
     'constraints' => array(
         'depends' => array(
-            'typo3' => '6.2.2 - 8.7.99',
+            'typo3' => '7.6.0 - 8.7.99',
         ),
         'conflicts' => array(),
         'suggests' => array(
             'ke_search' => '1.8.4',
-            'solrfal' => '2.0.1',
+            'solrfal' => '4.1.0',
         ),
     ),
 );

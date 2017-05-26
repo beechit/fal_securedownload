@@ -26,6 +26,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -39,7 +40,7 @@ class KeSearchFilesHook implements SingletonInterface
     protected $checkPermissionsService;
 
     /**
-     * Contructor
+     * Constructor
      */
     public function __construct()
     {
@@ -80,7 +81,7 @@ class KeSearchFilesHook implements SingletonInterface
             if ($feGroups) {
                 $feGroups = implode(
                     ',',
-                    GeneralUtility::keepItemsInArray(explode(',', $resourcePermissions), $feGroups)
+                    ArrayUtility::keepItemsInArray(explode(',', $resourcePermissions), $feGroups)
                 );
             } else {
                 $feGroups = $resourcePermissions;

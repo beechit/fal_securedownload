@@ -231,6 +231,7 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 
     /**
      * Redirect to url
+     * @param $url
      */
     protected function redirectToUrl($url)
     {

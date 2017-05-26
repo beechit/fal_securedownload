@@ -21,12 +21,6 @@ $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess']['FalSecuredownload'] =
     'BeechIt\\FalSecuredownload\\Hooks\\FileDumpHook';
 
-// Resource Icon hook
-if (!\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version(7.6)) {
-    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_iconworks.php']['overrideResourceIcon']['FalSecuredownload'] =
-        'BeechIt\\FalSecuredownload\\Hooks\\IconUtilityHook';
-}
-
 if (TYPO3_MODE === 'BE') {
     /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
     $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
@@ -50,14 +44,8 @@ if (TYPO3_MODE === 'BE') {
         'BeechIt\\FalSecuredownload\\Hooks\\CmsLayout->getExtensionSummary';
 
     // Add FolderPermission button to docheader of filelist
-    if (!\TYPO3\CMS\Core\Utility\GeneralUtility::compat_version(7.6)) {
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['typo3/template.php']['docHeaderButtonsHook']['FalSecuredownload'] =
-            'BeechIt\\FalSecuredownload\\Hooks\\DocHeaderButtonsHook->addFolderPermissionsButton';
-    } else {
-        // Add FolderPermission button to docheader of filelist
-        $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload'] =
-            'BeechIt\\FalSecuredownload\\Hooks\\DocHeaderButtonsHook->getButtons';
-    }
+    $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload'] =
+        'BeechIt\\FalSecuredownload\\Hooks\\DocHeaderButtonsHook->getButtons';
 
     // refresh file tree after change in tx_falsecuredownload_folder record
     $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
@@ -114,16 +102,9 @@ if (TYPO3_MODE === 'BE') {
     $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = 'BeechIt\\FalSecuredownload\\Hooks\\KeSearchFilesHook';
 
     if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('solrfal')) {
-        $solrfalVersion = \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::getExtensionVersion('solrfal');
-        if (\TYPO3\CMS\Core\Utility\VersionNumberUtility::convertVersionNumberToInteger($solrfalVersion) >= 2001000) {
-            // Namespace change in Solrfal 2.1
-            $solrfalDocumentFactoryClassName = 'ApacheSolrForTypo3\\Solrfal\\Indexing\\DocumentFactory';
-        } else {
-            $solrfalDocumentFactoryClassName = 'TYPO3\\Solr\\Solrfal\\Indexing\\DocumentFactory';
-        }
         // ext:solrfal enrich metadata and generate correct public url slot
         $signalSlotDispatcher->connect(
-            $solrfalDocumentFactoryClassName,
+            'ApacheSolrForTypo3\\Solrfal\\Indexing\\DocumentFactory',
             'fileMetaDataRetrieved',
             'BeechIt\\FalSecuredownload\\Aspects\\SolrFalAspect',
             'fileMetaDataRetrieved'

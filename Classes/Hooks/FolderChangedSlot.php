@@ -40,7 +40,7 @@ class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
     protected $utilityService;
 
     /**
-     * __contruct
+     * __construct
      */
     public function __construct()
     {
