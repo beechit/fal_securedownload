@@ -26,12 +26,14 @@ if (TYPO3_MODE === 'BE') {
     $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
 
     // Public url rendering in BE context
-    $signalSlotDispatcher->connect(
-        'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
-        \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
-        'BeechIt\\FalSecuredownload\\Aspects\\PublicUrlAspect',
-        'generatePublicUrl'
-    );
+    if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI)) {
+        $signalSlotDispatcher->connect(
+            'TYPO3\\CMS\\Core\\Resource\\ResourceStorage',
+            \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,
+            'BeechIt\\FalSecuredownload\\Aspects\\PublicUrlAspect',
+            'generatePublicUrl'
+        );
+    }
     \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerAjaxHandler(
         'FalSecuredownload::publicUrl',
         'BeechIt\\FalSecuredownload\\Controller\\BePublicUrlController->dumpFile'
