@@ -9,7 +9,6 @@ return [
         'hideTable' => true,
         'rootLevel' => true,
         'default_sortby' => 'ORDER BY folder ASC',
-        'dividers2tabs' => false,
         'security' => [
             'ignoreWebMountRestriction' => true,
             'ignoreRootLevelRestriction' => true,
