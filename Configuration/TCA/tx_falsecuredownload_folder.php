@@ -30,7 +30,7 @@ return [
     ],
     'columns' => [
         'storage' => [
-            'exclude' => 0,
+            'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:storage',
             'config' => [
                 'type' => 'group',
@@ -42,23 +42,23 @@ return [
             ]
         ],
         'folder' => [
-            'exclude' => 0,
+            'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:folder',
             'config' => [
                 'type' => 'input',
-                'size' => '30'
+                'size' => 30
             ]
         ],
         'folder_hash' => [
-            'exclude' => 0,
+            'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:folder',
             'config' => [
                 'type' => 'input',
-                'size' => '30'
+                'size' => 30
             ]
         ],
         'fe_groups' => [
-            'exclude' => 0,
+            'exclude' => false,
             'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.fe_group',
             'config' => [
                 'type' => 'select',

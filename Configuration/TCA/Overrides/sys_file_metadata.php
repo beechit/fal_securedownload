@@ -3,7 +3,7 @@ defined('TYPO3_MODE') or die();
 
 $additionalColumns = [
     'fe_groups' => [
-        'exclude' => 1,
+        'exclude' => true,
         'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.fe_group',
         'config' => [
             'type' => 'select',
