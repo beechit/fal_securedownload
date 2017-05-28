@@ -15,7 +15,7 @@ $TCA['tt_content']['types']['list']['subtypes_addlist'][$pluginSignature] = 'pi_
     'FILE:EXT:' . $_EXTKEY . '/Configuration/FlexForms/FileTree.xml'
 );
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'FileTree');
+
 
 if (TYPO3_MODE === 'BE') {
     // Add click menu item:
