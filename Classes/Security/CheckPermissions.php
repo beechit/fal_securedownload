@@ -47,7 +47,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
     /**
      * @var array check folder root-line access cache
      */
-    protected $checkFolderRootLineAccessCache = array();
+    protected $checkFolderRootLineAccessCache = [];
 
     /**
      * Constructor
@@ -158,7 +158,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
         $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
         $resource->getStorage()->setEvaluatePermissions(false);
 
-        $feGroups = array();
+        $feGroups = [];
         // loop trough the root line of an folder and check the permissions of every folder
         foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
             // fetch folder permissions record
@@ -166,7 +166,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
 
             // if record found check permissions
             if ($folderRecord) {
-                if ($feGroups === array()) {
+                if ($feGroups === []) {
                     $feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], true);
                 }
                 if ($folderRecord['fe_groups']) {
@@ -190,7 +190,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function getFolderRootLine(FolderInterface $folder)
     {
-        $rootLine = array($folder);
+        $rootLine = [$folder];
         /** @var $parentFolder \TYPO3\CMS\Core\Resource\Folder; */
         $parentFolder = $folder->getParentFolder();
         $count = 0;

@@ -85,7 +85,7 @@ class LeafStateService implements \TYPO3\CMS\Core\SingletonInterface
             $folderStates = unserialize($folderStates);
         }
         if (!is_array($folderStates)) {
-            $folderStates = array();
+            $folderStates = [];
         }
         return $folderStates;
     }

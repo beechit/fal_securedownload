@@ -37,14 +37,14 @@ class CmsLayout
      *
      * @var array
      */
-    public $tableData = array();
+    public $tableData = [];
 
     /**
      * Flexform information
      *
      * @var array
      */
-    public $flexformData = array();
+    public $flexformData = [];
 
     /**
      * Returns information about this extension's pi1 plugin
@@ -69,18 +69,18 @@ class CmsLayout
             };
 
             if ($storageName) {
-                $this->tableData[] = array(
+                $this->tableData[] = [
                     $this->sL('flexform.storage'),
                     $storageName
-                );
+                ];
             }
 
             // Folder
             $folder = $this->getFieldFromFlexform('settings.folder');
-            $this->tableData[] = array(
+            $this->tableData[] = [
                 $this->sL('flexform.folder'),
                 $folder
-            );
+            ];
 
             $result .= $this->renderSettingsAsTable();
             $result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';

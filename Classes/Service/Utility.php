@@ -32,7 +32,7 @@ use TYPO3\CMS\Core\Resource\Folder;
 class Utility implements \TYPO3\CMS\Core\SingletonInterface
 {
 
-    static protected $folderRecordCache = array();
+    static protected $folderRecordCache = [];
 
     /**
      * Get folder configuration record
@@ -70,8 +70,8 @@ class Utility implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function updateFolderRecord($oldStorageUid, $oldIdentifierHash, $oldIdentifier, $newRecord)
     {
-        $allowedFields = array('storage', 'folder', 'folder_hash');
-        $record = array();
+        $allowedFields = ['storage', 'folder', 'folder_hash'];
+        $record = [];
 
         foreach ($allowedFields as $field) {
             if (isset($newRecord[$field])) {

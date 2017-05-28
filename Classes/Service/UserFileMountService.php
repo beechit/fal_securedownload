@@ -49,7 +49,7 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
         // if storageUid found get folders
         if ($storageUid > 0) {
             // reset items
-            $PA['items'] = array();
+            $PA['items'] = [];
 
             /** @var $storageRepository \TYPO3\CMS\Core\Resource\StorageRepository */
             $storageRepository = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
@@ -59,10 +59,10 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
                 $rootLevelFolder = $storage->getRootLevelFolder();
                 $folderItems = $this->getSubfoldersForOptionList($rootLevelFolder);
                 foreach ($folderItems as $item) {
-                    $PA['items'][] = array(
+                    $PA['items'][] = [
                         $item->getIdentifier(),
                         $item->getIdentifier()
-                    );
+                    ];
                 }
             } else {
                 /** @var \TYPO3\CMS\Core\Messaging\FlashMessageService $flashMessageService */
@@ -75,10 +75,10 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
                 ));
 
                 if (!count($PA['items'])) {
-                    $PA['items'][] = array(
+                    $PA['items'][] = [
                         '',
                         ''
-                    );
+                    ];
                 }
             }
         }

@@ -46,7 +46,7 @@ abstract class AbstractBeButtons
      */
     protected function generateButtons($combinedIdentifier)
     {
-        $buttons = array();
+        $buttons = [];
 
         // In some folder copy/move actions in file list a invalid id is passed
         try {
@@ -63,7 +63,7 @@ abstract class AbstractBeButtons
             && !$folder->getStorage()->isPublic()
             && in_array(
                 $folder->getRole(),
-                array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD)
+                [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD]
             )
         ) {
             /** @var \BeechIt\FalSecuredownload\Service\Utility $utility */
@@ -112,13 +112,13 @@ abstract class AbstractBeButtons
      */
     protected function buildEditUrl($uid)
     {
-        return $this->buildUrl(array(
-            'edit' => array(
-                'tx_falsecuredownload_folder' => array(
+        return $this->buildUrl([
+            'edit' => [
+                'tx_falsecuredownload_folder' => [
                     $uid => 'edit'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -129,20 +129,20 @@ abstract class AbstractBeButtons
      */
     protected function buildAddUrl(Folder $folder)
     {
-        return $this->buildUrl(array(
-            'edit' => array(
-                'tx_falsecuredownload_folder' => array(
+        return $this->buildUrl([
+            'edit' => [
+                'tx_falsecuredownload_folder' => [
                     0 => 'new'
-                )
-            ),
-            'defVals' => array(
-                'tx_falsecuredownload_folder' => array(
+                ]
+            ],
+            'defVals' => [
+                'tx_falsecuredownload_folder' => [
                     'storage' => $folder->getStorage()->getUid(),
                     'folder' => $folder->getIdentifier(),
                     'folder_hash' => $folder->getHashedIdentifier(),
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     /**

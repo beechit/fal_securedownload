@@ -82,7 +82,7 @@ class PublicUrlAspect implements SingletonInterface
 
         // We only render special links for non-public files
         if ($this->enabled && $resourceObject instanceof Resource\FileInterface && !$storage->isPublic()) {
-            $queryParameterArray = array('eID' => 'dumpFile', 't' => '');
+            $queryParameterArray = ['eID' => 'dumpFile', 't' => ''];
             if ($resourceObject instanceof Resource\File) {
                 $queryParameterArray['f'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'f';

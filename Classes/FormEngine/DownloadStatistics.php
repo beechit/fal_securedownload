@@ -35,7 +35,7 @@ class DownloadStatistics extends AbstractNode
     /**
      * @var array
      */
-    protected $resultArray = array();
+    protected $resultArray = [];
 
     /**
      * @return array
@@ -59,7 +59,7 @@ class DownloadStatistics extends AbstractNode
         );
 
         $lang = $this->getLanguageService();
-        $markup = array();
+        $markup = [];
         if ($statistics) {
             $titleFileName = $lang->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.fileName');
             $titleDownloads = $lang->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.downloads');

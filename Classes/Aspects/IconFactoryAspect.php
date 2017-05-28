@@ -73,6 +73,6 @@ class IconFactoryAspect
 
             $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
         }
-        return array($resource, $size, $options, $iconIdentifier, $overlayIdentifier);
+        return [$resource, $size, $options, $iconIdentifier, $overlayIdentifier];
     }
 }

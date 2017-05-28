@@ -136,16 +136,16 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
 
         /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
         $signalSlotDispatcher = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
-        $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', array($file, $this));
+        $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', [$file, $this]);
 
         if (ExtensionConfiguration::trackDownloads()) {
             $db = $this->getDatabase();
-            $db->exec_INSERTquery('tx_falsecuredownload_download', array(
+            $db->exec_INSERTquery('tx_falsecuredownload_download', [
                 'tstamp' => time(),
                 'crdate' => time(),
                 'feuser' => $this->feUser->user['uid'],
                 'file' => $this->originalFile->getUid()
-            ));
+            ]);
         }
 
         // todo: find a nicer way to force the download. Other hooks are blocked by this

@@ -4,13 +4,13 @@ defined('TYPO3_MODE') or die();
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
     'BeechIt.FalSecuredownload',
     'Filetree',
-    array(
+    [
         'FileTree' => 'tree',
-    ),
+    ],
     // non-cacheable actions
-    array(
+    [
         'FileTree' => 'tree',
-    )
+    ]
 );
 
 // FE FileTree leaf open/close state dispatcher
@@ -113,10 +113,10 @@ if (TYPO3_MODE === 'BE') {
 
     if (\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::trackDownloads()) {
         // register FormEngine node for rendering download statistics in fe_users
-        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1470920616] = array(
+        $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1470920616] = [
             'nodeName' => 'falSecureDownloadStats',
             'priority' => 40,
             'class' => 'BeechIt\\FalSecuredownload\\FormEngine\\DownloadStatistics',
-        );
+        ];
     }
 }
