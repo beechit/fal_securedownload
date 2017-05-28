@@ -25,11 +25,12 @@ namespace BeechIt\FalSecuredownload\Service;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\SingletonInterface;
 
 /**
  * Class Utility
  */
-class Utility implements \TYPO3\CMS\Core\SingletonInterface
+class Utility implements SingletonInterface
 {
 
     static protected $folderRecordCache = [];

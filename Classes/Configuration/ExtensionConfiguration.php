@@ -90,8 +90,6 @@ class ExtensionConfiguration
     /**
      * Track user downloads
      *
-     * This feature is only available on CMS 7+
-     *
      * @return bool
      */
     public static function trackDownloads()

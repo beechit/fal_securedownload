@@ -24,6 +24,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -64,7 +65,7 @@ class CmsLayout
             $storageName = '';
             try {
                 $storageUid = $this->getFieldFromFlexform('settings.storage');
-                $storageName = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getStorageObject($storageUid)->getName();
+                $storageName = ResourceFactory::getInstance()->getStorageObject($storageUid)->getName();
             } catch (\Exception $exception) {
             };
 

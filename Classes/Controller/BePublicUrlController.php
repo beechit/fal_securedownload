@@ -6,6 +6,10 @@ namespace BeechIt\FalSecuredownload\Controller;
  * Date: 22-08-2014 16:04
  * All code (c) Beech Applications B.V. all rights reserved
  */
+
+use TYPO3\CMS\Core\Http\AjaxRequestHandler;
+use TYPO3\CMS\Core\Resource\ProcessedFileRepository;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 
@@ -20,9 +24,9 @@ class BePublicUrlController
      * Copy from /sysext/core/Resources/PHP/FileDumpEID.php
      *
      * @param array $params
-     * @param \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj
+     * @param AjaxRequestHandler $ajaxObj
      */
-    public function dumpFile($params = [], \TYPO3\CMS\Core\Http\AjaxRequestHandler $ajaxObj = null)
+    public function dumpFile($params = [], AjaxRequestHandler $ajaxObj = null)
     {
         $parameters = ['eID' => 'dumpFile'];
         if (GeneralUtility::_GP('t')) {
@@ -39,14 +43,14 @@ class BePublicUrlController
                 'BeResourceStorageDumpFile') === GeneralUtility::_GP('token')
         ) {
             if (isset($parameters['f'])) {
-                $file = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getFileObject($parameters['f']);
+                $file = ResourceFactory::getInstance()->getFileObject($parameters['f']);
                 if ($file->isDeleted() || $file->isMissing()) {
                     $file = null;
                 }
                 $orgFile = $file;
             } else {
                 /** @var \TYPO3\CMS\Core\Resource\ProcessedFile $file */
-                $file = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ProcessedFileRepository')->findByUid($parameters['p']);
+                $file = GeneralUtility::makeInstance(ProcessedFileRepository::class)->findByUid($parameters['p']);
                 if ($file->isDeleted()) {
                     $file = null;
                 }

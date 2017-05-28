@@ -24,9 +24,11 @@ namespace BeechIt\FalSecuredownload\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -36,11 +38,11 @@ use TYPO3\CMS\Core\Resource\Folder;
  *
  * @package BeechIt\FalSecuredownload\Security
  */
-class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
+class CheckPermissions implements SingletonInterface
 {
 
     /**
-     * @var \BeechIt\FalSecuredownload\Service\Utility
+     * @var Utility
      */
     protected $utilityService;
 
@@ -54,7 +56,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function __construct()
     {
-        $this->utilityService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
+        $this->utilityService = GeneralUtility::makeInstance(Utility::class);
     }
 
     /**
@@ -191,7 +193,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
     public function getFolderRootLine(FolderInterface $folder)
     {
         $rootLine = [$folder];
-        /** @var $parentFolder \TYPO3\CMS\Core\Resource\Folder; */
+        /** @var $parentFolder \TYPO3\CMS\Core\Resource\Folder */
         $parentFolder = $folder->getParentFolder();
         $count = 0;
         while ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {

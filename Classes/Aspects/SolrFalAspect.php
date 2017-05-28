@@ -36,12 +36,8 @@ class SolrFalAspect implements SingletonInterface
      */
     public function __construct()
     {
-        $this->checkPermissionsService = GeneralUtility::makeInstance(
-            'BeechIt\\FalSecuredownload\\Security\\CheckPermissions'
-        );
-        $this->publicUrlAspect = GeneralUtility::makeInstance(
-            'BeechIt\\FalSecuredownload\\Aspects\\PublicUrlAspect'
-        );
+        $this->checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
+        $this->publicUrlAspect = GeneralUtility::makeInstance(PublicUrlAspect::class);
     }
 
     /**

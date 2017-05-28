@@ -24,6 +24,8 @@ namespace BeechIt\FalSecuredownload\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
@@ -31,7 +33,7 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
  *
  * @package BeechIt\FalSecuredownload\Service
  */
-class LeafStateService implements \TYPO3\CMS\Core\SingletonInterface
+class LeafStateService implements SingletonInterface
 {
 
     /**
@@ -45,7 +47,7 @@ class LeafStateService implements \TYPO3\CMS\Core\SingletonInterface
     {
 
         // check if folder exists
-        $resourceFactory = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance();
+        $resourceFactory = ResourceFactory::getInstance();
         $folderObject = $resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
 
         if ($folderObject) {

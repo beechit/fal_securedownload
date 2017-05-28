@@ -24,6 +24,8 @@ namespace BeechIt\FalSecuredownload\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Utility\MathUtility;
+
 /**
  * ProcessedFileRepository
  *
@@ -42,7 +44,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      */
     public function findByUid($uid)
     {
-        if (!\TYPO3\CMS\Core\Utility\MathUtility::canBeInterpretedAsInteger($uid)) {
+        if (!MathUtility::canBeInterpretedAsInteger($uid)) {
             throw new \InvalidArgumentException('uid has to be integer.', 1316779798);
         }
         $row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->table, 'uid=' . (int)$uid);

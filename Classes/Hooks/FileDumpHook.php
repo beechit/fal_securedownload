@@ -25,23 +25,30 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
+use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
+use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 /**
  * FileDumpHook
  */
-class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface
+class FileDumpHook implements FileDumpEIDHookInterface
 {
 
     /**
-     * @var \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication
+     * @var FrontendUserAuthentication
      */
     protected $feUser;
 
     /**
-     * @var \TYPO3\CMS\Core\Resource\File
+     * @var File
      */
     protected $originalFile;
 
@@ -92,7 +99,7 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
     /**
      * Get feUser
      *
-     * @return \TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication
+     * @return FrontendUserAuthentication
      */
     public function getFeUser()
     {
@@ -104,10 +111,10 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
      * Method should issue 403 if access is rejected
      * or 401 if authentication is required
      *
-     * @param \TYPO3\CMS\Core\Resource\ResourceInterface $file
+     * @param ResourceInterface $file
      * @return void
      */
-    public function checkFileAccess(\TYPO3\CMS\Core\Resource\ResourceInterface $file)
+    public function checkFileAccess(ResourceInterface $file)
     {
         if (!$file instanceof FileInterface) {
             throw new \RuntimeException('Given $file is not a file.', 1469019515);
@@ -134,8 +141,8 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
             }
         }
 
-        /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
+        /** @var Dispatcher $signalSlotDispatcher */
+        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
         $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', [$file, $this]);
 
         if (ExtensionConfiguration::trackDownloads()) {
@@ -193,13 +200,10 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
      */
     protected function checkPermissions()
     {
-
         $this->initializeUserAuthentication();
 
-        /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
-        $checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(
-            'BeechIt\\FalSecuredownload\\Security\\CheckPermissions'
-        );
+        /** @var $checkPermissionsService CheckPermissions */
+        $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
 
         $userFeGroups = !$this->feUser->user ? false : $this->feUser->groupData['uid'];
 
@@ -212,7 +216,7 @@ class FileDumpHook implements \TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInter
     protected function initializeUserAuthentication()
     {
         if ($this->feUser === null) {
-            $this->feUser = \TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser();
+            $this->feUser = EidUtility::initFeUser();
             $this->feUser->fetchGroupData();
         }
     }
