@@ -25,6 +25,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use TYPO3\CMS\Backend\ClickMenu\ClickMenu;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 
 /**
  * Add ClickMenuOptions in file list
@@ -79,9 +80,12 @@ class ClickMenuOptions extends AbstractBeButtons
             $url = $this->parentObject->urlRefForCM($url, $addReturnUrl ? 'returnUrl' : '');
         }
 
+        /** @var BackendUserAuthentication $beUser */
+        $beUser = $GLOBALS['BE_USER'];
+
         return $this->parentObject->linkItem(
             '<span title="' . htmlspecialchars($title) . '">' . $shortTitle . '</span>',
-            $this->parentObject->excludeIcon($icon),
+            !empty($beUser->uc['noMenuMode']) && $beUser->uc['noMenuMode'] !== 'icons' ? '' : ' ' . $icon,
             $url
         );
     }
