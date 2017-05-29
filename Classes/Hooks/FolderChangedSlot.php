@@ -24,18 +24,21 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Slots that pick up signals after (re)moving folders to update folder record
  */
-class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
+class FolderChangedSlot implements SingletonInterface
 {
 
-    protected $folderMapping = array();
+    protected $folderMapping = [];
 
     /**
-     * @var \BeechIt\FalSecuredownload\Service\Utility
+     * @var Utility
      */
     protected $utilityService;
 
@@ -44,7 +47,7 @@ class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function __construct()
     {
-        $this->utilityService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
+        $this->utilityService = GeneralUtility::makeInstance(Utility::class);
     }
 
     /**
@@ -77,11 +80,11 @@ class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
             $oldStorageUid,
             $folder->getHashedIdentifier(),
             $folder->getIdentifier(),
-            array(
+            [
                 'storage' => $newStorageUid,
                 'folder_hash' => $newFolder->getHashedIdentifier(),
                 'folder' => $newFolder->getIdentifier()
-            )
+            ]
         );
 
         if (!empty($this->folderMapping[$folder->getCombinedIdentifier()])) {
@@ -91,11 +94,11 @@ class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
                     $oldStorageUid,
                     $folderInfo[0],
                     $folderInfo[1],
-                    array(
+                    [
                         'storage' => $newStorageUid,
                         'folder_hash' => $newMapping[$key][0],
                         'folder' => $newMapping[$key][1]
-                    )
+                    ]
                 );
             }
         }
@@ -158,11 +161,11 @@ class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
             $oldStorageUid,
             $folder->getHashedIdentifier(),
             $folder->getIdentifier(),
-            array(
+            [
                 'storage' => $newStorageUid,
                 'folder_hash' => $newFolder->getHashedIdentifier(),
                 'folder' => $newFolder->getIdentifier()
-            )
+            ]
         );
 
         if (!empty($this->folderMapping[$folder->getCombinedIdentifier()])) {
@@ -172,11 +175,11 @@ class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
                     $oldStorageUid,
                     $folderInfo[0],
                     $folderInfo[1],
-                    array(
+                    [
                         'storage' => $newStorageUid,
                         'folder_hash' => $newMapping[$key][0],
                         'folder' => $newMapping[$key][1]
-                    )
+                    ]
                 );
             }
         }
@@ -190,9 +193,9 @@ class FolderChangedSlot implements \TYPO3\CMS\Core\SingletonInterface
      */
     protected function getSubFolderIdentifiers(Folder $folder)
     {
-        $folderIdentifiers = array();
+        $folderIdentifiers = [];
         foreach ($folder->getSubfolders() as $subFolder) {
-            $folderIdentifiers[] = array($subFolder->getHashedIdentifier(), $subFolder->getIdentifier());
+            $folderIdentifiers[] = [$subFolder->getHashedIdentifier(), $subFolder->getIdentifier()];
             $folderIdentifiers = array_merge($folderIdentifiers, $this->getSubFolderIdentifiers($subFolder));
         }
         return $folderIdentifiers;

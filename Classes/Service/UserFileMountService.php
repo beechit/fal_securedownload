@@ -25,6 +25,8 @@ namespace BeechIt\FalSecuredownload\Service;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Messaging\FlashMessage;
+use TYPO3\CMS\Core\Messaging\FlashMessageService;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -38,10 +40,9 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
      * of a selected storage
      *
      * @param array $PA the array with additional configuration options.
-     * @param Object $tceformsObj Parent object
      * @throws \TYPO3\CMS\Core\Exception
      */
-    public function renderFlexFormSelectDropdown(&$PA, $tceformsObj)
+    public function renderFlexFormSelectDropdown(&$PA)
     {
         // get storageUid from flexform
         $storageUid = $PA['row']['settings.storage'][0];
@@ -49,24 +50,24 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
         // if storageUid found get folders
         if ($storageUid > 0) {
             // reset items
-            $PA['items'] = array();
+            $PA['items'] = [];
 
-            /** @var $storageRepository \TYPO3\CMS\Core\Resource\StorageRepository */
-            $storageRepository = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\StorageRepository');
+            /** @var $storageRepository StorageRepository */
+            $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
             /** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
             $storage = $storageRepository->findByUid($storageUid);
             if ($storage->isBrowsable()) {
                 $rootLevelFolder = $storage->getRootLevelFolder();
                 $folderItems = $this->getSubfoldersForOptionList($rootLevelFolder);
                 foreach ($folderItems as $item) {
-                    $PA['items'][] = array(
+                    $PA['items'][] = [
                         $item->getIdentifier(),
                         $item->getIdentifier()
-                    );
+                    ];
                 }
             } else {
-                /** @var \TYPO3\CMS\Core\Messaging\FlashMessageService $flashMessageService */
-                $flashMessageService = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessageService');
+                /** @var FlashMessageService $flashMessageService */
+                $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
                 $queue = $flashMessageService->getMessageQueueByIdentifier();
                 $queue->enqueue(new FlashMessage(
                     'Storage "' . $storage->getName() . '" is not browsable. No folder is currently selectable.',
@@ -75,10 +76,10 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
                 ));
 
                 if (!count($PA['items'])) {
-                    $PA['items'][] = array(
+                    $PA['items'][] = [
                         '',
                         ''
-                    );
+                    ];
                 }
             }
         }

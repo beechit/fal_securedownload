@@ -23,7 +23,12 @@ namespace BeechIt\FalSecuredownload\Aspects;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+
+use BeechIt\FalSecuredownload\Security\CheckPermissions;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class IconFactoryAspect
@@ -47,19 +52,15 @@ class IconFactoryAspect
         $overlayIdentifier
     ) {
         if (!$resource->getStorage()->isPublic()) {
-            /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
-            $checkPermissionsService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
+            /** @var $checkPermissionsService CheckPermissions */
+            $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
 
             $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
             $resource->getStorage()->setEvaluatePermissions(false);
 
-            if ($resource instanceof \TYPO3\CMS\Core\Resource\Folder) {
-                $folder = $resource;
-            } else {
-                $folder = $resource->getParentFolder();
-            }
+            $folder = $resource instanceof Folder ? $resource : $resource->getParentFolder();
 
-            if ($resource instanceof \TYPO3\CMS\Core\Resource\File && $resource->getProperty('fe_groups')) {
+            if ($resource instanceof File && $resource->getProperty('fe_groups')) {
                 $overlayIdentifier = 'overlay-restricted';
 
                 // check if there are permissions set on this specific folder
@@ -73,6 +74,6 @@ class IconFactoryAspect
 
             $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
         }
-        return array($resource, $size, $options, $iconIdentifier, $overlayIdentifier);
+        return [$resource, $size, $options, $iconIdentifier, $overlayIdentifier];
     }
 }

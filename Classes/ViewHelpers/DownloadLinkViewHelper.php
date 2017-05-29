@@ -67,7 +67,7 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
         /** @var FileInterface $file */
         $file = $this->arguments['file'];
 
-        $queryParameterArray = array('eID' => 'dumpFile', 't' => '');
+        $queryParameterArray = ['eID' => 'dumpFile', 't' => ''];
         if ($file instanceof File) {
             $queryParameterArray['f'] = $file->getUid();
             $queryParameterArray['t'] = 'f';

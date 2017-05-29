@@ -24,26 +24,28 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\ClickMenu\ClickMenu;
+
 /**
  * Add ClickMenuOptions in file list
  */
 class ClickMenuOptions extends AbstractBeButtons
 {
     /**
-     * @var \TYPO3\CMS\Backend\ClickMenu\ClickMenu
+     * @var ClickMenu
      */
     protected $parentObject;
 
     /**
      * Add create tx_ icon to filemenu
      *
-     * @param \TYPO3\CMS\Backend\ClickMenu\ClickMenu $parentObject Back-reference to the calling object
+     * @param ClickMenu $parentObject Back-reference to the calling object
      * @param array $menuItems Current list of menu items
      * @param string $combinedIdentifier The combined identifier
      * @param integer $uid Id of the clicked on item
      * @return array Modified list of menu items
      */
-    public function main(\TYPO3\CMS\Backend\ClickMenu\ClickMenu $parentObject, $menuItems, $combinedIdentifier, $uid)
+    public function main(ClickMenu $parentObject, $menuItems, $combinedIdentifier, $uid)
     {
 
         if (!$parentObject->isDBmenu) {
@@ -68,7 +70,7 @@ class ClickMenuOptions extends AbstractBeButtons
      * @param string $icon
      * @param string $url
      * @param bool $addReturnUrl
-     * @return string
+     * @return string|array
      */
     protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true)
     {

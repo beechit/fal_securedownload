@@ -24,7 +24,9 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Core\Imaging\Icon;
+use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -46,13 +48,12 @@ abstract class AbstractBeButtons
      */
     protected function generateButtons($combinedIdentifier)
     {
-        $buttons = array();
+        $buttons = [];
 
         // In some folder copy/move actions in file list a invalid id is passed
         try {
             /** @var $file \TYPO3\CMS\Core\Resource\Folder */
-            $folder = ResourceFactory::getInstance()
-                ->retrieveFileOrFolderObject($combinedIdentifier);
+            $folder = ResourceFactory::getInstance()->retrieveFileOrFolderObject($combinedIdentifier);
         } catch (ResourceDoesNotExistException $exception) {
             $folder = null;
         } catch (InsufficientFolderAccessPermissionsException $exception) {
@@ -63,11 +64,11 @@ abstract class AbstractBeButtons
             && !$folder->getStorage()->isPublic()
             && in_array(
                 $folder->getRole(),
-                array(Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD)
+                [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD]
             )
         ) {
-            /** @var \BeechIt\FalSecuredownload\Service\Utility $utility */
-            $utility = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
+            /** @var Utility $utility */
+            $utility = GeneralUtility::makeInstance(Utility::class);
             $folderRecord = $utility->getFolderRecord($folder);
 
             $menuItems[] = 'spacer';
@@ -94,14 +95,12 @@ abstract class AbstractBeButtons
 
     /**
      * @param string $name
-     * @return string|Icon
+     * @return Icon
      */
     protected function getIcon($name)
     {
-       $iconFactory = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Imaging\\IconFactory');
-       $icon = $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
-
-        return $icon;
+       $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+       return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
     }
 
     /**
@@ -112,13 +111,13 @@ abstract class AbstractBeButtons
      */
     protected function buildEditUrl($uid)
     {
-        return $this->buildUrl(array(
-            'edit' => array(
-                'tx_falsecuredownload_folder' => array(
+        return $this->buildUrl([
+            'edit' => [
+                'tx_falsecuredownload_folder' => [
                     $uid => 'edit'
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -129,20 +128,20 @@ abstract class AbstractBeButtons
      */
     protected function buildAddUrl(Folder $folder)
     {
-        return $this->buildUrl(array(
-            'edit' => array(
-                'tx_falsecuredownload_folder' => array(
+        return $this->buildUrl([
+            'edit' => [
+                'tx_falsecuredownload_folder' => [
                     0 => 'new'
-                )
-            ),
-            'defVals' => array(
-                'tx_falsecuredownload_folder' => array(
+                ]
+            ],
+            'defVals' => [
+                'tx_falsecuredownload_folder' => [
                     'storage' => $folder->getStorage()->getUid(),
                     'folder' => $folder->getIdentifier(),
                     'folder_hash' => $folder->getHashedIdentifier(),
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
     }
 
     /**
@@ -165,7 +164,7 @@ abstract class AbstractBeButtons
      * @param string $icon
      * @param string $url
      * @param bool $addReturnUrl
-     * @return string
+     * @return string|array
      */
     abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true);
 

@@ -65,11 +65,11 @@ class DocHeaderButtonsHook extends AbstractBeButtons
      */
     protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true)
     {
-        $link = array(
+        $link = [
             'title' => $title,
             'icon' => $icon,
             'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : '')
-        );
+        ];
         return $link;
     }
 

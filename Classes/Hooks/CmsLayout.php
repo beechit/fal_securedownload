@@ -24,6 +24,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -37,14 +38,14 @@ class CmsLayout
      *
      * @var array
      */
-    public $tableData = array();
+    public $tableData = [];
 
     /**
      * Flexform information
      *
      * @var array
      */
-    public $flexformData = array();
+    public $flexformData = [];
 
     /**
      * Returns information about this extension's pi1 plugin
@@ -64,23 +65,23 @@ class CmsLayout
             $storageName = '';
             try {
                 $storageUid = $this->getFieldFromFlexform('settings.storage');
-                $storageName = \TYPO3\CMS\Core\Resource\ResourceFactory::getInstance()->getStorageObject($storageUid)->getName();
+                $storageName = ResourceFactory::getInstance()->getStorageObject($storageUid)->getName();
             } catch (\Exception $exception) {
             };
 
             if ($storageName) {
-                $this->tableData[] = array(
+                $this->tableData[] = [
                     $this->sL('flexform.storage'),
                     $storageName
-                );
+                ];
             }
 
             // Folder
             $folder = $this->getFieldFromFlexform('settings.folder');
-            $this->tableData[] = array(
+            $this->tableData[] = [
                 $this->sL('flexform.folder'),
                 $folder
-            );
+            ];
 
             $result .= $this->renderSettingsAsTable();
             $result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';

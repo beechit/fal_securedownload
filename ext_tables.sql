@@ -25,7 +25,7 @@ CREATE TABLE tx_falsecuredownload_folder (
 #
 CREATE TABLE sys_file_metadata (
 	# FE permissions
-	fe_groups tinytext,
+	fe_groups tinytext
 );
 
 CREATE TABLE tx_falsecuredownload_download (

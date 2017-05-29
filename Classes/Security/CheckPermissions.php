@@ -24,9 +24,11 @@ namespace BeechIt\FalSecuredownload\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -36,25 +38,25 @@ use TYPO3\CMS\Core\Resource\Folder;
  *
  * @package BeechIt\FalSecuredownload\Security
  */
-class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
+class CheckPermissions implements SingletonInterface
 {
 
     /**
-     * @var \BeechIt\FalSecuredownload\Service\Utility
+     * @var Utility
      */
     protected $utilityService;
 
     /**
      * @var array check folder root-line access cache
      */
-    protected $checkFolderRootLineAccessCache = array();
+    protected $checkFolderRootLineAccessCache = [];
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->utilityService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\Utility');
+        $this->utilityService = GeneralUtility::makeInstance(Utility::class);
     }
 
     /**
@@ -158,7 +160,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
         $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
         $resource->getStorage()->setEvaluatePermissions(false);
 
-        $feGroups = array();
+        $feGroups = [];
         // loop trough the root line of an folder and check the permissions of every folder
         foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
             // fetch folder permissions record
@@ -166,7 +168,7 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
 
             // if record found check permissions
             if ($folderRecord) {
-                if ($feGroups === array()) {
+                if ($feGroups === []) {
                     $feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], true);
                 }
                 if ($folderRecord['fe_groups']) {
@@ -190,8 +192,8 @@ class CheckPermissions implements \TYPO3\CMS\Core\SingletonInterface
      */
     public function getFolderRootLine(FolderInterface $folder)
     {
-        $rootLine = array($folder);
-        /** @var $parentFolder \TYPO3\CMS\Core\Resource\Folder; */
+        $rootLine = [$folder];
+        /** @var $parentFolder \TYPO3\CMS\Core\Resource\Folder */
         $parentFolder = $folder->getParentFolder();
         $count = 0;
         while ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {

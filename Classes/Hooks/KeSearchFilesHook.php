@@ -44,9 +44,7 @@ class KeSearchFilesHook implements SingletonInterface
      */
     public function __construct()
     {
-        $this->checkPermissionsService = GeneralUtility::makeInstance(
-            'BeechIt\\FalSecuredownload\\Security\\CheckPermissions'
-        );
+        $this->checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
     }
 
     /**

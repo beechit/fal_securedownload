@@ -5,16 +5,16 @@ if (!\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::trackDownl
     return;
 }
 
-$additionalColumns = array(
-    'downloads' => array(
-        'exclude' => 1,
+$additionalColumns = [
+    'downloads' => [
+        'exclude' => true,
         'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.label',
-        'config' => array(
+        'config' => [
             'type' => 'input',
             'renderType' => 'falSecureDownloadStats'
-        )
-    )
-);
+        ]
+    ]
+];
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('fe_users', $additionalColumns);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('fe_users', 'downloads');

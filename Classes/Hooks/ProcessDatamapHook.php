@@ -25,6 +25,9 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\DataHandling\DataHandler;
+
 /**
  * Hooks called after a record is added/updated/deleted
  */
@@ -38,17 +41,17 @@ class ProcessDatamapHook
      * @param string $table
      * @param $id
      * @param array $fieldArray
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+     * @param DataHandler $dataHandler
      */
     public function processDatamap_afterDatabaseOperations(
         $status,
         $table,
         $id,
         array $fieldArray,
-        \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+        DataHandler $dataHandler
     ) {
         if ($table === 'tx_falsecuredownload_folder') {
-            \TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('updateFolderTree');
+            BackendUtility::setUpdateSignal('updateFolderTree');
         }
     }
 
@@ -59,7 +62,7 @@ class ProcessDatamapHook
      * @param string $table
      * @param int $id
      * @param mixed $value
-     * @param \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler
+     * @param DataHandler $dataHandler
      * @param mixed $pasteUpdate
      * @param array $pasteDatamap
      */
@@ -68,12 +71,12 @@ class ProcessDatamapHook
         $table,
         $id,
         $value,
-        \TYPO3\CMS\Core\DataHandling\DataHandler $dataHandler,
+        DataHandler $dataHandler,
         $pasteUpdate,
         array $pasteDatamap
     ) {
         if ($table === 'tx_falsecuredownload_folder') {
-            \TYPO3\CMS\Backend\Utility\BackendUtility::setUpdateSignal('updateFolderTree');
+            BackendUtility::setUpdateSignal('updateFolderTree');
         }
     }
 }

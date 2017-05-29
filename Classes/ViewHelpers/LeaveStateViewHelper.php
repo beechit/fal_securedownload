@@ -24,7 +24,9 @@ namespace BeechIt\FalSecuredownload\ViewHelpers;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Service\LeafStateService;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
@@ -52,8 +54,7 @@ class LeaveStateViewHelper extends AbstractConditionViewHelper
         /** @var Folder $folder */
         $folder = $this->arguments['folder'];
 
-        /** @var $leafStateService \BeechIt\FalSecuredownload\Service\LeafStateService */
-        $leafStateService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\LeafStateService');
+        $leafStateService = GeneralUtility::makeInstance(LeafStateService::class);
         $feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : false;
 
         if ($feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier())) {
