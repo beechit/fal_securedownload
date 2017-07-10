@@ -32,6 +32,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
  * Utility functions to check permissions
@@ -50,6 +51,11 @@ class CheckPermissions implements SingletonInterface
      * @var array check folder root-line access cache
      */
     protected $checkFolderRootLineAccessCache = [];
+
+    /**
+     * @var array custom groups from slot
+     */
+    protected $customGroups = [];
 
     /**
      * Constructor
@@ -84,6 +90,18 @@ class CheckPermissions implements SingletonInterface
         if ($file->getStorage()->isPublic()) {
             return true;
         }
+
+        /** @var Dispatcher $signalSlotDispatcher */
+        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
+        $signalSlotDispatcher->dispatch(__CLASS__, 'AddCustomGroups', [&$this]);
+
+        if (is_array($userFeGroups)) {
+            $userFeGroups = array_unique(array_merge($userFeGroups, $this->customGroups));
+        }
+        if ($userFeGroups === false && !empty($this->customGroups)) {
+            $userFeGroups = $this->customGroups;
+        }
+
         /** @var Folder $parentFolder */
         $parentFolder = $file->getParentFolder();
         // check folder access
@@ -96,6 +114,17 @@ class CheckPermissions implements SingletonInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * Add custom groups (needed for adding groups via the slot "AddCustomGroups"
+     *
+     * @param $customGroups
+     * @return void
+     */
+    public function addCustomGroups($customGroups)
+    {
+        $this->customGroups = $customGroups;
     }
 
     /**
