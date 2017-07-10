@@ -53,11 +53,6 @@ class CheckPermissions implements SingletonInterface
     protected $checkFolderRootLineAccessCache = [];
 
     /**
-     * @var array custom groups from slot
-     */
-    protected $customGroups = [];
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -91,15 +86,17 @@ class CheckPermissions implements SingletonInterface
             return true;
         }
 
+        $customUserGroups = [];
         /** @var Dispatcher $signalSlotDispatcher */
         $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
-        $signalSlotDispatcher->dispatch(__CLASS__, 'AddCustomGroups', [&$this]);
+        $signalArguments = $signalSlotDispatcher->dispatch(__CLASS__, 'AddCustomGroups', [$customUserGroups]);
+        $customUserGroups = array_shift($signalArguments);
 
         if (is_array($userFeGroups)) {
-            $userFeGroups = array_unique(array_merge($userFeGroups, $this->customGroups));
+            $userFeGroups = array_unique(array_merge($userFeGroups, $customUserGroups));
         }
-        if ($userFeGroups === false && !empty($this->customGroups)) {
-            $userFeGroups = $this->customGroups;
+        if ($userFeGroups === false && !empty($customUserGroups)) {
+            $userFeGroups = $customUserGroups;
         }
 
         /** @var Folder $parentFolder */
@@ -114,17 +111,6 @@ class CheckPermissions implements SingletonInterface
             return true;
         }
         return false;
-    }
-
-    /**
-     * Add custom groups (needed for adding groups via the slot "AddCustomGroups"
-     *
-     * @param $customGroups
-     * @return void
-     */
-    public function addCustomGroups($customGroups)
-    {
-        $this->customGroups = $customGroups;
     }
 
     /**
