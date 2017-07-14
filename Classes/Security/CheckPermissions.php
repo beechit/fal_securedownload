@@ -32,6 +32,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
  * Utility functions to check permissions
@@ -84,6 +85,20 @@ class CheckPermissions implements SingletonInterface
         if ($file->getStorage()->isPublic()) {
             return true;
         }
+
+        $customUserGroups = [];
+        /** @var Dispatcher $signalSlotDispatcher */
+        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
+        $signalArguments = $signalSlotDispatcher->dispatch(__CLASS__, 'AddCustomGroups', [$customUserGroups]);
+        $customUserGroups = array_shift($signalArguments);
+
+        if (is_array($userFeGroups)) {
+            $userFeGroups = array_unique(array_merge($userFeGroups, $customUserGroups));
+        }
+        if ($userFeGroups === false && !empty($customUserGroups)) {
+            $userFeGroups = $customUserGroups;
+        }
+
         /** @var Folder $parentFolder */
         $parentFolder = $file->getParentFolder();
         // check folder access
