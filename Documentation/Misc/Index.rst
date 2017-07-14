@@ -104,6 +104,24 @@ Example of how to register a slot for this signal (in your ext_localconf.php):
 		'logFileDump'
 	);
 
+AddCustomGroups
+---------------
+
+This signal is fired every time, the permissions are checked. It will add new groups to the list of authenticated groups,
+which are not detected by the standard group mechanism. An example is, if you are using ip based authentication, where
+no frontend user is logged in.
+
+The slot must return an array which contains the array of the custom usergroups. This array will then be merged with the
+original array of groups.
+
+.. code-block:: php
+
+     public function addCustomGroups($customGroups)
+     {
+         // add your group ids here
+         return array($customGroups);
+     }
+
 EXT:fal_securedownload vs EXT:naw_securedl
 ==========================================
 
