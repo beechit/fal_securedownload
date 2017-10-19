@@ -24,8 +24,11 @@ namespace BeechIt\FalSecuredownload\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class Utility
@@ -34,6 +37,16 @@ class Utility implements SingletonInterface
 {
 
     static protected $folderRecordCache = [];
+
+    /**
+     * @var ConnectionPool
+     */
+    protected $connectionPool;
+
+    public function __construct()
+    {
+        $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+    }
 
     /**
      * Get folder configuration record
@@ -47,13 +60,27 @@ class Utility implements SingletonInterface
         if (!isset(self::$folderRecordCache[$folder->getCombinedIdentifier()])
             || !array_key_exists($folder->getCombinedIdentifier(), self::$folderRecordCache)
         ) {
-            $record = $this->getDatabase()->exec_SELECTgetSingleRow(
-                '*',
-                'tx_falsecuredownload_folder',
-                'storage = ' . (int)$folder->getStorage()->getUid() . '
-				AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($folder->getHashedIdentifier(),
-                    'tx_falsecuredownload_folder')
-            );
+            if (version_compare(TYPO3_branch, '8.7', '>=')) {
+
+                $queryBuilder = $this->getQueryBuilder();
+                $record = $queryBuilder
+                    ->select('*')
+                    ->from('tx_falsecuredownload_folder')
+                    ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$folder->getStorage()->getUid(), \PDO::PARAM_INT)))
+                    ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folder->getHashedIdentifier(), \PDO::PARAM_STR)))
+                    ->execute()
+                    ->fetch();
+
+            } else {
+
+                $record = $this->getDatabase()->exec_SELECTgetSingleRow(
+                    '*',
+                    'tx_falsecuredownload_folder',
+                    'storage = ' . (int)$folder->getStorage()->getUid() . '
+                    AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($folder->getHashedIdentifier(), 'tx_falsecuredownload_folder')
+                );
+
+            }
             // cache results
             self::$folderRecordCache[$folder->getCombinedIdentifier()] = $record;
         }
@@ -80,15 +107,27 @@ class Utility implements SingletonInterface
             }
         }
 
-        if (count($record)) {
-            $this->getDatabase()->exec_UPDATEquery(
-                'tx_falsecuredownload_folder',
-                'storage = ' . (int)$oldStorageUid . '
-				AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($oldIdentifierHash,
-                    'tx_falsecuredownload_folder'),
-                $record,
-                true
-            );
+        if (!empty($record)) {
+            if (version_compare(TYPO3_branch, '8.7', '>=')) {
+                $queryBuilder = $this->getQueryBuilder();
+                $queryBuilder
+                    ->update('tx_falsecuredownload_folder')
+                    ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$oldStorageUid, \PDO::PARAM_INT)))
+                    ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($oldIdentifierHash, \PDO::PARAM_STR)));
+                foreach ($record as $field => $value) {
+                    $queryBuilder->set($field, $value);
+                }
+                $queryBuilder->execute();
+
+            } else {
+                $this->getDatabase()->exec_UPDATEquery(
+                    'tx_falsecuredownload_folder',
+                    'storage = ' . (int)$oldStorageUid . '
+                     AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($oldIdentifierHash, 'tx_falsecuredownload_folder'),
+                    $record,
+                    true
+                );
+            }
 
             // clear cache if exists
             if (isset(self::$folderRecordCache[$oldStorageUid . ':' . $oldIdentifier])) {
@@ -107,11 +146,21 @@ class Utility implements SingletonInterface
     public function deleteFolderRecord($storageUid, $folderHash, $identifier)
     {
 
-        $this->getDatabase()->exec_DELETEquery(
-            'tx_falsecuredownload_folder',
-            'storage = ' . (int)$storageUid . '
-			AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($folderHash, 'tx_falsecuredownload_folder')
-        );
+        if (version_compare(TYPO3_branch, '8.7', '>=')) {
+            $queryBuilder = $this->getQueryBuilder();
+            $queryBuilder
+                ->delete('tx_falsecuredownload_folder')
+                ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$storageUid, \PDO::PARAM_INT)))
+                ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash, \PDO::PARAM_STR)))
+                ->execute();
+
+        } else {
+            $this->getDatabase()->exec_DELETEquery(
+                'tx_falsecuredownload_folder',
+                'storage = ' . (int)$storageUid . '
+                AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($folderHash, 'tx_falsecuredownload_folder')
+            );
+        }
 
         // clear cache if exists
         if (isset(self::$folderRecordCache[$storageUid . ':' . $identifier])) {
@@ -127,6 +176,16 @@ class Utility implements SingletonInterface
     protected function getDatabase()
     {
         return $GLOBALS['TYPO3_DB'];
+    }
+
+    /**
+     * Gets a query build
+     *
+     * @return QueryBuilder
+     */
+    protected function getQueryBuilder()
+    {
+        return $this->connectionPool->getQueryBuilderForTable('tx_falsecuredownload_folder');
     }
 
 }

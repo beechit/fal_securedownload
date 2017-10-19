@@ -24,6 +24,8 @@ namespace BeechIt\FalSecuredownload\Domain\Repository;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
@@ -47,7 +49,19 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
         if (!MathUtility::canBeInterpretedAsInteger($uid)) {
             throw new \InvalidArgumentException('uid has to be integer.', 1316779798);
         }
-        $row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->table, 'uid=' . (int)$uid);
+
+        if (version_compare(TYPO3_branch, '8.7', '>=')) {
+            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+            $row = $queryBuilder
+                ->select('*')
+                ->from($this->table)
+                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int)$uid, \PDO::PARAM_INT)))
+                ->execute()
+                ->fetch();
+        } else {
+            $row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->table, 'uid=' . (int)$uid);
+        }
+
         if (empty($row) || !is_array($row)) {
             throw new \RuntimeException(
                 'Could not find row with uid "' . $uid . '" in table ' . $this->table,

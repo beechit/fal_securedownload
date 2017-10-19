@@ -131,7 +131,7 @@ class CheckPermissions implements SingletonInterface
         if (!isset($this->checkFolderRootLineAccessCache[$cacheIdentifier])) {
             $this->checkFolderRootLineAccessCache[$cacheIdentifier] = true;
 
-            // loop trough the root line of an folder and check the permissions of every folder
+            // loop through the root line of an folder and check the permissions of every folder
             foreach ($this->getFolderRootLine($folder) as $rootlinefolder) {
                 // fetch folder permissions record
                 $folderRecord = $this->utilityService->getFolderRecord($rootlinefolder);
