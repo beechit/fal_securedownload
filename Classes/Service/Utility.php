@@ -45,7 +45,9 @@ class Utility implements SingletonInterface
 
     public function __construct()
     {
-        $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        if (version_compare(TYPO3_branch, '8.7', '>=')) {
+            $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
+        }
     }
 
     /**
