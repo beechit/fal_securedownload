@@ -26,6 +26,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
+use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -146,13 +147,26 @@ class FileDumpHook implements FileDumpEIDHookInterface
         $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', [$file, $this]);
 
         if (ExtensionConfiguration::trackDownloads()) {
-            $db = $this->getDatabase();
-            $db->exec_INSERTquery('tx_falsecuredownload_download', [
+            $columns = [
                 'tstamp' => time(),
                 'crdate' => time(),
-                'feuser' => $this->feUser->user['uid'],
-                'file' => $this->originalFile->getUid()
-            ]);
+                'feuser' => (int)$this->feUser->user['uid'],
+                'file' => (int)$this->originalFile->getUid()
+            ];
+
+            if (version_compare(TYPO3_branch, '8.7', '>=')) {
+                GeneralUtility::makeInstance(ConnectionPool::class)
+                    ->getConnectionForTable('tx_falsecuredownload_download')
+                    ->insert(
+                        'tx_falsecuredownload_download',
+                        $columns,
+                        [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]
+                    );
+
+            } else {
+                $db = $this->getDatabase();
+                $db->exec_INSERTquery('tx_falsecuredownload_download', $columns);
+            }
         }
 
         // todo: find a nicer way to force the download. Other hooks are blocked by this
