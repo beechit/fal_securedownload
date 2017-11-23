@@ -1,4 +1,5 @@
 <?php
+
 namespace BeechIt\FalSecuredownload\Hooks;
 
 /***************************************************************
@@ -74,6 +75,11 @@ class FileDumpHook implements FileDumpEIDHookInterface
     protected $forceDownloadForExt = '';
 
     /**
+     * @var bool
+     */
+    protected $resumableDownload = false;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -95,6 +101,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         if (ExtensionConfiguration::forceDownloadForExt()) {
             $this->forceDownloadForExt = ExtensionConfiguration::forceDownloadForExt();
         }
+        $this->resumableDownload = ExtensionConfiguration::resumableDownload();
     }
 
     /**
@@ -169,11 +176,76 @@ class FileDumpHook implements FileDumpEIDHookInterface
             }
         }
 
-        // todo: find a nicer way to force the download. Other hooks are blocked by this
-        if ($this->forceDownload($file->getExtension())) {
-            $file->getStorage()->dumpFileContents($file, true);
+        if ($this->forceDownload($this->originalFile->getExtension())) {
+            $this->dumpFileContents($this->originalFile, true, $this->resumableDownload);
+        } elseif ($this->resumableDownload) {
+            $this->dumpFileContents($this->originalFile, false, true);
+        }
+    }
+
+    /**
+     * Dump file contents
+     *
+     * @todo: find a nicer way to force the download. Other hooks are blocked by this.
+     * @todo: Try to get the resumable option part of TYPO3 core itself
+     *
+     * @param File $file
+     * @param bool $asDownload
+     * @param bool $resumableDownload
+     */
+    protected function dumpFileContents($file, $asDownload, $resumableDownload)
+    {
+        if (!$resumableDownload) {
+            $file->getStorage()->dumpFileContents($file, $asDownload);
             exit;
         }
+
+        $contentDisposition = $asDownload ? 'attachment' : 'inline';
+        header('Content-Disposition: ' . $contentDisposition . '; filename="' . $file->getName() . '"');
+        header('Content-Type: ' . $file->getMimeType());
+        header('Expires: -1');
+        header('Cache-Control: public, must-revalidate, post-check=0, pre-check=0');
+
+        $fileSize = $file->getSize();
+        $range = $this->getHttpRange($fileSize);
+        if ($range === []) {
+            header('HTTP/1.1 416 Requested Range Not Satisfiable');
+            header('Content-Range: bytes */' . $fileSize);
+            exit;
+        }
+
+        list($begin, $end) = $range;
+        if ($begin !== 0 || $end !== $fileSize - 1) {
+            header('HTTP/1.1 206 Partial Content');
+            header('Content-Range: bytes ' . $begin . '-' . $end . '/' . $fileSize);
+            header('Content-Length: ' . ($end - $begin + 1));
+        } else {
+
+            header('Content-Length: ' . $fileSize);
+        }
+        header('Accept-Ranges: bytes');
+
+        ob_clean();
+        flush();
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+
+        // Find part of file and push this out
+        $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
+        fseek($filePointer, $begin);
+
+        while (!feof($filePointer)) {
+            print(@fread($filePointer, 1024 * 8));
+            ob_flush();
+            flush();
+            if (connection_status() !== 0) {
+                break;
+            }
+        }
+
+        @fclose($filePointer);
+        exit;
     }
 
     /**
@@ -268,5 +340,40 @@ class FileDumpHook implements FileDumpEIDHookInterface
     protected function getDatabase()
     {
         return $GLOBALS['TYPO3_DB'];
+    }
+
+    /**
+     * Determines the HTTP range given in the request
+     *
+     * @param integer $fileSize the size of the file
+     * @return array the range (begin, end), or empty array if the range request is invalid.
+     */
+    protected function getHttpRange($fileSize)
+    {
+        $range = isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false;
+        if (!$range || $range === '-') {
+            return [0, $fileSize - 1];
+        }
+        if (!preg_match('/^bytes=(\d*)-(\d*)$/', $range, $matches)) {
+            return [];
+        }
+        if ($matches[1] === '') {
+            $start = $fileSize - $matches[2];
+            $end = $fileSize - 1;
+        } elseif ($matches[2] !== '') {
+            $start = $matches[1];
+            $end = $matches[2];
+            if ($end >= $fileSize) {
+                $end = $fileSize - 1;
+            }
+        } else {
+            $start = $matches[1];
+            $end = $fileSize - 1;
+        }
+        if ($start < 0 || $start > $end) {
+            return false;
+        } else {
+            return [$start, $end];
+        }
     }
 }

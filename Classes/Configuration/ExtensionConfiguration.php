@@ -36,6 +36,7 @@ class ExtensionConfiguration
     private static $forceDownload = false;
     private static $forceDownloadForExt = '';
     private static $trackDownloads = false;
+    private static $resumableDownload = true;
 
     private static function init()
     {
@@ -48,6 +49,7 @@ class ExtensionConfiguration
             self::$forceDownload = (bool)$extensionConfig['force_download'];
             self::$forceDownloadForExt = $extensionConfig['force_download_for_ext'];
             self::$trackDownloads = (bool)$extensionConfig['track_downloads'];
+            self::$resumableDownload = (bool)(isset($extensionConfig['resumable_download']) ? $extensionConfig['resumable_download'] : false);
         }
     }
 
@@ -96,5 +98,14 @@ class ExtensionConfiguration
     {
         self::init();
         return self::$trackDownloads;
+    }
+
+    /**
+     * @return bool
+     */
+    public static function resumableDownload()
+    {
+        self::init();
+        return self::$resumableDownload;
     }
 }
