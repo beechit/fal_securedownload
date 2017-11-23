@@ -214,15 +214,14 @@ class FileDumpHook implements FileDumpEIDHookInterface
             exit;
         }
 
+        $dumpSize = $fileSize;
         list($begin, $end) = $range;
         if ($begin !== 0 || $end !== $fileSize - 1) {
             header('HTTP/1.1 206 Partial Content');
             header('Content-Range: bytes ' . $begin . '-' . $end . '/' . $fileSize);
-            header('Content-Length: ' . ($end - $begin + 1));
-        } else {
-
-            header('Content-Length: ' . $fileSize);
+            $dumpSize = $end - $begin + 1;
         }
+        header('Content-Length: ' . $dumpSize);
         header('Accept-Ranges: bytes');
 
         ob_clean();
@@ -234,11 +233,18 @@ class FileDumpHook implements FileDumpEIDHookInterface
         // Find part of file and push this out
         $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
         fseek($filePointer, $begin);
-
-        while (!feof($filePointer)) {
-            print(@fread($filePointer, 1024 * 8));
+        $dumpedSize = 0;
+        while (!feof($filePointer) && $dumpedSize < $dumpSize) {
+            $partSize = 1024 * 8;
+            if ($partSize > $dumpSize - $dumpedSize) {
+                $partSize = $dumpSize - $dumpedSize;
+            }
+            $buffer = @fread($filePointer, $partSize);
+            $dumpedSize += strlen($buffer);
+            print($buffer);
             ob_flush();
             flush();
+
             if (connection_status() !== 0) {
                 break;
             }
