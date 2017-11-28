@@ -22,3 +22,13 @@ There is also a plugin to show your files as a tree on your website.
    :alt: Set FE permissions for folder
 
    **Image 1:** Set FE permissions for folder
+
+
+**Features**
+
+- Restrict FE access on folder level
+- Restrict FE access on file level
+- Let editor set permissions in file list
+- Force download for all files (for protected file storages)
+- Force download for specific file extensions (for protected file storages)
+- Keep track of requested downloads (count downloads per user and file)

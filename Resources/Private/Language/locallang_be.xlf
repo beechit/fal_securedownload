@@ -39,7 +39,10 @@
 				<source>Force download for these file extensions (comma separated list)</source>
 			</trans-unit>
 			<trans-unit id="extmng.track_downloads">
-				<source>Count downloads per user and create statistics (TYPO3 CMS 7+ only)</source>
+				<source>Count downloads per user and create statistics</source>
+			</trans-unit>
+			<trans-unit id="extmng.resumable_download">
+				<source>Enable resumable downloads</source>
 			</trans-unit>
 
 			<trans-unit id="downloadStatistics.label">

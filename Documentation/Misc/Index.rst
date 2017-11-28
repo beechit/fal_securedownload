@@ -52,6 +52,15 @@ Force download for some file extensions only
 
 Force download for a given set of file extensions (comma separated list)
 
+Enable resumable downloads
+--------------------------
+
+*Option name: resumable_download*
+
+Enables resumable download support (default enabled for new installs).
+
+This enables support for `HTTP/1.1 206 Partial Content`, so the file/download can be requested in multiple parts.
+
 Count downloads per user and create statistics
 ----------------------------------------------
 

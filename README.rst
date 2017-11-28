@@ -15,9 +15,19 @@ The access to assets can be set on folder/file bases by setting access to fe_gro
 
 3. Add a .htaccess file with "Deny from all" (Apache < 2.3) or "Require all denied" (Apache >= 2.3) in your file storage root folder or move your storage outside of your webroot
 
+**Features**
+
+- Restrict FE access on folder level
+- Restrict FE access on file level
+- Let editor set permissions in file list
+- Force download for all files (for protected file storages)
+- Force download for specific file extensions (for protected file storages)
+- Keep track of requested downloads (count downloads per user and file)
+
 **Requirements:**
     TYPO3 7 LTS, TYPO3 8
 
 **Suggestions:**
     EXT:ke_search v1.8.4
     EXT:solrfal v4.1.0
+
