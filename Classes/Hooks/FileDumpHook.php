@@ -201,7 +201,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         }
 
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
-        header('Content-Disposition: ' . $contentDisposition . '; filename="' . $file->getName() . '"');
+        header('Content-Disposition: ' . $contentDisposition . '; filename="' . ( $file->getProperty('download_name') ? $file->getProperty('download_name') : $file->getName() ) . '"');
         header('Content-Type: ' . $file->getMimeType());
         header('Expires: -1');
         header('Cache-Control: public, must-revalidate, post-check=0, pre-check=0');
