@@ -202,7 +202,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         $download_name = $file->getProperty('download_name') ? $file->getProperty('download_name') : $file->getName();
         $file_parts = pathinfo($download_name);
         if( $file_parts['extension'] == '' ){
-        	$download_name = preg_replace( ['/\W/'], ['_'], $download_name ).'.'.$file->getExtension() // append the original extension
+        	$download_name = preg_replace( ['/\W/'], ['_'], $download_name ).'.'.$file->getExtension(); // append the original extension
         }
 
 
