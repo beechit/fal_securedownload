@@ -200,7 +200,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
             exit;
         }
         $downloadName = $file->getProperty('download_name') ?: $file->getName();
-
+        
+        // Make sure downloadName has a file extension
+        $fileParts = pathinfo($downloadName);	
+        if($fileParts['extension'] === '') {	
+            $downloadName .= '.' . $file->getExtension();
+        }
+        
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
         header('Content-Disposition: ' . $contentDisposition . '; filename="' . $download_name . '"');
         header('Content-Type: ' . $file->getMimeType());
