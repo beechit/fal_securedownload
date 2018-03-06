@@ -25,7 +25,7 @@ namespace BeechIt\FalSecuredownload\Aspects;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Resource;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -96,11 +96,11 @@ class PublicUrlAspect implements SingletonInterface
             );
 
             // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
-            $urlData['publicUrl'] = BackendUtility::getAjaxUrl(
-                'FalSecuredownload::publicUrl',
+            $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+            $urlData['publicUrl'] = (string) $uriBuilder->buildUriFromRoute(
+                'ajax_dump_file',
                 $queryParameterArray,
-                false,
-                true
+                UriBuilder::ABSOLUTE_URL
             );
         }
     }

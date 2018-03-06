@@ -34,10 +34,6 @@ if (TYPO3_MODE === 'BE') {
             'generatePublicUrl'
         );
     }
-    \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::registerAjaxHandler(
-        'FalSecuredownload::publicUrl',
-        \BeechIt\FalSecuredownload\Controller\BePublicUrlController::class . '->dumpFile'
-    );
 
     // Page module hook
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree']['fal_securedownload'] =
