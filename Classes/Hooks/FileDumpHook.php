@@ -195,20 +195,21 @@ class FileDumpHook implements FileDumpEIDHookInterface
      */
     protected function dumpFileContents($file, $asDownload, $resumableDownload)
     {
-        if (!$resumableDownload) {
-            $file->getStorage()->dumpFileContents($file, $asDownload);
-            exit;
-        }
         $downloadName = $file->getProperty('download_name') ?: $file->getName();
-        
+
         // Make sure downloadName has a file extension
-        $fileParts = pathinfo($downloadName);	
-        if($fileParts['extension'] === '') {	
+        $fileParts = pathinfo($downloadName);
+        if(empty($fileParts['extension'])) {
             $downloadName .= '.' . $file->getExtension();
+        }
+
+        if (!$resumableDownload) {
+            $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
+            exit;
         }
         
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
-        header('Content-Disposition: ' . $contentDisposition . '; filename="' . $download_name . '"');
+        header('Content-Disposition: ' . $contentDisposition . '; filename="' . $downloadName . '"');
         header('Content-Type: ' . $file->getMimeType());
         header('Expires: -1');
         header('Cache-Control: public, must-revalidate, post-check=0, pre-check=0');
