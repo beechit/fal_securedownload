@@ -85,8 +85,12 @@ To have correct urls to indexed files you need to add/adjust following ext:solr 
 
 .. code-block:: ts
 
+    # Make sure the correct public URL is indexed
 	plugin.tx_solr.index.queue._FILES.default.filePublicUrl = public_url
 	plugin.tx_solr.index.queue._FILES.default.url = public_url
+
+    # Make sure the fe_groups are considered (replace __storageUid__ with your secured storage UID)
+    plugin.tx_solr.index.enableFileIndexing.storageContext.__storageUid__.enableFields.accessGroups = fe_groups
 
 *This feature is sponsored by: STIMME DER HOFFNUNG Adventist Media Center*
 
