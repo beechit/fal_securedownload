@@ -128,7 +128,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         if (!$file instanceof FileInterface) {
             throw new \RuntimeException('Given $file is not a file.', 1469019515);
         }
-        if ($file instanceof FileReference) {
+        if (method_exists($file, 'getOriginalFile')) {
             $this->originalFile = $file->getOriginalFile();
         } else {
             $this->originalFile = $file;
@@ -177,10 +177,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
             }
         }
 
+        // Dump the precise requested file for File and ProcessedFile, but dump the referenced file for FileReference
+        $dumpFile = $file instanceof FileReference ? $file->getOriginalFile() : $file;
+
         if ($this->forceDownload($this->originalFile->getExtension())) {
-            $this->dumpFileContents($this->originalFile, true, $this->resumableDownload);
+            $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
         } elseif ($this->resumableDownload) {
-            $this->dumpFileContents($this->originalFile, false, true);
+            $this->dumpFileContents($dumpFile, false, true);
         }
     }
 
