@@ -180,7 +180,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         // Dump the precise requested file for File and ProcessedFile, but dump the referenced file for FileReference
         $dumpFile = $file instanceof FileReference ? $file->getOriginalFile() : $file;
 
-        if ($this->forceDownload($this->originalFile->getExtension())) {
+        if ($this->forceDownload($dumpFile->getExtension())) {
             $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
         } elseif ($this->resumableDownload) {
             $this->dumpFileContents($dumpFile, false, true);
