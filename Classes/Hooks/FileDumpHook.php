@@ -31,6 +31,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -176,10 +177,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
             }
         }
 
-        if ($this->forceDownload($this->originalFile->getExtension())) {
-            $this->dumpFileContents($this->originalFile, true, $this->resumableDownload);
+        // Dump the precise requested file for File and ProcessedFile, but dump the referenced file for FileReference
+        $dumpFile = $file instanceof FileReference ? $file->getOriginalFile() : $file;
+
+        if ($this->forceDownload($dumpFile->getExtension())) {
+            $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
         } elseif ($this->resumableDownload) {
-            $this->dumpFileContents($this->originalFile, false, true);
+            $this->dumpFileContents($dumpFile, false, true);
         }
     }
 
