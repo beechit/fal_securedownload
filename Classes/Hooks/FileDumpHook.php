@@ -31,6 +31,7 @@ use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -127,7 +128,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         if (!$file instanceof FileInterface) {
             throw new \RuntimeException('Given $file is not a file.', 1469019515);
         }
-        if (method_exists($file, 'getOriginalFile')) {
+        if ($file instanceof FileReference) {
             $this->originalFile = $file->getOriginalFile();
         } else {
             $this->originalFile = $file;
