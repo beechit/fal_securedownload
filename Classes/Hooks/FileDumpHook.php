@@ -139,13 +139,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
                 if ($this->loginRedirectUrl !== null) {
                     $this->redirectToUrl($this->loginRedirectUrl);
                 } else {
-                    $this->exitScript('Authentication required!', 401);
+                    $this->exitScript('Authentication required!');
                 }
             } else {
                 if ($this->noAccessRedirectUrl !== null) {
                     $this->redirectToUrl($this->noAccessRedirectUrl);
                 } else {
-                    $this->exitScript('No access!', 403);
+                    $this->exitScript('No access!');
                 }
             }
         }
@@ -211,7 +211,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
             $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
             exit;
         }
-        
+
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
         header('Content-Disposition: ' . $contentDisposition . '; filename="' . $downloadName . '"');
         header('Content-Type: ' . $file->getMimeType());
