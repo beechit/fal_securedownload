@@ -24,6 +24,7 @@ namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\File;
@@ -96,9 +97,10 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
      */
     protected static function getFeUserGroups()
     {
-        if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
+        $context = GeneralUtility::makeInstance(Context::class);
+        if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
             return false;
         }
-        return $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        return $context->getPropertyFromAspect('frontend.user', 'groupIds');
     }
 }

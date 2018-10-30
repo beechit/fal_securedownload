@@ -50,17 +50,13 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
             throw new \InvalidArgumentException('uid has to be integer.', 1316779798);
         }
 
-        if (version_compare(TYPO3_branch, '8.7', '>=')) {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
-            $row = $queryBuilder
-                ->select('*')
-                ->from($this->table)
-                ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int)$uid, \PDO::PARAM_INT)))
-                ->execute()
-                ->fetch();
-        } else {
-            $row = $GLOBALS['TYPO3_DB']->exec_SELECTgetSingleRow('*', $this->table, 'uid=' . (int)$uid);
-        }
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable($this->table);
+        $row = $queryBuilder
+            ->select('*')
+            ->from($this->table)
+            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int)$uid, \PDO::PARAM_INT)))
+            ->execute()
+            ->fetch();
 
         if (empty($row) || !is_array($row)) {
             throw new \RuntimeException(

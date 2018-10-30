@@ -28,7 +28,6 @@ namespace BeechIt\FalSecuredownload\Hooks;
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
@@ -162,19 +161,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
                 'file' => (int)$this->originalFile->getUid()
             ];
 
-            if (version_compare(TYPO3_branch, '8.7', '>=')) {
-                GeneralUtility::makeInstance(ConnectionPool::class)
-                    ->getConnectionForTable('tx_falsecuredownload_download')
-                    ->insert(
-                        'tx_falsecuredownload_download',
-                        $columns,
-                        [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]
-                    );
-
-            } else {
-                $db = $this->getDatabase();
-                $db->exec_INSERTquery('tx_falsecuredownload_download', $columns);
-            }
+            GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getConnectionForTable('tx_falsecuredownload_download')
+                ->insert(
+                    'tx_falsecuredownload_download',
+                    $columns,
+                    [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]
+                );
         }
 
         // Dump the precise requested file for File and ProcessedFile, but dump the referenced file for FileReference
@@ -208,7 +201,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         }
 
         if (!$resumableDownload) {
-            $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
+            $file->getStorage()->streamFile($file, $asDownload, $downloadName);
             exit;
         }
 
@@ -350,14 +343,6 @@ class FileDumpHook implements FileDumpEIDHookInterface
         );
         header('location: ' . $redirect_uri);
         exit;
-    }
-
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabase()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 
     /**
