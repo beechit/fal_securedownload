@@ -196,17 +196,12 @@ class FileDumpHook implements FileDumpEIDHookInterface
 
         // Make sure downloadName has a file extension
         $fileParts = pathinfo($downloadName);
-        if(empty($fileParts['extension'])) {
+        if (empty($fileParts['extension'])) {
             $downloadName .= '.' . $file->getExtension();
         }
 
         if (!$resumableDownload) {
-            if (method_exists('streamFile', $file->getStorage())) {
-                $file->getStorage()->streamFile($file, $asDownload, $downloadName);
-            } else {
-                // Fallback for 8LTS
-                $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
-            }
+            $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
             exit;
         }
 

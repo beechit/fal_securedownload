@@ -67,12 +67,8 @@ class BePublicUrlController
             }
 
             ob_start();
-            if (method_exists('streamFile', $file->getStorage())) {
-                $file->getStorage()->streamFile($file);
-            } else {
-                // Fallback for 8LTS
-                $file->getStorage()->dumpFileContents($file);
-            }
+            $file->getStorage()->dumpFileContents($file);
+
             exit;
         } else {
             HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
