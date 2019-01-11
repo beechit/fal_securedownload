@@ -90,7 +90,7 @@ class PublicUrlAspect implements SingletonInterface
                 $queryParameterArray['p'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'p';
             }
-            $queryParameterArray['token'] = GeneralUtility::hmac(
+            $queryParameterArray['fal_token'] = GeneralUtility::hmac(
                 implode('|', $queryParameterArray),
                 'BeResourceStorageDumpFile'
             );

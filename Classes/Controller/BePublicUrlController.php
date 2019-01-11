@@ -40,7 +40,7 @@ class BePublicUrlController
         }
 
         if (GeneralUtility::hmac(implode('|', $parameters),
-                'BeResourceStorageDumpFile') === GeneralUtility::_GP('token')
+                'BeResourceStorageDumpFile') === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {
                 $file = ResourceFactory::getInstance()->getFileObject($parameters['f']);
