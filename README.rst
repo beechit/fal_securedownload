@@ -25,7 +25,7 @@ The access to assets can be set on folder/file bases by setting access to fe_gro
 - Keep track of requested downloads (count downloads per user and file)
 
 **Requirements:**
-    TYPO3 7 LTS, TYPO3 8
+    TYPO3 8 LTS, TYPO3 9 LTS
 
 **Suggestions:**
     EXT:ke_search v1.8.4
