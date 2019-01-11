@@ -40,7 +40,7 @@ class BePublicUrlController
         }
 
         if (GeneralUtility::hmac(implode('|', $parameters),
-                'BeResourceStorageDumpFile') === GeneralUtility::_GP('token')
+                'BeResourceStorageDumpFile') === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {
                 $file = ResourceFactory::getInstance()->getFileObject($parameters['f']);
@@ -67,7 +67,12 @@ class BePublicUrlController
             }
 
             ob_start();
-            $file->getStorage()->dumpFileContents($file);
+            if (method_exists('streamFile', $file->getStorage())) {
+                $file->getStorage()->streamFile($file);
+            } else {
+                // Fallback for 8LTS
+                $file->getStorage()->dumpFileContents($file);
+            }
             exit;
         } else {
             HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);

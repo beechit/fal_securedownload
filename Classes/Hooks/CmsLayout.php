@@ -137,15 +137,13 @@ class CmsLayout
      *
      * @param string $key
      * @param string $languageFile
-     * @param bool $hsc If set, the return value is htmlspecialchar'ed
      * @return string
      */
     protected function sL(
         $key,
-        $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf',
-        $hsc = true
+        $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf'
     ) {
-        return $this->getLangService()->sL($languageFile . ':' . $key, $hsc);
+        return $this->getLangService()->sL($languageFile . ':' . $key);
     }
 
     /**

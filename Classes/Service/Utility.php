@@ -62,27 +62,15 @@ class Utility implements SingletonInterface
         if (!isset(self::$folderRecordCache[$folder->getCombinedIdentifier()])
             || !array_key_exists($folder->getCombinedIdentifier(), self::$folderRecordCache)
         ) {
-            if (version_compare(TYPO3_branch, '8.7', '>=')) {
+            $queryBuilder = $this->getQueryBuilder();
+            $record = $queryBuilder
+                ->select('*')
+                ->from('tx_falsecuredownload_folder')
+                ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$folder->getStorage()->getUid(), \PDO::PARAM_INT)))
+                ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folder->getHashedIdentifier(), \PDO::PARAM_STR)))
+                ->execute()
+                ->fetch();
 
-                $queryBuilder = $this->getQueryBuilder();
-                $record = $queryBuilder
-                    ->select('*')
-                    ->from('tx_falsecuredownload_folder')
-                    ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$folder->getStorage()->getUid(), \PDO::PARAM_INT)))
-                    ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folder->getHashedIdentifier(), \PDO::PARAM_STR)))
-                    ->execute()
-                    ->fetch();
-
-            } else {
-
-                $record = $this->getDatabase()->exec_SELECTgetSingleRow(
-                    '*',
-                    'tx_falsecuredownload_folder',
-                    'storage = ' . (int)$folder->getStorage()->getUid() . '
-                    AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($folder->getHashedIdentifier(), 'tx_falsecuredownload_folder')
-                );
-
-            }
             // cache results
             self::$folderRecordCache[$folder->getCombinedIdentifier()] = $record;
         }
@@ -168,16 +156,6 @@ class Utility implements SingletonInterface
         if (isset(self::$folderRecordCache[$storageUid . ':' . $identifier])) {
             unset(self::$folderRecordCache[$storageUid . ':' . $identifier]);
         }
-    }
-
-    /**
-     * Gets the database object.
-     *
-     * @return \TYPO3\CMS\Core\Database\DatabaseConnection
-     */
-    protected function getDatabase()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 
     /**

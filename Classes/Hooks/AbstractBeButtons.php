@@ -25,6 +25,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use BeechIt\FalSecuredownload\Service\Utility;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
@@ -153,7 +154,9 @@ abstract class AbstractBeButtons
     protected function buildUrl(array $parameters)
     {
         $parameters['returnUrl'] = GeneralUtility::getIndpEnv('REQUEST_URI');
-        return BackendUtility::getModuleUrl('record_edit', $parameters);
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+
+        return $uriBuilder->buildUriFromRoute('record_edit', $parameters);
     }
 
     /**
