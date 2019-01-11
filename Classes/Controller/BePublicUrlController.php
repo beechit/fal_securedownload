@@ -52,7 +52,7 @@ class BePublicUrlController
                 /** @var \TYPO3\CMS\Core\Resource\ProcessedFile $file */
                 $file = GeneralUtility::makeInstance(ProcessedFileRepository::class)->findByUid($parameters['p']);
                 if ($file->isDeleted()) {
-                    $file = null;
+                    HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_404);
                 }
                 $orgFile = $file->getOriginalFile();
             }
