@@ -45,13 +45,18 @@ class ExtensionConfiguration
     {
         if (!self::$isInitialized) {
             self::$isInitialized = true;
-            $extensionConfig = GeneralUtility::makeInstance(ExtensionConfigurationCore::class)->get('fal_securedownload');
+            if (class_exists(ExtensionConfigurationCore::class)) {
+                $extensionConfig = GeneralUtility::makeInstance(ExtensionConfigurationCore::class)->get('fal_securedownload');
+            } else {
+                // Fallback for 8LTS
+                $extensionConfig = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['fal_securedownload']);
+            }
             self::$loginRedirectUrl = $extensionConfig['login_redirect_url'];
             self::$noAccessRedirectUrl = $extensionConfig['no_access_redirect_url'];
             self::$forceDownload = (bool)$extensionConfig['force_download'];
             self::$forceDownloadForExt = $extensionConfig['force_download_for_ext'];
             self::$trackDownloads = (bool)$extensionConfig['track_downloads'];
-            self::$resumableDownload = (isset($extensionConfig['resumable_download']) ? $extensionConfig['resumable_download'] : false);
+            self::$resumableDownload = (isset($extensionConfig['resumable_download']) ? (bool)$extensionConfig['resumable_download'] : false);
         }
     }
 

@@ -201,7 +201,12 @@ class FileDumpHook implements FileDumpEIDHookInterface
         }
 
         if (!$resumableDownload) {
-            $file->getStorage()->streamFile($file, $asDownload, $downloadName);
+            if (method_exists('streamFile', $file->getStorage())) {
+                $file->getStorage()->streamFile($file, $asDownload, $downloadName);
+            } else {
+                // Fallback for 8LTS
+                $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
+            }
             exit;
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace BeechIt\FalSecuredownload\Hooks;
 
 /***************************************************************
@@ -84,7 +85,9 @@ class DocHeaderButtonsHook extends AbstractBeButtons
     {
         $buttons = $params['buttons'];
 
-        if (GeneralUtility::_GP('route') === '/file/FilelistList/') {
+        if (GeneralUtility::_GP('M') === 'file_FilelistList' // 8LTS
+            || GeneralUtility::_GP('route') === '/file/FilelistList/' // >= 9LTS
+        ) {
             foreach ($this->generateButtons(GeneralUtility::_GP('id')) as $buttonInfo) {
                 $button = $buttonBar->makeLinkButton();
                 $button->setIcon($buttonInfo['icon']);
