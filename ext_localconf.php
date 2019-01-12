@@ -43,6 +43,10 @@ if (TYPO3_MODE === 'BE') {
     $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload'] =
         \BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook::class . '->getButtons';
 
+    // Context menu
+    $GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1547242135]
+        = \BeechIt\FalSecuredownload\ContextMenu\ItemProvider::class;
+
     // refresh file tree after change in tx_falsecuredownload_folder record
     $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
         \BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook::class;

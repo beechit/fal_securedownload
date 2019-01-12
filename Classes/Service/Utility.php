@@ -54,7 +54,7 @@ class Utility implements SingletonInterface
      * Get folder configuration record
      *
      * @param Folder $folder
-     * @return array
+     * @return array|false
      */
     public function getFolderRecord(Folder $folder)
     {
