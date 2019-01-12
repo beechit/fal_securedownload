@@ -32,12 +32,11 @@ use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsExcepti
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Abstract utility class for classes that want to add album add/edit buttons
- * somewhere like a ClickMenuOptions class.
+ * Abstract utility class for classes that want to add BE buttons
+ * to edit folder permissions
  */
 abstract class AbstractBeButtons
 {
