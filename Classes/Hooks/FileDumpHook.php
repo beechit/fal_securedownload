@@ -237,6 +237,9 @@ class FileDumpHook implements FileDumpEIDHookInterface
 
         // Find part of file and push this out
         $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
+        if ($filePointer === false) {
+            exit;
+        }
         fseek($filePointer, $begin);
         $dumpedSize = 0;
         while (!feof($filePointer) && $dumpedSize < $dumpSize) {
