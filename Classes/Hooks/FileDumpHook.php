@@ -218,6 +218,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
             header('Content-Range: bytes */' . $fileSize);
             exit;
         }
+        
+        // Find part of file and push this out
+        $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
+        if ($filePointer === false) {
+            header('HTTP/1.1 404 File not found');
+            exit;
+        }
 
         $dumpSize = $fileSize;
         list($begin, $end) = $range;
@@ -235,8 +242,6 @@ class FileDumpHook implements FileDumpEIDHookInterface
             ob_end_clean();
         }
 
-        // Find part of file and push this out
-        $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
         fseek($filePointer, $begin);
         $dumpedSize = 0;
         while (!feof($filePointer) && $dumpedSize < $dumpSize) {
