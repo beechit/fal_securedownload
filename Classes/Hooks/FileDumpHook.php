@@ -27,12 +27,18 @@ namespace BeechIt\FalSecuredownload\Hooks;
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
+use InvalidArgumentException;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Site\Entity\Site;
+use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
@@ -218,7 +224,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
             header('Content-Range: bytes */' . $fileSize);
             exit;
         }
-        
+
         // Find part of file and push this out
         $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
         if ($filePointer === false) {
@@ -337,17 +343,77 @@ class FileDumpHook implements FileDumpEIDHookInterface
 
     /**
      * Redirect to url
+     *
      * @param $url
      */
     protected function redirectToUrl($url)
     {
+        if (stripos($url, 't3://') === 0) {
+            $url = $this->resolveUrl($GLOBALS['TYPO3_REQUEST'], $url);
+        }
+
         $redirect_uri = str_replace(
             '###REQUEST_URI###',
             rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
             $url
         );
+
         header('location: ' . $redirect_uri);
         exit;
+    }
+
+    /**
+     * Resolve the URL (currently only page and external URL are supported)
+     *
+     * @param ServerRequestInterface $request
+     * @param string $url
+     * @return string
+     */
+    protected function resolveUrl(ServerRequestInterface $request, $url)
+    {
+        $urlParameters = GeneralUtility::makeInstance(LinkService::class)->resolve($url);
+
+        if ($urlParameters['type'] !== 'page' && $urlParameters['type'] !== 'url') {
+            throw new InvalidArgumentException(
+                'Redirects URL can only handle TYPO3 urls of types "page" or "url".',
+                1522826609
+            );
+        }
+
+        if ($urlParameters['type'] === 'url') {
+            $uri = $urlParameters['url'];
+        } else {
+            $pageUid = (int)$urlParameters['pageuid'];
+            $site = $request->getAttribute('site');
+
+            if (($site instanceof Site) === false) {
+                $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageUid);
+            }
+
+            $language = $request->getAttribute('language');
+
+            if (($language instanceof SiteLanguage) === false || $language->isEnabled() === false) {
+                $language = $site->getDefaultLanguage();
+            }
+
+            $uri = $site->getRouter()->generateUri($pageUid, ['_language' => $language]);
+            $currentUri = $request->getUri();
+
+            if (empty($uri->getScheme()) === true) {
+                $uri = $uri->withScheme($currentUri->getScheme());
+            }
+            if (empty($uri->getUserInfo()) === true) {
+                $uri = $uri->withUserInfo($currentUri->getUserInfo());
+            }
+            if (empty($uri->getHost()) === true) {
+                $uri = $uri->withHost($currentUri->getHost());
+            }
+            if ($uri->getPort() === null) {
+                $uri = $uri->withPort($currentUri->getPort());
+            }
+        }
+
+        return (string)$uri;
     }
 
     /**
