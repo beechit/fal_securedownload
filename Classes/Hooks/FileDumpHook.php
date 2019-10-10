@@ -28,7 +28,6 @@ namespace BeechIt\FalSecuredownload\Hooks;
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\File;
@@ -36,12 +35,11 @@ use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
-use TYPO3\CMS\Core\Site\Entity\Site;
-use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
-use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 /**
@@ -349,7 +347,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
     protected function redirectToUrl($url)
     {
         if (stripos($url, 't3://') === 0) {
-            $url = $this->resolveUrl($GLOBALS['TYPO3_REQUEST'], $url);
+            $url = $this->resolveUrl($url);
         }
 
         $redirect_uri = str_replace(
@@ -365,55 +363,59 @@ class FileDumpHook implements FileDumpEIDHookInterface
     /**
      * Resolve the URL (currently only page and external URL are supported)
      *
-     * @param ServerRequestInterface $request
      * @param string $url
      * @return string
      */
-    protected function resolveUrl(ServerRequestInterface $request, $url)
+    protected function resolveUrl($url): string
     {
         $urlParameters = GeneralUtility::makeInstance(LinkService::class)->resolve($url);
 
-        if ($urlParameters['type'] !== 'page' && $urlParameters['type'] !== 'url') {
+        if ($urlParameters['type'] !== LinkService::TYPE_PAGE && $urlParameters['type'] !== LinkService::TYPE_URL) {
             throw new InvalidArgumentException(
                 'Redirects URL can only handle TYPO3 urls of types "page" or "url".',
                 1522826609
             );
         }
 
-        if ($urlParameters['type'] === 'url') {
+        if ($urlParameters['type'] === LinkService::TYPE_URL) {
             $uri = $urlParameters['url'];
         } else {
-            $pageUid = (int)$urlParameters['pageuid'];
-            $site = $request->getAttribute('site');
+            $this->initializeTypoScriptFrontendController();
 
-            if (($site instanceof Site) === false) {
-                $site = GeneralUtility::makeInstance(SiteFinder::class)->getSiteByPageId($pageUid);
-            }
+            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $contentObject->start([], '');
 
-            $language = $request->getAttribute('language');
-
-            if (($language instanceof SiteLanguage) === false || $language->isEnabled() === false) {
-                $language = $site->getDefaultLanguage();
-            }
-
-            $uri = $site->getRouter()->generateUri($pageUid, ['_language' => $language]);
-            $currentUri = $request->getUri();
-
-            if (empty($uri->getScheme()) === true) {
-                $uri = $uri->withScheme($currentUri->getScheme());
-            }
-            if (empty($uri->getUserInfo()) === true) {
-                $uri = $uri->withUserInfo($currentUri->getUserInfo());
-            }
-            if (empty($uri->getHost()) === true) {
-                $uri = $uri->withHost($currentUri->getHost());
-            }
-            if ($uri->getPort() === null) {
-                $uri = $uri->withPort($currentUri->getPort());
-            }
+            $uri = $contentObject->typoLink_URL([
+                'addQueryString' => true,
+                'addQueryString.' => [
+                    'exclude' => 'eID,f,t,token'
+                ],
+                'forceAbsoluteUrl' => true,
+                'parameter' => $url,
+                'returnLast' => 'url'
+            ]);
         }
 
         return (string)$uri;
+    }
+
+    /**
+     * Initialize frontend
+     */
+    protected function initializeTypoScriptFrontendController()
+    {
+        if (version_compare(TYPO3_branch, '8.7', '<=') === true) {
+            $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
+                TypoScriptFrontendController::class,
+                $GLOBALS['TYPO3_CONF_VARS'],
+                GeneralUtility::_GP('id'),
+                GeneralUtility::_GP('type')
+            );
+            $GLOBALS['TSFE']->initFEuser();
+            $GLOBALS['TSFE']->determineId();
+            $GLOBALS['TSFE']->initTemplate();
+            $GLOBALS['TSFE']->getConfigArray();
+        }
     }
 
     /**
