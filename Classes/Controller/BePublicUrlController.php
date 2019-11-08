@@ -26,7 +26,7 @@ class BePublicUrlController
      * @param ResponseInterface $response
      * @return ResponseInterface
      */
-    public function dumpFile(ServerRequestInterface $request, ResponseInterface $response)
+    public function dumpFile()
     {
         $parameters = ['eID' => 'dumpFile'];
         if (GeneralUtility::_GP('t')) {
