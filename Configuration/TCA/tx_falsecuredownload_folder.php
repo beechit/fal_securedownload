@@ -13,15 +13,26 @@ return [
             'ignoreWebMountRestriction' => true,
             'ignoreRootLevelRestriction' => true,
         ],
+        'enablecolumns' => [
+            'starttime' => 'starttime',
+            'endtime' => 'endtime',
+        ],
+
         'iconfile' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.png'
     ],
     'interface' => [
-        'showRecordFieldList' => 'fe_groups, storage, folder, folder_hash'
+        'showRecordFieldList' => 'fe_groups, storage, folder, folder_hash, starttime, endtime'
     ],
     'types' => [
-        '0' => ['showitem' => 'fe_groups,--palette--;;filePalette'],
+        '0' => ['showitem' => '--div--;LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:feGroupAccess,
+									--palette--;;accessPalette,
+									--palette--;;filePalette,
+                                --div--;LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:timeRestrictions,
+                                    --palette--;;timeRestriction'],
     ],
     'palettes' => [
+    	'accessPalette' => [ 'showitem' =>	'fe_groups' ],
+        'timeRestriction' => ['showitem' => 'starttime, endtime'],
         // File palette, hidden but needs to be included all the time
         'filePalette' => [
             'showitem' => 'storage, folder, folder_hash',
@@ -80,6 +91,26 @@ return [
                 'foreign_table_where' => 'ORDER BY fe_groups.title',
                 'enableMultiSelectFilterTextfield' => true,
             ]
+        ],
+        'starttime' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.starttime',
+                'config' => [
+                        'type' => 'input',
+                        'renderType' => 'inputDateTime',
+                        'eval' => 'datetime,int',
+                        'default' => 0
+                ]
+        ],
+        'endtime' => [
+                'exclude' => true,
+                'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.endtime',
+                'config' => [
+                        'type' => 'input',
+                        'renderType' => 'inputDateTime',
+                        'eval' => 'datetime,int',
+                        'default' => 0
+                ]
         ]
     ]
 ];

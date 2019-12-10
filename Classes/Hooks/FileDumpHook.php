@@ -173,10 +173,21 @@ class FileDumpHook implements FileDumpEIDHookInterface
         // Dump the precise requested file for File and ProcessedFile, but dump the referenced file for FileReference
         $dumpFile = $file instanceof FileReference ? $file->getOriginalFile() : $file;
 
-        if ($this->forceDownload($dumpFile->getExtension())) {
-            $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
-        } elseif ($this->resumableDownload) {
-            $this->dumpFileContents($dumpFile, false, true);
+        // check Time Restrictions from File Meta
+        $fileMeta = $dumpFile->getProperties();
+        if( !($fileMeta['starttime'] >= date('U')) AND !(date('U') <=  $fileMeta['endtime']) )	{
+            // no access  outside this period
+            // debug(['access'=>'denied', 'meta' => $fileMeta , 'now' => date('U')]); exit;
+        	header('HTTP/1.1 404 File not found');
+        	exit;
+        } else {
+            // access  inside period
+            // debug(['access'=>'granted','meta' => $fileMeta , 'now' => date('U')]);exit;
+            if ($this->forceDownload($dumpFile->getExtension())) {
+                $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
+            } elseif ($this->resumableDownload) {
+                $this->dumpFileContents($dumpFile, false, true);
+            }
         }
     }
 
@@ -218,7 +229,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
             header('Content-Range: bytes */' . $fileSize);
             exit;
         }
-        
+
         // Find part of file and push this out
         $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
         if ($filePointer === false) {

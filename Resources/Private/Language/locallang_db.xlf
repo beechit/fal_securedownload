@@ -13,7 +13,12 @@
 			<trans-unit id="folder">
 				<source>Folder</source>
 			</trans-unit>
-
+			<trans-unit id="feGroupAccess">
+				<source>Access FE Group/User</source>
+			</trans-unit>
+			<trans-unit id="timeRestrictions">
+				<source>Time Restrictions</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
