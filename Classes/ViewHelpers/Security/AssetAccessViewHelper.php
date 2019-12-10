@@ -24,6 +24,7 @@ namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\File;
@@ -92,13 +93,23 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
     /**
      * Determines whether the currently logged in FE user belongs to the specified usergroup
      *
-     * @return boolean|array FALSE when not logged in or else $GLOBALS['TSFE']->fe_user->groupData['uid']
+     * @return boolean|array FALSE when not logged in or else frontend.user.groupIds
      */
     protected static function getFeUserGroups()
     {
-        if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
-            return false;
+        if (class_exists(Context::class)) {
+            $context = GeneralUtility::makeInstance(Context::class);
+            if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
+                return false;
+            }
+            return $context->getPropertyFromAspect('frontend.user', 'groupIds');
+        } else {
+            // Fallback for 8LTS
+            if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
+                return false;
+            }
+            return $GLOBALS['TSFE']->fe_user->groupData['uid'];
         }
-        return $GLOBALS['TSFE']->fe_user->groupData['uid'];
+
     }
 }

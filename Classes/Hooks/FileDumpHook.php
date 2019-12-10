@@ -28,9 +28,9 @@ namespace BeechIt\FalSecuredownload\Hooks;
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -138,13 +138,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
                 if ($this->loginRedirectUrl !== null) {
                     $this->redirectToUrl($this->loginRedirectUrl);
                 } else {
-                    $this->exitScript('Authentication required!', 401);
+                    $this->exitScript('Authentication required!');
                 }
             } else {
                 if ($this->noAccessRedirectUrl !== null) {
                     $this->redirectToUrl($this->noAccessRedirectUrl);
                 } else {
-                    $this->exitScript('No access!', 403);
+                    $this->exitScript('No access!');
                 }
             }
         }
@@ -161,25 +161,22 @@ class FileDumpHook implements FileDumpEIDHookInterface
                 'file' => (int)$this->originalFile->getUid()
             ];
 
-            if (version_compare(TYPO3_branch, '8.7', '>=')) {
-                GeneralUtility::makeInstance(ConnectionPool::class)
-                    ->getConnectionForTable('tx_falsecuredownload_download')
-                    ->insert(
-                        'tx_falsecuredownload_download',
-                        $columns,
-                        [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]
-                    );
-
-            } else {
-                $db = $this->getDatabase();
-                $db->exec_INSERTquery('tx_falsecuredownload_download', $columns);
-            }
+            GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getConnectionForTable('tx_falsecuredownload_download')
+                ->insert(
+                    'tx_falsecuredownload_download',
+                    $columns,
+                    [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]
+                );
         }
 
-        if ($this->forceDownload($this->originalFile->getExtension())) {
-            $this->dumpFileContents($this->originalFile, true, $this->resumableDownload);
+        // Dump the precise requested file for File and ProcessedFile, but dump the referenced file for FileReference
+        $dumpFile = $file instanceof FileReference ? $file->getOriginalFile() : $file;
+
+        if ($this->forceDownload($dumpFile->getExtension())) {
+            $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
         } elseif ($this->resumableDownload) {
-            $this->dumpFileContents($this->originalFile, false, true);
+            $this->dumpFileContents($dumpFile, false, true);
         }
     }
 
@@ -195,13 +192,21 @@ class FileDumpHook implements FileDumpEIDHookInterface
      */
     protected function dumpFileContents($file, $asDownload, $resumableDownload)
     {
+        $downloadName = $file->getProperty('download_name') ?: $file->getName();
+
+        // Make sure downloadName has a file extension
+        $fileParts = pathinfo($downloadName);
+        if (empty($fileParts['extension'])) {
+            $downloadName .= '.' . $file->getExtension();
+        }
+
         if (!$resumableDownload) {
-            $file->getStorage()->dumpFileContents($file, $asDownload);
+            $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
             exit;
         }
 
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
-        header('Content-Disposition: ' . $contentDisposition . '; filename="' . ( $file->getProperty('download_name') ? $file->getProperty('download_name') : $file->getName() ) . '"');
+        header('Content-Disposition: ' . $contentDisposition . '; filename="' . $downloadName . '"');
         header('Content-Type: ' . $file->getMimeType());
         header('Expires: -1');
         header('Cache-Control: public, must-revalidate, post-check=0, pre-check=0');
@@ -211,6 +216,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
         if ($range === []) {
             header('HTTP/1.1 416 Requested Range Not Satisfiable');
             header('Content-Range: bytes */' . $fileSize);
+            exit;
+        }
+        
+        // Find part of file and push this out
+        $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
+        if ($filePointer === false) {
+            header('HTTP/1.1 404 File not found');
             exit;
         }
 
@@ -230,8 +242,6 @@ class FileDumpHook implements FileDumpEIDHookInterface
             ob_end_clean();
         }
 
-        // Find part of file and push this out
-        $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
         fseek($filePointer, $begin);
         $dumpedSize = 0;
         while (!feof($filePointer) && $dumpedSize < $dumpSize) {
@@ -338,14 +348,6 @@ class FileDumpHook implements FileDumpEIDHookInterface
         );
         header('location: ' . $redirect_uri);
         exit;
-    }
-
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabase()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 
     /**

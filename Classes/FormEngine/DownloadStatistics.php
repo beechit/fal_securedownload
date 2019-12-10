@@ -27,7 +27,6 @@ namespace BeechIt\FalSecuredownload\FormEngine;
 
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 use TYPO3\CMS\Lang\LanguageService;
@@ -51,33 +50,22 @@ class DownloadStatistics extends AbstractNode
             return $this->resultArray;
         }
 
-        if (version_compare(TYPO3_branch, '8.7', '>=')) {
-            $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
-            $statistics = $queryBuilder
-                ->selectLiteral(
-                    $queryBuilder->getConnection()->getDatabasePlatform()->getCountExpression(
-                        $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file')
-                    ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt'))
-                ->addSelect('sys_file.name')
-                ->from('sys_file')
-                ->join('sys_file', 'tx_falsecuredownload_download', 'tx_falsecuredownload_download',
-                    $queryBuilder->expr()->eq('tx_falsecuredownload_download.file', $queryBuilder->quoteIdentifier('sys_file.uid'))
-                )
-                ->where($queryBuilder->expr()->eq('tx_falsecuredownload_download.feuser', $queryBuilder->createNamedParameter((int)$row['uid'], \PDO::PARAM_INT)))
-                ->groupBy('sys_file.name')
-                ->orderBy('sys_file.name')
-                ->execute()
-                ->fetchAll();
-        } else {
-            $db = $this->getDatabase();
-            $statistics = $db->exec_SELECTgetRows(
-                'sys_file.name, count(tx_falsecuredownload_download.file) as cnt',
-                'sys_file JOIN tx_falsecuredownload_download ON tx_falsecuredownload_download.file = sys_file.uid
-                    AND tx_falsecuredownload_download.feuser = ' . (int)$row['uid'],
-                '',
-                'sys_file.name'
-            );
-        }
+        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
+        $statistics = $queryBuilder
+            ->selectLiteral(
+                $queryBuilder->getConnection()->getDatabasePlatform()->getCountExpression(
+                    $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file')
+                ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt'))
+            ->addSelect('sys_file.name')
+            ->from('sys_file')
+            ->join('sys_file', 'tx_falsecuredownload_download', 'tx_falsecuredownload_download',
+                $queryBuilder->expr()->eq('tx_falsecuredownload_download.file', $queryBuilder->quoteIdentifier('sys_file.uid'))
+            )
+            ->where($queryBuilder->expr()->eq('tx_falsecuredownload_download.feuser', $queryBuilder->createNamedParameter((int)$row['uid'], \PDO::PARAM_INT)))
+            ->groupBy('sys_file.name')
+            ->orderBy('sys_file.name')
+            ->execute()
+            ->fetchAll();
 
         $lang = $this->getLanguageService();
         $markup = [];
@@ -109,13 +97,5 @@ class DownloadStatistics extends AbstractNode
     protected function getLanguageService()
     {
         return $GLOBALS['LANG'];
-    }
-
-    /**
-     * @return DatabaseConnection
-     */
-    protected function getDatabase()
-    {
-        return $GLOBALS['TYPO3_DB'];
     }
 }

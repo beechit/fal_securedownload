@@ -25,18 +25,18 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use BeechIt\FalSecuredownload\Service\Utility;
+use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Abstract utility class for classes that want to add album add/edit buttons
- * somewhere like a ClickMenuOptions class.
+ * Abstract utility class for classes that want to add BE buttons
+ * to edit folder permissions
  */
 abstract class AbstractBeButtons
 {
@@ -153,7 +153,9 @@ abstract class AbstractBeButtons
     protected function buildUrl(array $parameters)
     {
         $parameters['returnUrl'] = GeneralUtility::getIndpEnv('REQUEST_URI');
-        return BackendUtility::getModuleUrl('record_edit', $parameters);
+        $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+
+        return $uriBuilder->buildUriFromRoute('record_edit', $parameters);
     }
 
     /**

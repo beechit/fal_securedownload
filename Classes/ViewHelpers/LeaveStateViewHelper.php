@@ -44,23 +44,30 @@ class LeaveStateViewHelper extends AbstractConditionViewHelper
     }
 
     /**
-     * renders <f:then> child if the current visitor ...
-     * otherwise renders <f:else> child.
-
-     * @return string
+     * @param array $arguments
+     * @return bool
      */
-    public function render()
+    protected static function evaluateCondition($arguments = null)
     {
         /** @var Folder $folder */
-        $folder = $this->arguments['folder'];
+        $folder = $arguments['folder'];
 
         $leafStateService = GeneralUtility::makeInstance(LeafStateService::class);
         $feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : false;
 
-        if ($feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier())) {
+        return $feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier());
+    }
+
+    /**
+     * Renders <f:then> child if $condition is true, otherwise renders <f:else> child.
+     *
+     * @return string the rendered string
+     */
+    public function render()
+    {
+        if (static::evaluateCondition($this->arguments)) {
             return $this->renderThenChild();
-        } else {
-            return $this->renderElseChild();
         }
+        return $this->renderElseChild();
     }
 }
