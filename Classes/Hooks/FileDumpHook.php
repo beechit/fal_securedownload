@@ -175,19 +175,53 @@ class FileDumpHook implements FileDumpEIDHookInterface
 
         // check Time Restrictions from File Meta
         $fileMeta = $dumpFile->getProperties();
-        if( !($fileMeta['starttime'] >= date('U')) AND !(date('U') <=  $fileMeta['endtime']) )	{
-            // no access  outside this period
-            // debug(['access'=>'denied', 'meta' => $fileMeta , 'now' => date('U')]); exit;
-        	header('HTTP/1.1 404 File not found');
-        	exit;
-        } else {
+
+
+        $condition1 = $fileMeta['starttime'] <= date('U'); // start lower than now
+		$condition2 = $fileMeta['starttime'] == 0; // start not set
+		$condition1_2 = ( $condition1 || $condition2 );
+		$condition3 = $fileMeta['endtime'] >= date('U'); // end greater than now
+		$condition4 = $fileMeta['endtime'] == 0; // end not set
+		$condition3_4 = ( $condition3 || $condition4 );
+
+// debug([
+//         '1: $fileMeta[starttime] <= date(U)' => $con1,
+// 		'2: $fileMeta[starttime] == 0'=> $con2,
+// 		'1_2: 1||2' => $con1_2,
+//         '3: $fileMeta[endtime] >= date(U)'=> $con3,
+//         '4: $fileMeta[endtime] == 0'=> $con4,
+//         '3_4: 3||4' => $con3_4,
+//         '1_2 && 3_4' => ( $con1_2 && $con3_4),
+//         'now' => date('U')
+// ]);
+
+
+		if ( $condition1_2 && $condition3_4 ) {
             // access  inside period
-            // debug(['access'=>'granted','meta' => $fileMeta , 'now' => date('U')]);exit;
+//             debug([
+//             	'access'=>'granted',
+//             	'meta' => $fileMeta ,
+//             	'now' => date ('d-m-Y H:i:s',date('U')),
+//             	'start' => date ('d-m-Y H:i:s',$fileMeta['starttime']),
+//             	'end' => date ('d-m-Y H:i:s',$fileMeta['endtime'])
+//             ]); exit;
+
             if ($this->forceDownload($dumpFile->getExtension())) {
                 $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
             } elseif ($this->resumableDownload) {
                 $this->dumpFileContents($dumpFile, false, true);
             }
+        } else {
+            // no access  outside this period
+//             debug([
+//                 'access'=>'denied',
+//                 'meta' => $fileMeta ,
+//                 'now' => date('U'),
+//                 'start' => date ('d-m-Y H:i:s',$fileMeta['starttime']),
+//                 'end' => date ('d-m-Y H:i:s',$fileMeta['endtime'])
+//             ]);exit;
+            header('HTTP/1.1 404 File not found');
+            exit;
         }
     }
 

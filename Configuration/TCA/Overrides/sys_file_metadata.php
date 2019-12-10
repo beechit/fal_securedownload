@@ -32,10 +32,10 @@ $GLOBALS['TCA']['sys_file_metadata'] = array_merge_recursive(
 	$GLOBALS['TCA']['sys_file_metadata'],
 	[
 		'ctrl'=>[
-			'enablecolumns' => [
-				'starttime' => 'starttime',
-				'endtime' => 'endtime',
-			]
+// 			'enablecolumns' => [
+// 				'starttime' => 'starttime',
+// 				'endtime' => 'endtime',
+// 			]
 		],
 		'columns' => [
 			'starttime' => [
