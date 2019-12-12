@@ -86,6 +86,10 @@ class CheckPermissions implements SingletonInterface
             return true;
         }
 
+        if( !$this->checkFileAccessForTimePeriod( $file ) ){
+        	return false;
+        }
+
         $customUserGroups = [];
         /** @var Dispatcher $signalSlotDispatcher */
         $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
@@ -101,6 +105,11 @@ class CheckPermissions implements SingletonInterface
 
         /** @var Folder $parentFolder */
         $parentFolder = $file->getParentFolder();
+
+        if( !$this->checkFolderAccessForTimePeriod($parentFolder) ){
+        	return false;
+        }
+
         // check folder access
         if ($this->checkFolderRootLineAccess($parentFolder, $userFeGroups)) {
             // access to folder then check file privileges if present
@@ -111,6 +120,78 @@ class CheckPermissions implements SingletonInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if the folder start and stop date is set and if the current date is in the period.
+     *
+     * possible are only start date, start and end date, only end date
+     *
+     * TODO: implement check folder times
+     *
+     * @param Folder $folder
+     * @return bool
+     */
+    public function checkFolderAccessForTimePeriod(Folder $folder){
+    	// loop through the root line of an folder and check the permissions of every folder
+		$access = true;
+		$rootlineTree = array_slice($this->getFolderRootLine($folder),1);
+
+		foreach ($rootlineTree as $rootlinefolder) {
+    		// fetch folder permissions record
+    		$folderRecord = $this->utilityService->getFolderRecord($rootlinefolder);
+
+    		// if no record found the folder in rootline has no access so subfolders have'nt also
+    		if (!$folderRecord) {
+   				$access = false;
+   				break;
+    		}
+    	}
+    	return $access;
+    }
+
+    public function checkAccessForTimePeriod( $dataRecord ){
+
+    	$condition1 = $dataRecord['starttime'] <= date('U'); // start lower than now
+    	$condition2 = $dataRecord['starttime'] == 0; // start not set
+        $condition1_2 = ( $condition1 || $condition2 );
+        $condition3 = $dataRecord['endtime'] >= date('U'); // end greater than now
+        $condition4 = $dataRecord['endtime'] == 0; // end not set
+        $condition3_4 = ( $condition3 || $condition4 );
+
+//         debug([
+//         	'access' => ($condition1_2 && $condition3_4) ? 'granted' : 'dismissed',
+//         	'meta' => $dataRecord,
+//             'now' => date ('d-m-Y H:i:s',date('U')),
+//         		'start' => date ('d-m-Y H:i:s',$dataRecord['starttime']),
+//         		'end' => date ('d-m-Y H:i:s',$dataRecord['endtime']),
+//             'now' => date('U'),
+//             'condition results' => [
+//                 '1: $fileMeta[starttime] <= date(U)' => $condition1,
+//                 '2: $fileMeta[starttime] == 0'=> $condition2,
+//                 '1_2: 1||2' => $condition1_2,
+//                 '3: $fileMeta[endtime] >= date(U)'=> $condition3,
+//                 '4: $fileMeta[endtime] == 0'=> $condition4,
+//                 '3_4: 3||4' => $condition3_4,
+//                 'final' => ( $condition1_2 && $condition3_4),
+//             ]
+//         ]); exit;
+
+        return $condition1_2 && $condition3_4;
+    }
+    /**
+     * Check if the file start and stop date is set and if the current date is in the period.
+     *
+     * possible are only start date, start and end date, only end date
+     *
+     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @return bool
+     */
+    public function checkFileAccessForTimePeriod(File $file){
+
+    	// check Time Restrictions from File Meta
+    	$fileMeta = $file->getProperties();
+    	return $this->checkAccessForTimePeriod($fileMeta);
     }
 
     /**
@@ -127,7 +208,6 @@ class CheckPermissions implements SingletonInterface
             $folder->getHashedIdentifier() .
             serialize($userFeGroups)
         );
-
         if (!isset($this->checkFolderRootLineAccessCache[$cacheIdentifier])) {
             $this->checkFolderRootLineAccessCache[$cacheIdentifier] = true;
 

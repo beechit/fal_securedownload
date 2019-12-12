@@ -37,3 +37,20 @@ page.jsFooterInline.303030.value (
 		}
 	});
 )
+
+#config.tx_extbase {
+#	objects {
+#		TYPO3\CMS\Core\Resource\Folder {
+#			className = BeechIt\FalSecuredownload\Resource\Folder
+#		}
+#	}
+#	persistence {
+#		classes {
+#			BeechIt\FalSecuredownload\Resource\Folder {
+#				mapping {
+#					tableName = tx_falsecuredownload_folder
+#				}
+#			}
+#		}
+#	}
+}

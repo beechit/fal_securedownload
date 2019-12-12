@@ -80,6 +80,11 @@ class FileDumpHook implements FileDumpEIDHookInterface
     protected $resumableDownload = false;
 
     /**
+     * @var $checkPermissionsService CheckPermissions
+     */
+    protected $checkPermissionsService = false;
+
+    /**
      * Constructor
      */
     public function __construct()
