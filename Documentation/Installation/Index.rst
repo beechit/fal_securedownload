@@ -25,7 +25,7 @@ Installation
 
       **Image 1:** Create non-public file storage
 
-   Best is to have the fysical folder outsite of your document root. If not add an .htaccess with "Deny from all" (Apache < 2.3) or "Require all denied" (Apache >= 2.3) in your file storage root folder.
+   Best is to have the physical folder outside of your document root. If not, add an .htaccess with "Deny from all" (Apache < 2.3) or "Require all denied" (Apache >= 2.3) in your file storage root folder.
 
 #. **Set permissions**
 
