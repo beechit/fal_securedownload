@@ -74,7 +74,8 @@ class Utility implements SingletonInterface
             // cache results
             self::$folderRecordCache[$folder->getCombinedIdentifier()] = $record;
         }
-
+//         debug($queryBuilder->getSQL());
+//         debug($queryBuilder->getParameters());
         return self::$folderRecordCache[$folder->getCombinedIdentifier()];
     }
 

@@ -107,6 +107,9 @@ class FileDumpHook implements FileDumpEIDHookInterface
             $this->forceDownloadForExt = ExtensionConfiguration::forceDownloadForExt();
         }
         $this->resumableDownload = ExtensionConfiguration::resumableDownload();
+
+        $this->checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
+
     }
 
     /**
