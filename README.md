@@ -18,6 +18,8 @@ The access to assets can be set on folder/file bases by setting access to fe_gro
 
 - Restrict FE access on folder level
 - Restrict FE access on file level
+- Restrict FE access by start/stop datetime on folder level
+- Restrict FE access by start/stop datetime on file level
 - Let editor set permissions in file list
 - Force download for all files (for protected file storages)
 - Force download for specific file extensions (for protected file storages)
