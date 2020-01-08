@@ -186,11 +186,11 @@ class FileDumpHook implements FileDumpEIDHookInterface
 
 
         $condition1 = $fileMeta['starttime'] <= date('U'); // start lower than now
-		$condition2 = $fileMeta['starttime'] == 0; // start not set
-		$condition1_2 = ( $condition1 || $condition2 );
-		$condition3 = $fileMeta['endtime'] >= date('U'); // end greater than now
-		$condition4 = $fileMeta['endtime'] == 0; // end not set
-		$condition3_4 = ( $condition3 || $condition4 );
+        $condition2 = $fileMeta['starttime'] == 0; // start not set
+        $condition1_2 = ( $condition1 || $condition2 );
+        $condition3 = $fileMeta['endtime'] >= date('U'); // end greater than now
+        $condition4 = $fileMeta['endtime'] == 0; // end not set
+        $condition3_4 = ( $condition3 || $condition4 );
 
 // debug([
 //         '1: $fileMeta[starttime] <= date(U)' => $con1,
@@ -204,7 +204,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
 // ]);
 
 
-		if ( $condition1_2 && $condition3_4 ) {
+        if ( $condition1_2 && $condition3_4 ) {
             // access  inside period
 //             debug([
 //             	'access'=>'granted',
@@ -269,6 +269,13 @@ class FileDumpHook implements FileDumpEIDHookInterface
         if ($range === []) {
             header('HTTP/1.1 416 Requested Range Not Satisfiable');
             header('Content-Range: bytes */' . $fileSize);
+            exit;
+        }
+        
+        // Find part of file and push this out
+        $filePointer = @fopen($file->getForLocalProcessing(false), 'rb');
+        if ($filePointer === false) {
+            header('HTTP/1.1 404 File not found');
             exit;
         }
 
