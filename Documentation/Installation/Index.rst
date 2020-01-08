@@ -35,7 +35,13 @@ Installation
       :width: 400px
       :alt: Set FE permissions for folder
 
-      **Image 2:** Set FE permissions for folder
+      **Image 2:** Set FE permissions for folder though context menu item
+
+   .. figure:: ../Images/set-folder-permissions2.png
+      :width: 400px
+      :alt: Set FE permissions for folder
+
+      **Image 3:** Set FE permissions for folder though button in button bar
 
 
 
