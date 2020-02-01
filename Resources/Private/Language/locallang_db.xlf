@@ -13,7 +13,12 @@
 			<trans-unit id="folder">
 				<source>Folder</source>
 			</trans-unit>
-
+			<trans-unit id="downloadName">
+				<source>Alternative Download name</source>
+			</trans-unit>
+			<trans-unit id="downloadName.description">
+				<source>Send File with an alternative Filename</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>

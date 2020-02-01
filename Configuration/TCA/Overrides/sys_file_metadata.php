@@ -25,8 +25,20 @@ $additionalColumns = [
             'foreign_table_where' => 'ORDER BY fe_groups.title',
             'enableMultiSelectFilterTextfield' => true,
         ]
+    ],
+    'download_name' => [
+        'exclude' => true,
+        'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:downloadName',
+    		'description' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:downloadName.description',
+        'config' => [
+            'type' => 'input',
+            'size' => '255',
+            'max' => '255',
+        ]
     ]
 ];
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('sys_file_metadata', $additionalColumns);
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('sys_file_metadata', 'fe_groups');
+
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('sys_file_metadata', 'download_name','', 'after:alternative');
