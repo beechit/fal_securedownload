@@ -57,8 +57,17 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
             /** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
             $storage = $storageRepository->findByUid($storageUid);
             if ($storage->isBrowsable()) {
-                $rootLevelFolder = $storage->getRootLevelFolder();
-                $folderItems = $this->getSubfoldersForOptionList($rootLevelFolder);
+                if (!empty($storage->getFileMounts())) {
+                    $fileMounts = $storage->getFileMounts();
+                    $folderItems = [];
+                    foreach ($fileMounts as $fileMount) {
+                        $folderItems[] = $this->getSubfoldersForOptionList($fileMount['folder']);
+                    }
+                    $folderItems = array_merge(...$folderItems);
+                } else {
+                    $rootLevelFolder = $storage->getRootLevelFolder();
+                    $folderItems = $this->getSubfoldersForOptionList($rootLevelFolder);
+                }
                 foreach ($folderItems as $item) {
                     $PA['items'][] = [
                         $item->getIdentifier(),
