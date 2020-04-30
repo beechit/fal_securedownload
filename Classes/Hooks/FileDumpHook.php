@@ -178,9 +178,9 @@ class FileDumpHook implements FileDumpEIDHookInterface
         $dumpFile = $file instanceof FileReference ? $file->getOriginalFile() : $file;
 
         if ($this->forceDownload($dumpFile->getExtension())) {
-            $this->dumpFileContents($dumpFile, true, $this->resumableDownload);
+            $this->dumpTheFileContents($dumpFile, true, $this->resumableDownload);
         } elseif ($this->resumableDownload) {
-            $this->dumpFileContents($dumpFile, false, true);
+            $this->dumpTheFileContents($dumpFile, false, true);
         }
     }
 
@@ -194,7 +194,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
      * @param bool $asDownload
      * @param bool $resumableDownload
      */
-    protected function dumpFileContents($file, $asDownload, $resumableDownload)
+    protected function dumpTheFileContents($file, $asDownload, $resumableDownload)
     {
         $downloadName = $file->getProperty('download_name') ?: $file->getName();
 
@@ -205,7 +205,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         }
 
         if (!$resumableDownload) {
-            $file->getStorage()->dumpFileContents($file, $asDownload, $downloadName);
+            $file->getStorage()->dumpTheFileContents($file, $asDownload, $downloadName);
             exit;
         }
 
