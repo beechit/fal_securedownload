@@ -97,19 +97,10 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
      */
     protected static function getFeUserGroups()
     {
-        if (class_exists(Context::class)) {
-            $context = GeneralUtility::makeInstance(Context::class);
-            if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
-                return false;
-            }
-            return $context->getPropertyFromAspect('frontend.user', 'groupIds');
-        } else {
-            // Fallback for 8LTS
-            if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
-                return false;
-            }
-            return $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        $context = GeneralUtility::makeInstance(Context::class);
+        if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
+            return false;
         }
-
+        return $context->getPropertyFromAspect('frontend.user', 'groupIds');
     }
 }

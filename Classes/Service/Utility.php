@@ -26,6 +26,7 @@ namespace BeechIt\FalSecuredownload\Service;
 
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -45,9 +46,7 @@ class Utility implements SingletonInterface
 
     public function __construct()
     {
-        if (version_compare(TYPO3_branch, '8.7', '>=')) {
-            $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        }
+        $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
     }
 
     /**
@@ -98,7 +97,6 @@ class Utility implements SingletonInterface
         }
 
         if (!empty($record)) {
-            if (version_compare(TYPO3_branch, '8.7', '>=')) {
                 $queryBuilder = $this->getQueryBuilder();
                 $queryBuilder
                     ->update('tx_falsecuredownload_folder')
@@ -108,16 +106,6 @@ class Utility implements SingletonInterface
                     $queryBuilder->set($field, $value);
                 }
                 $queryBuilder->execute();
-
-            } else {
-                $this->getDatabase()->exec_UPDATEquery(
-                    'tx_falsecuredownload_folder',
-                    'storage = ' . (int)$oldStorageUid . '
-                     AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($oldIdentifierHash, 'tx_falsecuredownload_folder'),
-                    $record,
-                    true
-                );
-            }
 
             // clear cache if exists
             if (isset(self::$folderRecordCache[$oldStorageUid . ':' . $oldIdentifier])) {
@@ -135,22 +123,12 @@ class Utility implements SingletonInterface
      */
     public function deleteFolderRecord($storageUid, $folderHash, $identifier)
     {
-
-        if (version_compare(TYPO3_branch, '8.7', '>=')) {
             $queryBuilder = $this->getQueryBuilder();
             $queryBuilder
                 ->delete('tx_falsecuredownload_folder')
                 ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$storageUid, \PDO::PARAM_INT)))
                 ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash, \PDO::PARAM_STR)))
                 ->execute();
-
-        } else {
-            $this->getDatabase()->exec_DELETEquery(
-                'tx_falsecuredownload_folder',
-                'storage = ' . (int)$storageUid . '
-                AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($folderHash, 'tx_falsecuredownload_folder')
-            );
-        }
 
         // clear cache if exists
         if (isset(self::$folderRecordCache[$storageUid . ':' . $identifier])) {
