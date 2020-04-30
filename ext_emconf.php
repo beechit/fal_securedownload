@@ -4,7 +4,7 @@
  * Extension Manager/Repository config file for ext: "fal_securedownload"
  ***************************************************************/
 
-$EM_CONF[$_EXTKEY] = [
+$EM_CONF['fal_securedownload'] = [
     'title' => 'FAL Secure Download',
     'description' => 'Secure download of assets. Makes it possible to secure FE use of assets/files by setting permissions to folders/files for fe_groups.',
     'category' => 'plugin',
@@ -17,10 +17,10 @@ $EM_CONF[$_EXTKEY] = [
     'createDirs' => '',
     'modify_tables' => '',
     'clearCacheOnLoad' => true,
-    'version' => '2.2.1',
+    'version' => '3.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '8.7.0 - 9.5.99',
+            'typo3' => '9.5.0 - 10.4.99',
         ],
         'conflicts' => [],
         'suggests' => [
