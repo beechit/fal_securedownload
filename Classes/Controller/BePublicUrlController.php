@@ -67,7 +67,8 @@ class BePublicUrlController
             }
 
             ob_start();
-            $file->getStorage()->dumpFileContents($file);
+
+            $file->getStorage()->streamFile($file);
 
             exit;
         } else {
