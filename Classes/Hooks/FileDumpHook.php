@@ -322,7 +322,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
     protected function initializeUserAuthentication()
     {
         if ($this->feUser === null) {
-            $this->feUser = EidUtility::initFeUser();
+            $this->feUser = $GLOBALS['TSFE']->fe_user;
             $this->feUser->fetchGroupData();
         }
     }

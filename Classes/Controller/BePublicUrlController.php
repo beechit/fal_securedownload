@@ -28,7 +28,7 @@ class BePublicUrlController
      */
     public function dumpFile(ServerRequestInterface $request, ResponseInterface $response)
     {
-        $parameters = ['eID' => 'dumpFile'];
+        $parameters = ['secureDownload' => 'dumpFile'];
         if (GeneralUtility::_GP('t')) {
             $parameters['t'] = GeneralUtility::_GP('t');
         }
