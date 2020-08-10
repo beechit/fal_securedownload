@@ -20,12 +20,8 @@ $EM_CONF[$_EXTKEY] = [
     'version' => '3.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '9.5.0 - 10.4.99',
+            'typo3' => '10.4.20 - 10.4.99',
         ],
         'conflicts' => [],
-        'suggests' => [
-            'ke_search' => '1.8.4',
-            'solrfal' => '4.1.0',
-        ],
     ],
 ];
