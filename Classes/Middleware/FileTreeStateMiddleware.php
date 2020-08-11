@@ -13,19 +13,8 @@ use TYPO3\CMS\Core\Http\NullResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class SecureDownloadMiddleware implements MiddlewareInterface
+class FileTreeStateMiddleware implements MiddlewareInterface
 {
-
-    /**
-     * @var FileDumpController
-     */
-    protected $fileDumpController;
-
-    public function __construct()
-    {
-        $this->fileDumpController = GeneralUtility::makeInstance(FileDumpController::class);
-    }
-
     /**
      * Dispatches the request to the corresponding eID class or eID script
      *
@@ -36,14 +25,11 @@ class SecureDownloadMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $eID = $request->getParsedBody()['secureDownload'] ?? $request->getQueryParams()['secureDownload'] ?? null;
+        $eID = $request->getParsedBody()['treeState'] ?? $request->getQueryParams()['treeState'] ?? null;
 
-        if ($eID === null || $eID !== 'dumpFile') {
+        if ($eID === null || $eID !== 'FalSecuredownloadFileTreeState') {
             return $handler->handle($request);
         }
-
-        // Remove any output produced until now
-        ob_clean();
 
         $target = $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include'][$eID] ?? null;
         if (empty($target)) {
@@ -51,7 +37,6 @@ class SecureDownloadMiddleware implements MiddlewareInterface
         }
 
         $request = $request->withAttribute('target', $target);
-        $this->fileDumpController->dumpAction($request);
         return $handler->handle($request);
     }
 

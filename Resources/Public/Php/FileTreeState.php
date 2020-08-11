@@ -6,5 +6,5 @@ if (!empty($folder)) {
 
     /** @var $leafStateService \BeechIt\FalSecuredownload\Service\LeafStateService */
     $leafStateService = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Service\\LeafStateService');
-    $leafStateService->saveLeafStateForUser(\TYPO3\CMS\Frontend\Utility\EidUtility::initFeUser(), $folder, $open);
+    $leafStateService->saveLeafStateForUser($GLOBALS['TSFE']->fe_user, $folder, $open);
 }

@@ -7,5 +7,11 @@ return [
                 'typo3/cms-frontend/authentication',
             ],
         ],
+        'fal-secure-download/file-tree-state-middleware' => [
+            'target' => \BeechIt\FalSecuredownload\Middleware\FileTreeStateMiddleware::class,
+            'after' => [
+                'typo3/cms-frontend/authentication',
+            ],
+        ],
     ],
 ];
