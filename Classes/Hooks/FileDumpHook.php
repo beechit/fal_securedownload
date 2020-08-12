@@ -29,6 +29,7 @@ use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use InvalidArgumentException;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Http\AbstractApplication;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -43,7 +44,7 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 /**
  * FileDumpHook
  */
-class FileDumpHook implements FileDumpEIDHookInterface
+class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterface
 {
 
     /**
@@ -203,7 +204,8 @@ class FileDumpHook implements FileDumpEIDHookInterface
         }
 
         if (!$resumableDownload) {
-            $file->getStorage()->dumpTheFileContents($file, $asDownload, $downloadName);
+            $response = $file->getStorage()->streamFile($file, $asDownload, $downloadName);
+            $this->sendResponse($response);
             exit;
         }
 
