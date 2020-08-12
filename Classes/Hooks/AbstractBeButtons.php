@@ -80,7 +80,6 @@ abstract class AbstractBeButtons
                     $this->getIcon('folder'),
                     $this->buildEditUrl($folderRecord['uid'])
                 );
-
             } else {
                 $buttons[] = $this->createLink(
                     $this->sL('clickmenu.folderpermissions'),
@@ -99,8 +98,8 @@ abstract class AbstractBeButtons
      */
     protected function getIcon($name)
     {
-       $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-       return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
     }
 
     /**

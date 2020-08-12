@@ -30,8 +30,6 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 
 /**
  * ProcessedFileRepository
- *
- * @package BeechIt\FalSecuredownload\Domain\Repository
  */
 class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepository
 {

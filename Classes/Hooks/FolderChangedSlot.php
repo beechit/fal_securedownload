@@ -34,7 +34,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class FolderChangedSlot implements SingletonInterface
 {
-
     protected $folderMapping = [];
 
     /**

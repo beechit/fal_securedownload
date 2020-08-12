@@ -69,7 +69,6 @@ class ItemProvider extends AbstractProvider
     {
         $this->initialize();
         if ($this->folder instanceof Folder) {
-
             $items += $this->prepareItems([
                 'permissions_divider' => [
                     'type' => 'divider',

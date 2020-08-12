@@ -26,18 +26,16 @@ namespace BeechIt\FalSecuredownload\Security;
 
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 
 /**
  * Utility functions to check permissions
- *
- * @package BeechIt\FalSecuredownload\Security
  */
 class CheckPermissions implements SingletonInterface
 {
@@ -122,7 +120,6 @@ class CheckPermissions implements SingletonInterface
      */
     public function checkFolderRootLineAccess(Folder $folder, $userFeGroups)
     {
-
         $cacheIdentifier = sha1(
             $folder->getHashedIdentifier() .
             serialize($userFeGroups)

@@ -100,4 +100,3 @@ class DocHeaderButtonsHook extends AbstractBeButtons
         return $buttons;
     }
 }
-

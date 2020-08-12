@@ -35,8 +35,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class Utility implements SingletonInterface
 {
-
-    static protected $folderRecordCache = [];
+    protected static $folderRecordCache = [];
 
     /**
      * @var ConnectionPool
@@ -58,7 +57,6 @@ class Utility implements SingletonInterface
      */
     public function getFolderRecord(Folder $folder)
     {
-
         if (!isset(self::$folderRecordCache[$folder->getCombinedIdentifier()])
             || !array_key_exists($folder->getCombinedIdentifier(), self::$folderRecordCache)
         ) {
@@ -108,7 +106,6 @@ class Utility implements SingletonInterface
                     $queryBuilder->set($field, $value);
                 }
                 $queryBuilder->execute();
-
             } else {
                 $this->getDatabase()->exec_UPDATEquery(
                     'tx_falsecuredownload_folder',
@@ -135,7 +132,6 @@ class Utility implements SingletonInterface
      */
     public function deleteFolderRecord($storageUid, $folderHash, $identifier)
     {
-
         if (version_compare(TYPO3_branch, '8.7', '>=')) {
             $queryBuilder = $this->getQueryBuilder();
             $queryBuilder
@@ -143,7 +139,6 @@ class Utility implements SingletonInterface
                 ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$storageUid, \PDO::PARAM_INT)))
                 ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash, \PDO::PARAM_STR)))
                 ->execute();
-
         } else {
             $this->getDatabase()->exec_DELETEquery(
                 'tx_falsecuredownload_folder',
@@ -167,5 +162,4 @@ class Utility implements SingletonInterface
     {
         return $this->connectionPool->getQueryBuilderForTable('tx_falsecuredownload_folder');
     }
-
 }

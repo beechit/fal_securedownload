@@ -48,7 +48,6 @@ class SolrFalAspect implements SingletonInterface
      */
     public function fileMetaDataRetrieved(Item $item, \ArrayObject $metadata)
     {
-
         if ($item->getFile() instanceof File && !$item->getFile()->getStorage()->isPublic()) {
             $resourcePermissions = $this->checkPermissionsService->getPermissions($item->getFile());
             // If there are already permissions set, refine these with actual file permissions

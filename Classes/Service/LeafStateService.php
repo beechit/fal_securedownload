@@ -30,8 +30,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
  * Class LeafStateService
- *
- * @package BeechIt\FalSecuredownload\Service
  */
 class LeafStateService implements SingletonInterface
 {

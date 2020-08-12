@@ -55,10 +55,14 @@ class DownloadStatistics extends AbstractNode
             ->selectLiteral(
                 $queryBuilder->getConnection()->getDatabasePlatform()->getCountExpression(
                     $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file')
-                ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt'))
+                ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt')
+            )
             ->addSelect('sys_file.name')
             ->from('sys_file')
-            ->join('sys_file', 'tx_falsecuredownload_download', 'tx_falsecuredownload_download',
+            ->join(
+                'sys_file',
+                'tx_falsecuredownload_download',
+                'tx_falsecuredownload_download',
                 $queryBuilder->expr()->eq('tx_falsecuredownload_download.file', $queryBuilder->quoteIdentifier('sys_file.uid'))
             )
             ->where($queryBuilder->expr()->eq('tx_falsecuredownload_download.feuser', $queryBuilder->createNamedParameter((int)$row['uid'], \PDO::PARAM_INT)))

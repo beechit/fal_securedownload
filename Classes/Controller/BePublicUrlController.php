@@ -39,8 +39,10 @@ class BePublicUrlController
             $parameters['p'] = (int)GeneralUtility::_GP('p');
         }
 
-        if (GeneralUtility::hmac(implode('|', $parameters),
-                'BeResourceStorageDumpFile') === GeneralUtility::_GP('fal_token')
+        if (GeneralUtility::hmac(
+            implode('|', $parameters),
+            'BeResourceStorageDumpFile'
+        ) === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {
                 $file = ResourceFactory::getInstance()->getFileObject($parameters['f']);
@@ -70,8 +72,7 @@ class BePublicUrlController
             $file->getStorage()->dumpFileContents($file);
 
             exit;
-        } else {
-            HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
         }
+        HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
     }
 }

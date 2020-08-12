@@ -30,8 +30,6 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
  * FileTreeController
- *
- * @package BeechIt\FalSecuredownload\Controller
  */
 class FileTreeController extends ActionController
 {

@@ -31,12 +31,9 @@ use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
  * Class LeaveStateViewHelper
- *
- * @package BeechIt\FalSecuredownload\ViewHelpers
  */
 class LeaveStateViewHelper extends AbstractConditionViewHelper
 {
-
     public function initializeArguments()
     {
         parent::initializeArguments();
