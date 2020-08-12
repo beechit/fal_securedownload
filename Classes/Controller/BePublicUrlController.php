@@ -7,8 +7,7 @@ namespace BeechIt\FalSecuredownload\Controller;
  * All code (c) Beech Applications B.V. all rights reserved
  */
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Http\AbstractApplication;
 use TYPO3\CMS\Core\Resource\ProcessedFileRepository;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -17,7 +16,7 @@ use TYPO3\CMS\Core\Utility\HttpUtility;
 /**
  * Ajax controller for public url in BE
  */
-class BePublicUrlController
+class BePublicUrlController extends AbstractApplication
 {
     /**
      * @var ResourceFactory
@@ -34,12 +33,9 @@ class BePublicUrlController
 
     /**
      * Dump file content
-     * Copy from /sysext/core/Resources/PHP/FileDumpEID.php
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @return void
      */
-    public function dumpFile(ServerRequestInterface $request, ResponseInterface $response)
+    public function dumpFile()
     {
         $parameters = ['eID' => 'dumpFile'];
         if (GeneralUtility::_GP('t')) {
@@ -82,7 +78,9 @@ class BePublicUrlController
             }
 
             ob_start();
-            $file->getStorage()->dumpFileContents($file);
+
+            $response = $file->getStorage()->streamFile($file);
+            $this->sendResponse($response);
 
             exit;
         }
