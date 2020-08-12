@@ -26,8 +26,10 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
+use BeechIt\FalSecuredownload\Context\UserAspect;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use InvalidArgumentException;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\File;
@@ -40,7 +42,6 @@ use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Frontend\Utility\EidUtility;
 
 /**
  * FileDumpHook
@@ -83,11 +84,14 @@ class FileDumpHook implements FileDumpEIDHookInterface
      */
     protected $resumableDownload = false;
 
+    protected $context;
+
     /**
      * Constructor
      */
     public function __construct()
     {
+        $this->context = GeneralUtility::makeInstance(Context::class);
         if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'])) {
             $this->loginRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'];
         }
@@ -124,7 +128,6 @@ class FileDumpHook implements FileDumpEIDHookInterface
      * or 401 if authentication is required
      *
      * @param ResourceInterface $file
-     * @return void
      */
     public function checkFileAccess(ResourceInterface $file)
     {
@@ -255,7 +258,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
             }
             $buffer = @fread($filePointer, $partSize);
             $dumpedSize += strlen($buffer);
-            print($buffer);
+            print $buffer;
             ob_flush();
             flush();
 
@@ -322,7 +325,9 @@ class FileDumpHook implements FileDumpEIDHookInterface
     protected function initializeUserAuthentication()
     {
         if ($this->feUser === null) {
-            $this->feUser = EidUtility::initFeUser();
+            /** @var UserAspect $userAspect */
+            $userAspect = $this->context->getAspect('beechit.user');
+            $this->feUser = $userAspect->get('user');
             $this->feUser->fetchGroupData();
         }
     }
@@ -351,7 +356,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
             rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
             $url
         );
-        
+
         if (stripos($url, 't3://') === 0) {
             $url = $this->resolveUrl($url);
         }
@@ -421,7 +426,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
     /**
      * Determines the HTTP range given in the request
      *
-     * @param integer $fileSize the size of the file
+     * @param int $fileSize the size of the file
      * @return array the range (begin, end), or empty array if the range request is invalid.
      */
     protected function getHttpRange($fileSize)
@@ -448,8 +453,7 @@ class FileDumpHook implements FileDumpEIDHookInterface
         }
         if ($start < 0 || $start > $end) {
             return false;
-        } else {
-            return [$start, $end];
         }
+        return [$start, $end];
     }
 }
