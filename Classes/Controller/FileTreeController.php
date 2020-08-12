@@ -39,7 +39,7 @@ class FileTreeController extends ActionController
      */
     public function treeAction()
     {
-        $resourceFactory = ResourceFactory::getInstance();
+        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         try {
             $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
         } catch (FolderDoesNotExistException $exception) {

@@ -53,7 +53,7 @@ abstract class AbstractBeButtons
         // In some folder copy/move actions in file list a invalid id is passed
         try {
             /** @var $file \TYPO3\CMS\Core\Resource\Folder */
-            $folder = ResourceFactory::getInstance()->retrieveFileOrFolderObject($combinedIdentifier);
+            $folder = GeneralUtility::makeInstance(ResourceFactory::class)->retrieveFileOrFolderObject($combinedIdentifier);
         } catch (ResourceDoesNotExistException $exception) {
             $folder = null;
         } catch (InsufficientFolderAccessPermissionsException $exception) {

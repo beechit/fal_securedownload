@@ -45,7 +45,7 @@ class BePublicUrlController
         ) === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {
-                $file = ResourceFactory::getInstance()->getFileObject($parameters['f']);
+                $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($parameters['f']);
                 if ($file->isDeleted() || $file->isMissing()) {
                     $file = null;
                 }

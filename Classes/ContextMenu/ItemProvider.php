@@ -44,7 +44,7 @@ class ItemProvider extends AbstractProvider
     protected function initialize()
     {
         parent::initialize();
-        $resource = ResourceFactory::getInstance()
+        $resource = GeneralUtility::makeInstance(ResourceFactory::class)
             ->retrieveFileOrFolderObject($this->identifier);
 
         if ($resource instanceof Folder
