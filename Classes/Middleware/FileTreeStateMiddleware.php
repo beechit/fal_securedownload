@@ -13,6 +13,12 @@ use TYPO3\CMS\Core\Http\NullResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * Class FileTreeStateMiddleware
+ * @package BeechIt\FalSecuredownload\Middleware
+ * Copy of EidMiddleWare from the core, dedicated to call file dumpController
+ * Due though late initiating of frontendUserAuthenticate middleware.
+ */
 class FileTreeStateMiddleware implements MiddlewareInterface
 {
     /**
