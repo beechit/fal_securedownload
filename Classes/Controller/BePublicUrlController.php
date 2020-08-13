@@ -20,6 +20,19 @@ use TYPO3\CMS\Core\Utility\HttpUtility;
 class BePublicUrlController
 {
     /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
+
+    /**
      * Dump file content
      * Copy from /sysext/core/Resources/PHP/FileDumpEID.php
      * @param ServerRequestInterface $request
@@ -45,7 +58,7 @@ class BePublicUrlController
         ) === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {
-                $file = GeneralUtility::makeInstance(ResourceFactory::class)->getFileObject($parameters['f']);
+                $file = $this->resourceFactory->getFileObject($parameters['f']);
                 if ($file->isDeleted() || $file->isMissing()) {
                     $file = null;
                 }

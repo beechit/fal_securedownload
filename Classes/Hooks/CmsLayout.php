@@ -32,6 +32,18 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CmsLayout
 {
+    /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
 
     /**
      * Table information
@@ -64,7 +76,7 @@ class CmsLayout
             $storageName = '';
             try {
                 $storageUid = $this->getFieldFromFlexform('settings.storage');
-                $storageName = GeneralUtility::makeInstance(ResourceFactory::class)->getStorageObject($storageUid)->getName();
+                $storageName = $this->resourceFactory->getStorageObject($storageUid)->getName();
             } catch (\Exception $exception) {
             }
 

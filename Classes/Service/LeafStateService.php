@@ -34,6 +34,18 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
  */
 class LeafStateService implements SingletonInterface
 {
+    /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
 
     /**
      * Save new leave state in user session
@@ -46,8 +58,7 @@ class LeafStateService implements SingletonInterface
     {
 
         // check if folder exists
-        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
-        $folderObject = $resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
+        $folderObject = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
 
         if ($folderObject) {
             $folderState = $this->getFolderState($user);
