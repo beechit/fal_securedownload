@@ -28,3 +28,6 @@ services:
       $table: ''
       $identifier: ''
       $context: ''
+
+  BeechIt\FalSecuredownload\Middleware\FileTreeState:
+    public: true

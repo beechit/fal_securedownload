@@ -36,7 +36,7 @@ class EidFrontendAuthentication implements MiddlewareInterface
     {
         $eID = $request->getParsedBody()['eID'] ?? $request->getQueryParams()['eID'] ?? null;
 
-        if ($eID === null || $eID !== 'dumpFile') {
+        if ($eID === null || !in_array($eID, ['dumpFile', 'FalSecuredownloadFileTreeState'])) {
             return $handler->handle($request);
         }
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
