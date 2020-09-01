@@ -323,6 +323,9 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
     {
         if ($this->feUser === null) {
             $this->feUser = $GLOBALS['TSFE']->fe_user;
+            if (!$this->feUser instanceof FrontendUserAuthentication) {
+                throw new \UnexpectedValueException('feUser must implement interface ' . FrontendUserAuthentication::class, 1598964236);
+            }
             $this->feUser->fetchGroupData();
         }
     }
