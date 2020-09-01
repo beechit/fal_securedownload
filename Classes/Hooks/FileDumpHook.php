@@ -349,17 +349,17 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      */
     protected function redirectToUrl($url)
     {
-        if (stripos($url, 't3://') === 0) {
-            $url = $this->resolveUrl($url);
-        }
-
-        $redirect_uri = str_replace(
+        $url = str_replace(
             '###REQUEST_URI###',
             rawurlencode(GeneralUtility::getIndpEnv('REQUEST_URI')),
             $url
         );
+        
+        if (stripos($url, 't3://') === 0) {
+            $url = $this->resolveUrl($url);
+        }
 
-        header('location: ' . $redirect_uri);
+        header('location: ' . $url);
         exit;
     }
 
