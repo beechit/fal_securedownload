@@ -24,6 +24,7 @@ namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -72,6 +73,19 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
         $checkPermissionsService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
         $userFeGroups = self::getFeUserGroups();
         $access = false;
+
+         if($folder){
+             $utility = GeneralUtility::makeInstance(Utility::class);
+             $folderRecord = $utility->getFolderRecord($folder);
+             /* folder record automaticly disapears if start stop date is out of range,
+              * seems to be some native function...
+              */
+             //debug($folderRecord);
+             if(!$folderRecord){
+                 // Return with no access... no more need to check file permissions
+                 return false;
+             }
+         }
 
         // check folder access
         if ($checkPermissionsService->checkFolderRootLineAccess($folder, $userFeGroups)) {
