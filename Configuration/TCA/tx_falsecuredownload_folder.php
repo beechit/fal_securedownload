@@ -16,7 +16,6 @@ return [
         'iconfile' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.png'
     ],
     'interface' => [
-        'showRecordFieldList' => 'fe_groups, storage, folder, folder_hash'
     ],
     'types' => [
         '0' => ['showitem' => 'fe_groups,--palette--;;filePalette'],

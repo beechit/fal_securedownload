@@ -5,11 +5,11 @@ defined('TYPO3_MODE') or die();
     'BeechIt.FalSecuredownload',
     'Filetree',
     [
-        'FileTree' => 'tree',
+        BeechIt\FalSecuredownload\Controller\FileTreeController::class => 'tree',
     ],
     // non-cacheable actions
     [
-        'FileTree' => 'tree',
+        BeechIt\FalSecuredownload\Controller\FileTreeController::class => 'tree',
     ]
 );
 

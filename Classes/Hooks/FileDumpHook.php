@@ -387,8 +387,6 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         if ($urlParameters['type'] === LinkService::TYPE_URL) {
             $uri = $urlParameters['url'];
         } else {
-            $this->initializeTypoScriptFrontendController();
-
             $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $contentObject->start([], '');
 
@@ -404,25 +402,6 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         }
 
         return (string)$uri;
-    }
-
-    /**
-     * Initialize frontend
-     */
-    protected function initializeTypoScriptFrontendController()
-    {
-        if (version_compare(TYPO3_branch, '8.7', '<=') === true) {
-            $GLOBALS['TSFE'] = GeneralUtility::makeInstance(
-                TypoScriptFrontendController::class,
-                $GLOBALS['TYPO3_CONF_VARS'],
-                GeneralUtility::_GP('id'),
-                GeneralUtility::_GP('type')
-            );
-            $GLOBALS['TSFE']->initFEuser();
-            $GLOBALS['TSFE']->determineId();
-            $GLOBALS['TSFE']->initTemplate();
-            $GLOBALS['TSFE']->getConfigArray();
-        }
     }
 
     /**

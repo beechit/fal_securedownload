@@ -81,20 +81,16 @@ class DocHeaderButtonsHook extends AbstractBeButtons
      * @param ButtonBar $buttonBar
      * @return array
      */
-    public function getButtons($params, ButtonBar $buttonBar)
+    public function getButtons(array $params, ButtonBar $buttonBar): array
     {
         $buttons = $params['buttons'];
 
-        if (GeneralUtility::_GP('M') === 'file_FilelistList' // 8LTS
-            || GeneralUtility::_GP('route') === '/file/FilelistList/' // >= 9LTS
-        ) {
-            foreach ($this->generateButtons(GeneralUtility::_GP('id')) as $buttonInfo) {
-                $button = $buttonBar->makeLinkButton();
-                $button->setIcon($buttonInfo['icon']);
-                $button->setTitle($buttonInfo['title']);
-                $button->setHref($buttonInfo['url']);
-                $buttons['left'][2][] = $button;
-            }
+        foreach ($this->generateButtons(GeneralUtility::_GP('id')) as $buttonInfo) {
+            $button = $buttonBar->makeLinkButton();
+            $button->setIcon($buttonInfo['icon']);
+            $button->setTitle($buttonInfo['title']);
+            $button->setHref($buttonInfo['url']);
+            $buttons[ButtonBar::BUTTON_POSITION_LEFT][1][] = $button;
         }
 
         return $buttons;

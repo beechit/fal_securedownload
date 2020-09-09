@@ -91,21 +91,14 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
     /**
      * Determines whether the currently logged in FE user belongs to the specified usergroup
      *
-     * @return bool|array FALSE when not logged in or else frontend.user.groupIds
+     * @return boolean|array FALSE when not logged in or else frontend.user.groupIds
      */
     protected static function getFeUserGroups()
     {
-        if (class_exists(Context::class)) {
-            $context = GeneralUtility::makeInstance(Context::class);
-            if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
-                return false;
-            }
-            return $context->getPropertyFromAspect('frontend.user', 'groupIds');
-        }
-        // Fallback for 8LTS
-        if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
+        $context = GeneralUtility::makeInstance(Context::class);
+        if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
             return false;
         }
-        return $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        return $context->getPropertyFromAspect('frontend.user', 'groupIds');
     }
 }
