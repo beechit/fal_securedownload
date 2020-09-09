@@ -30,3 +30,5 @@ The access to assets can be set on folder/file bases by setting access to fe_gro
 - EXT:ke_search v1.8.4
 - EXT:solrfal v4.1.0
 
+#### Special thanks to:
+**TRITUM GmbH - https://www.tritum.de** for helping with the update to TYPO3 V10
