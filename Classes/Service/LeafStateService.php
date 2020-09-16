@@ -26,15 +26,26 @@ namespace BeechIt\FalSecuredownload\Service;
 
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
  * Class LeafStateService
- *
- * @package BeechIt\FalSecuredownload\Service
  */
 class LeafStateService implements SingletonInterface
 {
+    /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
 
     /**
      * Save new leave state in user session
@@ -47,8 +58,7 @@ class LeafStateService implements SingletonInterface
     {
 
         // check if folder exists
-        $resourceFactory = ResourceFactory::getInstance();
-        $folderObject = $resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
+        $folderObject = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
 
         if ($folderObject) {
             $folderState = $this->getFolderState($user);

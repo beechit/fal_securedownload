@@ -7,8 +7,7 @@ namespace BeechIt\FalSecuredownload\Controller;
  * All code (c) Beech Applications B.V. all rights reserved
  */
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use TYPO3\CMS\Core\Http\AbstractApplication;
 use TYPO3\CMS\Core\Resource\ProcessedFileRepository;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -17,16 +16,26 @@ use TYPO3\CMS\Core\Utility\HttpUtility;
 /**
  * Ajax controller for public url in BE
  */
-class BePublicUrlController
+class BePublicUrlController extends AbstractApplication
 {
     /**
-     * Dump file content
-     * Copy from /sysext/core/Resources/PHP/FileDumpEID.php
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
-     * @return ResponseInterface
+     * @var ResourceFactory
      */
-    public function dumpFile(ServerRequestInterface $request, ResponseInterface $response)
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
+
+    /**
+     * Dump file content
+     * @return void
+     */
+    public function dumpFile()
     {
         $parameters = ['eID' => 'dumpFile'];
         if (GeneralUtility::_GP('t')) {
@@ -39,11 +48,13 @@ class BePublicUrlController
             $parameters['p'] = (int)GeneralUtility::_GP('p');
         }
 
-        if (GeneralUtility::hmac(implode('|', $parameters),
-                'BeResourceStorageDumpFile') === GeneralUtility::_GP('fal_token')
+        if (GeneralUtility::hmac(
+            implode('|', $parameters),
+            'BeResourceStorageDumpFile'
+        ) === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {
-                $file = ResourceFactory::getInstance()->getFileObject($parameters['f']);
+                $file = $this->resourceFactory->getFileObject($parameters['f']);
                 if ($file->isDeleted() || $file->isMissing()) {
                     $file = null;
                 }
@@ -67,11 +78,12 @@ class BePublicUrlController
             }
 
             ob_start();
-            $file->getStorage()->dumpFileContents($file);
+
+            $response = $file->getStorage()->streamFile($file);
+            $this->sendResponse($response);
 
             exit;
-        } else {
-            HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
         }
+        HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_403);
     }
 }

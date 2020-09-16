@@ -24,8 +24,8 @@ namespace BeechIt\FalSecuredownload\Aspects;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use TYPO3\CMS\Core\Resource;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Resource;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -45,7 +45,7 @@ class PublicUrlAspect implements SingletonInterface
     /**
      * Get enabled
      *
-     * @return boolean
+     * @return bool
      */
     public function getEnabled()
     {
@@ -55,7 +55,7 @@ class PublicUrlAspect implements SingletonInterface
     /**
      * Set enabled
      *
-     * @param boolean $enabled
+     * @param bool $enabled
      */
     public function setEnabled($enabled)
     {
@@ -70,7 +70,6 @@ class PublicUrlAspect implements SingletonInterface
      * @param Resource\ResourceInterface $resourceObject
      * @param $relativeToCurrentScript
      * @param array $urlData
-     * @return void
      */
     public function generatePublicUrl(
         Resource\ResourceStorage $storage,
@@ -97,7 +96,7 @@ class PublicUrlAspect implements SingletonInterface
 
             // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
             $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
-            $urlData['publicUrl'] = (string) $uriBuilder->buildUriFromRoute(
+            $urlData['publicUrl'] = (string)$uriBuilder->buildUriFromRoute(
                 'ajax_dump_file',
                 $queryParameterArray,
                 UriBuilder::ABSOLUTE_URL

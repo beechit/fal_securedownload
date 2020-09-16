@@ -18,6 +18,7 @@
 							<onChange>reload</onChange>
 							<config>
 								<type>select</type>
+								<renderType>selectSingle</renderType>
 								<internal_type>db</internal_type>
 								<size>1</size>
 								<maxitems>1</maxitems>
@@ -40,6 +41,7 @@
 							<displayCond>FIELD:settings.storage:REQ:true</displayCond>
 							<config>
 								<type>select</type>
+								<renderType>selectSingle</renderType>
 								<items>
 									<numIndex index="0" type="array">
 										<numIndex index="0">LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.folder.selectStorage</numIndex>

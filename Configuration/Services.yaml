@@ -1,0 +1,33 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  BeechIt\FalSecuredownload\:
+    resource: '../Classes/*'
+
+  BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook:
+    public: true
+
+  BeechIt\FalSecuredownload\Controller\BePublicUrlController:
+    public: true
+
+  BeechIt\FalSecuredownload\Controller\FileTreeController:
+    public: true
+
+  BeechIt\FalSecuredownload\Hooks\CmsLayout:
+    public: true
+
+  BeechIt\FalSecuredownload\Service\LeafStateService:
+    public: true
+
+  BeechIt\FalSecuredownload\ContextMenu\ItemProvider:
+    public: true
+    arguments:
+      $table: ''
+      $identifier: ''
+      $context: ''
+
+  BeechIt\FalSecuredownload\Middleware\FileTreeState:
+    public: true

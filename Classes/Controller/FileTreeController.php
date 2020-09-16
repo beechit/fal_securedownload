@@ -26,24 +26,34 @@ namespace BeechIt\FalSecuredownload\Controller;
 
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 /**
  * FileTreeController
- *
- * @package BeechIt\FalSecuredownload\Controller
  */
 class FileTreeController extends ActionController
 {
+    /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
 
     /**
      * Render file tree
      */
     public function treeAction()
     {
-        $resourceFactory = ResourceFactory::getInstance();
         try {
-            $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
+            $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
         } catch (FolderDoesNotExistException $exception) {
             // folder not found
             $folder = null;

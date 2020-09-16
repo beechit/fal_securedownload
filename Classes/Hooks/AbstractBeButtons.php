@@ -40,6 +40,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 abstract class AbstractBeButtons
 {
+
+    /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
+
     /**
      * Generate album add/edit buttons for click menu or toolbar
      *
@@ -53,7 +67,7 @@ abstract class AbstractBeButtons
         // In some folder copy/move actions in file list a invalid id is passed
         try {
             /** @var $file \TYPO3\CMS\Core\Resource\Folder */
-            $folder = ResourceFactory::getInstance()->retrieveFileOrFolderObject($combinedIdentifier);
+            $folder = $this->resourceFactory->retrieveFileOrFolderObject($combinedIdentifier);
         } catch (ResourceDoesNotExistException $exception) {
             $folder = null;
         } catch (InsufficientFolderAccessPermissionsException $exception) {
@@ -80,7 +94,6 @@ abstract class AbstractBeButtons
                     $this->getIcon('folder'),
                     $this->buildEditUrl($folderRecord['uid'])
                 );
-
             } else {
                 $buttons[] = $this->createLink(
                     $this->sL('clickmenu.folderpermissions'),
@@ -99,8 +112,8 @@ abstract class AbstractBeButtons
      */
     protected function getIcon($name)
     {
-       $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-       return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
+        $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
+        return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
     }
 
     /**

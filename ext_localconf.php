@@ -5,17 +5,17 @@ defined('TYPO3_MODE') or die();
     'BeechIt.FalSecuredownload',
     'Filetree',
     [
-        'FileTree' => 'tree',
+        BeechIt\FalSecuredownload\Controller\FileTreeController::class => 'tree',
     ],
     // non-cacheable actions
     [
-        'FileTree' => 'tree',
+        BeechIt\FalSecuredownload\Controller\FileTreeController::class => 'tree',
     ]
 );
 
 // FE FileTree leaf open/close state dispatcher
 $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] =
-    'EXT:fal_securedownload/Resources/Public/Php/FileTreeState.php';
+    \BeechIt\FalSecuredownload\Controller\FileTreeStateController::class . '::saveLeafState';
 
 // FileDumpEID hook
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess']['FalSecuredownload'] =

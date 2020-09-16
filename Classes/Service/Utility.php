@@ -45,9 +45,7 @@ class Utility implements SingletonInterface
 
     public function __construct()
     {
-        if (version_compare(TYPO3_branch, '8.7', '>=')) {
-            $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
-        }
+        $this->connectionPool = GeneralUtility::makeInstance(ConnectionPool::class);
     }
 
     /**
@@ -58,7 +56,6 @@ class Utility implements SingletonInterface
      */
     public function getFolderRecord(Folder $folder)
     {
-
         if (!isset(self::$folderRecordCache[$folder->getCombinedIdentifier()])
             || !array_key_exists($folder->getCombinedIdentifier(), self::$folderRecordCache)
         ) {
@@ -98,26 +95,15 @@ class Utility implements SingletonInterface
         }
 
         if (!empty($record)) {
-            if (version_compare(TYPO3_branch, '8.7', '>=')) {
-                $queryBuilder = $this->getQueryBuilder();
-                $queryBuilder
-                    ->update('tx_falsecuredownload_folder')
-                    ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$oldStorageUid, \PDO::PARAM_INT)))
-                    ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($oldIdentifierHash, \PDO::PARAM_STR)));
-                foreach ($record as $field => $value) {
-                    $queryBuilder->set($field, $value);
-                }
-                $queryBuilder->execute();
-
-            } else {
-                $this->getDatabase()->exec_UPDATEquery(
-                    'tx_falsecuredownload_folder',
-                    'storage = ' . (int)$oldStorageUid . '
-                     AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($oldIdentifierHash, 'tx_falsecuredownload_folder'),
-                    $record,
-                    true
-                );
+            $queryBuilder = $this->getQueryBuilder();
+            $queryBuilder
+                ->update('tx_falsecuredownload_folder')
+                ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$oldStorageUid, \PDO::PARAM_INT)))
+                ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($oldIdentifierHash, \PDO::PARAM_STR)));
+            foreach ($record as $field => $value) {
+                $queryBuilder->set($field, $value);
             }
+            $queryBuilder->execute();
 
             // clear cache if exists
             if (isset(self::$folderRecordCache[$oldStorageUid . ':' . $oldIdentifier])) {
@@ -135,22 +121,12 @@ class Utility implements SingletonInterface
      */
     public function deleteFolderRecord($storageUid, $folderHash, $identifier)
     {
-
-        if (version_compare(TYPO3_branch, '8.7', '>=')) {
-            $queryBuilder = $this->getQueryBuilder();
-            $queryBuilder
-                ->delete('tx_falsecuredownload_folder')
-                ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$storageUid, \PDO::PARAM_INT)))
-                ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash, \PDO::PARAM_STR)))
-                ->execute();
-
-        } else {
-            $this->getDatabase()->exec_DELETEquery(
-                'tx_falsecuredownload_folder',
-                'storage = ' . (int)$storageUid . '
-                AND folder_hash = ' . $this->getDatabase()->fullQuoteStr($folderHash, 'tx_falsecuredownload_folder')
-            );
-        }
+        $queryBuilder = $this->getQueryBuilder();
+        $queryBuilder
+            ->delete('tx_falsecuredownload_folder')
+            ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$storageUid, \PDO::PARAM_INT)))
+            ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash, \PDO::PARAM_STR)))
+            ->execute();
 
         // clear cache if exists
         if (isset(self::$folderRecordCache[$storageUid . ':' . $identifier])) {

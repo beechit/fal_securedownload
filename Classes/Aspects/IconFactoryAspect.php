@@ -63,11 +63,11 @@ class IconFactoryAspect
             if ($resource instanceof File && $resource->getProperty('fe_groups')) {
                 $overlayIdentifier = 'overlay-restricted';
 
-                // check if there are permissions set on this specific folder
+            // check if there are permissions set on this specific folder
             } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== false) {
                 $overlayIdentifier = 'overlay-restricted';
 
-                // check if there are access restrictions in the root line of this folder
+            // check if there are access restrictions in the root line of this folder
             } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, false)) {
                 $overlayIdentifier = 'overlay-inherited-permissions';
             }

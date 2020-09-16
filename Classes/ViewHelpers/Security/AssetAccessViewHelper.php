@@ -25,15 +25,13 @@ namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
  ***************************************************************/
 
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\File;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
+use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
  * Asset access ViewHelper
- *
- * @package BeechIt\FalSecuredownload\ViewHelpers\Security
  */
 class AssetAccessViewHelper extends AbstractConditionViewHelper
 {
@@ -97,19 +95,10 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
      */
     protected static function getFeUserGroups()
     {
-        if (class_exists(Context::class)) {
-            $context = GeneralUtility::makeInstance(Context::class);
-            if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
-                return false;
-            }
-            return $context->getPropertyFromAspect('frontend.user', 'groupIds');
-        } else {
-            // Fallback for 8LTS
-            if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE']->loginUser) {
-                return false;
-            }
-            return $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        $context = GeneralUtility::makeInstance(Context::class);
+        if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
+            return false;
         }
-
+        return $context->getPropertyFromAspect('frontend.user', 'groupIds');
     }
 }

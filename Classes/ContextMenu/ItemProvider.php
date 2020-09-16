@@ -18,6 +18,24 @@ class ItemProvider extends AbstractProvider
 {
 
     /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * ItemProvider constructor.
+     * @param string $table
+     * @param string $identifier
+     * @param string $context
+     * @param ResourceFactory|null $resourceFactory
+     */
+    public function __construct(string $table, string $identifier, string $context = '', ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+        parent::__construct($table, $identifier, $context);
+    }
+
+    /**
      * @var Folder
      */
     protected $folder;
@@ -44,7 +62,7 @@ class ItemProvider extends AbstractProvider
     protected function initialize()
     {
         parent::initialize();
-        $resource = ResourceFactory::getInstance()
+        $resource = $this->resourceFactory
             ->retrieveFileOrFolderObject($this->identifier);
 
         if ($resource instanceof Folder
@@ -69,7 +87,6 @@ class ItemProvider extends AbstractProvider
     {
         $this->initialize();
         if ($this->folder instanceof Folder) {
-
             $items += $this->prepareItems([
                 'permissions_divider' => [
                     'type' => 'divider',

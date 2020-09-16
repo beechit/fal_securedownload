@@ -28,7 +28,7 @@ use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
+use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 
 /**
  * Download link view helper. Generates links that force a download action.
@@ -44,10 +44,10 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
     /**
      * Initialize arguments
      *
-     * @return void
      * @api
      */
-    public function initializeArguments() {
+    public function initializeArguments()
+    {
         parent::initializeArguments();
         $this->registerUniversalTagAttributes();
         $this->registerTagAttribute('name', 'string', 'Specifies the name of an anchor');
@@ -77,8 +77,10 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
             $queryParameterArray['t'] = 'p';
         }
 
-        $queryParameterArray['token'] = GeneralUtility::hmac(implode('|', $queryParameterArray),
-            'resourceStorageDumpFile');
+        $queryParameterArray['token'] = GeneralUtility::hmac(
+            implode('|', $queryParameterArray),
+            'resourceStorageDumpFile'
+        );
         $queryParameterArray['download'] = '';
         $uri = 'index.php?' . str_replace('+', '%20', http_build_query($queryParameterArray));
 

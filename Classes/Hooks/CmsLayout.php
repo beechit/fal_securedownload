@@ -32,6 +32,18 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CmsLayout
 {
+    /**
+     * @var ResourceFactory
+     */
+    protected $resourceFactory;
+
+    /**
+     * @param ResourceFactory $resourceFactory
+     */
+    public function __construct(ResourceFactory $resourceFactory = null)
+    {
+        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+    }
 
     /**
      * Table information
@@ -55,7 +67,6 @@ class CmsLayout
      */
     public function getExtensionSummary(array $params)
     {
-
         $result = '<u><strong>' . $this->sL('plugin.title') . '</strong></u>';
 
         if ($params['row']['list_type'] === 'falsecuredownload_filetree') {
@@ -65,9 +76,9 @@ class CmsLayout
             $storageName = '';
             try {
                 $storageUid = $this->getFieldFromFlexform('settings.storage');
-                $storageName = ResourceFactory::getInstance()->getStorageObject($storageUid)->getName();
+                $storageName = $this->resourceFactory->getStorageObject($storageUid)->getName();
             } catch (\Exception $exception) {
-            };
+            }
 
             if ($storageName) {
                 $this->tableData[] = [
@@ -116,7 +127,7 @@ class CmsLayout
      *
      * @param string $key name of the key
      * @param string $sheet name of the sheet
-     * @return string|NULL if nothing found, value if found
+     * @return string|null if nothing found, value if found
      */
     protected function getFieldFromFlexform($key, $sheet = 'sDEF')
     {
@@ -153,5 +164,4 @@ class CmsLayout
     {
         return $GLOBALS['LANG'];
     }
-
 }
