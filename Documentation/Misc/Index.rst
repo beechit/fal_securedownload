@@ -109,6 +109,50 @@ To have correct urls to indexed files you need to add/adjust following ext:solr 
 Signals and slots
 =================
 
+BeforeRedirects
+---------------
+
+This signal will be fired everytime a file is going to download or display. This signal will not be fired, if
+access to requested file is restricted for current logged in frontend user. So you can modify some redirect params if needed.
+
+Example of how to register a slot for this signal (in your ext_localconf.php):
+
+.. code-block:: php
+
+	/** Define a redirect page for inaccessible file resources */
+	/** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
+	$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+	$signalSlotDispatcher->connect(
+		'BeechIt\FalSecuredownload\Hooks\FileDumpHook',
+		'BeforeRedirects',
+		'endor\ExtensionName\Slot\BeforeRedirectsSlot',
+		'beforeRedirects'
+	);
+
+.. code-block:: php
+
+	<?php
+	namespace Vendor\ExtensionName\Slot;
+	
+	class BeforeRedirectsSlot
+	{
+	    public function beforeRedirects($loginRedirectUrl, $noAccessRedirectUrl, $file, $caller): array
+	    {
+	
+		//do your stuff
+	
+	        return [
+	            'loginRedirectUrl' => $loginRedirectUrl,
+	            'noAccessRedirectUrl' => $noAccessRedirectUrl,
+	            'file' => $file,
+	            'caller' => $caller,
+	        ];
+	    }
+	}
+
+That way you can modify these params if needed 'loginRedirectUrl', 'noAccessRedirectUrl', 'file', 'caller'
+
+
 BeforeFileDump
 --------------
 
