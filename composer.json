@@ -24,7 +24,6 @@
     "typo3/cms-core": "^10.4"
   },
   "replace": {
-    "fal_securedownload": "self.version",
     "typo3-ter/fal-securedownload": "self.version"
   },
   "autoload": {
