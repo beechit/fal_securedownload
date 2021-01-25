@@ -141,24 +141,37 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
             $this->originalFile = $file;
         }
 
+        $loginRedirectUrl = $this->loginRedirectUrl;
+        $noAccessRedirectUrl = $this->noAccessRedirectUrl;
+
+        /** @var Dispatcher $signalSlotDispatcher */
+        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
+        $signalArguments = [
+            'loginRedirectUrl' => $loginRedirectUrl,
+            'noAccessRedirectUrl' => $noAccessRedirectUrl,
+            'file' => $file,
+            'caller' => $this,
+        ];
+        $signalArguments = $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeRedirects', $signalArguments);
+        $loginRedirectUrl = $signalArguments['loginRedirectUrl'];
+        $noAccessRedirectUrl = $signalArguments['noAccessRedirectUrl'];
+
         if (!$this->checkPermissions()) {
             if (!$this->isLoggedIn()) {
-                if ($this->loginRedirectUrl !== null) {
-                    $this->redirectToUrl($this->loginRedirectUrl);
+                if ($loginRedirectUrl !== null) {
+                    $this->redirectToUrl($loginRedirectUrl);
                 } else {
                     $this->exitScript('Authentication required!');
                 }
             } else {
-                if ($this->noAccessRedirectUrl !== null) {
-                    $this->redirectToUrl($this->noAccessRedirectUrl);
+                if ($noAccessRedirectUrl !== null) {
+                    $this->redirectToUrl($noAccessRedirectUrl);
                 } else {
                     $this->exitScript('No access!');
                 }
             }
         }
 
-        /** @var Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
         $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', [$file, $this]);
 
         if (ExtensionConfiguration::trackDownloads()) {
