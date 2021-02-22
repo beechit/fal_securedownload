@@ -52,6 +52,9 @@ class FileTreeController extends ActionController
      */
     public function treeAction()
     {
+        if ($this->settings['storage'] === '') {
+            return;
+        }
         try {
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
         } catch (FolderDoesNotExistException $exception) {
