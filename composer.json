@@ -34,6 +34,9 @@
   "extra": {
     "branch-alias": {
       "dev-master": "2.x-dev"
+    },
+    "typo3/cms": {
+      "extension-key": "fal-securedownload"
     }
   }
 }
