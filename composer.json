@@ -36,7 +36,7 @@
       "dev-master": "2.x-dev"
     },
     "typo3/cms": {
-      "extension-key": "fal-securedownload"
+      "extension-key": "fal_securedownload"
     }
   }
 }
