@@ -400,7 +400,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         if ($urlParameters['type'] === LinkService::TYPE_URL) {
             $uri = $urlParameters['url'];
         } else {
-            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class, null);
             $contentObject->start([], '');
 
             $uri = $contentObject->typoLink_URL([
