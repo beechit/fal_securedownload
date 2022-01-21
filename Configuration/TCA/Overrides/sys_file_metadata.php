@@ -4,7 +4,7 @@ defined('TYPO3_MODE') or die();
 $additionalColumns = [
     'fe_groups' => [
         'exclude' => true,
-        'label' => 'LLL:EXT:lang/locallang_general.xlf:LGL.fe_group',
+        'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.fe_group',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectMultipleSideBySide',
@@ -12,11 +12,11 @@ $additionalColumns = [
             'maxitems' => 20,
             'items' => [
                 [
-                    'LLL:EXT:lang/locallang_general.xlf:LGL.any_login',
+                    'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
                     -2
                 ],
                 [
-                    'LLL:EXT:lang/locallang_general.xlf:LGL.usergroups',
+                    'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
                     '--div--'
                 ]
             ],
