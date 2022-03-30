@@ -23,7 +23,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -158,7 +158,7 @@ class CmsLayout
     }
 
     /**
-     * @return \TYPO3\CMS\Lang\LanguageService
+     * @return LanguageService
      */
     protected function getLangService()
     {

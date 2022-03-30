@@ -1,8 +1,8 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-    'BeechIt.FalSecuredownload',
+    'FalSecuredownload',
     'Filetree',
     [
         BeechIt\FalSecuredownload\Controller\FileTreeController::class => 'tree',
@@ -26,7 +26,7 @@ if (TYPO3_MODE === 'BE') {
     $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
 
     // Public url rendering in BE context
-    if (!(TYPO3_REQUESTTYPE & TYPO3_REQUESTTYPE_CLI)) {
+    if (!(\TYPO3\CMS\Core\Core\Environment::isCli())) {
         $signalSlotDispatcher->connect(
             \TYPO3\CMS\Core\Resource\ResourceStorage::class,
             \TYPO3\CMS\Core\Resource\ResourceStorage::SIGNAL_PreGeneratePublicUrl,

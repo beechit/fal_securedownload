@@ -61,7 +61,7 @@ class CheckPermissions implements SingletonInterface
     /**
      * Check file access for current FeUser
      *
-     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @param File $file
      * @return bool
      */
     public function checkFileAccessForCurrentFeUser($file)
@@ -73,7 +73,7 @@ class CheckPermissions implements SingletonInterface
     /**
      * Check file access for given FeGroups combination
      *
-     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @param File $file
      * @param bool|array $userFeGroups FALSE = no login, array() fe groups of user
      * @return bool
      */

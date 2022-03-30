@@ -1,10 +1,10 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 $additionalColumns = [
     'fe_groups' => [
         'exclude' => true,
-        'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.fe_group',
+        'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.fe_group',
         'config' => [
             'type' => 'select',
             'renderType' => 'selectMultipleSideBySide',
@@ -12,18 +12,17 @@ $additionalColumns = [
             'maxitems' => 20,
             'items' => [
                 [
-                    'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
+                    'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
                     -2
                 ],
                 [
-                    'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
+                    'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
                     '--div--'
                 ]
             ],
             'exclusiveKeys' => '-1,-2',
             'foreign_table' => 'fe_groups',
             'foreign_table_where' => 'ORDER BY fe_groups.title',
-            'enableMultiSelectFilterTextfield' => true,
         ]
     ]
 ];

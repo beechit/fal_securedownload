@@ -23,7 +23,7 @@ namespace BeechIt\FalSecuredownload\Controller;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
+use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -50,10 +50,10 @@ class FileTreeController extends ActionController
     /**
      * Render file tree
      */
-    public function treeAction()
+    public function treeAction(): ResponseInterface
     {
         if ($this->settings['storage'] === '') {
-            return;
+            return $this->htmlResponse(null);
         }
         try {
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
@@ -63,5 +63,6 @@ class FileTreeController extends ActionController
         }
 
         $this->view->assign('folder', $folder);
+        return $this->htmlResponse();
     }
 }

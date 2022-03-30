@@ -6,7 +6,7 @@ namespace BeechIt\FalSecuredownload\Controller;
  * Date: 22-08-2014 16:04
  * All code (c) Beech Applications B.V. all rights reserved
  */
-
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Http\AbstractApplication;
 use TYPO3\CMS\Core\Resource\ProcessedFileRepository;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -60,7 +60,7 @@ class BePublicUrlController extends AbstractApplication
                 }
                 $orgFile = $file;
             } else {
-                /** @var \TYPO3\CMS\Core\Resource\ProcessedFile $file */
+                /** @var ProcessedFile $file */
                 $file = GeneralUtility::makeInstance(ProcessedFileRepository::class)->findByUid($parameters['p']);
                 if ($file->isDeleted()) {
                     HttpUtility::setResponseCodeAndExit(HttpUtility::HTTP_STATUS_404);

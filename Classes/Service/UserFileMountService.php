@@ -23,7 +23,7 @@ namespace BeechIt\FalSecuredownload\Service;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
+use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\StorageRepository;
@@ -40,7 +40,7 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
      * of a selected storage
      *
      * @param array $PA the array with additional configuration options.
-     * @throws \TYPO3\CMS\Core\Exception
+     * @throws Exception
      */
     public function renderFlexFormSelectDropdown(&$PA)
     {
