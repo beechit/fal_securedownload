@@ -13,10 +13,10 @@ $EM_CONF[$_EXTKEY] = [
     'author_company' => 'Beech.it',
     'state' => 'stable',
     'clearCacheOnLoad' => true,
-    'version' => '3.0.0',
+    'version' => '4.0.0',
     'constraints' => [
         'depends' => [
-            'typo3' => '11.5.0 - 10.5.99',
+            'typo3' => '11.5.0 - 11.5.99',
         ],
         'conflicts' => [],
         'suggests' => [
