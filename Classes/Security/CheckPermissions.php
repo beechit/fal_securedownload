@@ -24,7 +24,9 @@ namespace BeechIt\FalSecuredownload\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent;
 use BeechIt\FalSecuredownload\Service\Utility;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
@@ -51,11 +53,17 @@ class CheckPermissions implements SingletonInterface
     protected $checkFolderRootLineAccessCache = [];
 
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->utilityService = GeneralUtility::makeInstance(Utility::class);
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -85,10 +93,10 @@ class CheckPermissions implements SingletonInterface
         }
 
         $customUserGroups = [];
-        /** @var Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
-        $signalArguments = $signalSlotDispatcher->dispatch(__CLASS__, 'AddCustomGroups', [$customUserGroups]);
-        $customUserGroups = array_shift($signalArguments);
+        /** @var AddCustomGroupsEvent $event */
+        $event = $this->eventDispatcher->dispatch(new AddCustomGroupsEvent([$customUserGroups]));
+        $eventArguments = $event->getCustomUserGroups();
+        $customUserGroups = array_shift($eventArguments);
 
         if (is_array($userFeGroups)) {
             $userFeGroups = array_unique(array_merge($userFeGroups, $customUserGroups));

@@ -27,8 +27,11 @@ namespace BeechIt\FalSecuredownload\Hooks;
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Context\UserAspect;
+use BeechIt\FalSecuredownload\Events\BeforeFileDumpEvent;
+use BeechIt\FalSecuredownload\Events\BeforeRedirectsEvent;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use InvalidArgumentException;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Http\AbstractApplication;
@@ -88,9 +91,14 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
     protected $context;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->context = GeneralUtility::makeInstance(Context::class);
         if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'])) {
@@ -111,6 +119,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
             $this->forceDownloadForExt = ExtensionConfiguration::forceDownloadForExt();
         }
         $this->resumableDownload = ExtensionConfiguration::resumableDownload();
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -144,17 +153,10 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         $loginRedirectUrl = $this->loginRedirectUrl;
         $noAccessRedirectUrl = $this->noAccessRedirectUrl;
 
-        /** @var Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
-        $signalArguments = [
-            'loginRedirectUrl' => $loginRedirectUrl,
-            'noAccessRedirectUrl' => $noAccessRedirectUrl,
-            'file' => $file,
-            'caller' => $this,
-        ];
-        $signalArguments = $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeRedirects', $signalArguments);
-        $loginRedirectUrl = $signalArguments['loginRedirectUrl'];
-        $noAccessRedirectUrl = $signalArguments['noAccessRedirectUrl'];
+        /** @var BeforeRedirectsEvent $event */
+        $event = $this->eventDispatcher->dispatch(new BeforeRedirectsEvent($loginRedirectUrl, $noAccessRedirectUrl, $file, $this));
+        $loginRedirectUrl = $event->getLoginRedirectUrl();
+        $noAccessRedirectUrl = $event->getNoAccessRedirectUrl();
 
         if (!$this->checkPermissions()) {
             if (!$this->isLoggedIn()) {
@@ -171,8 +173,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
                 }
             }
         }
-
-        $signalSlotDispatcher->dispatch(__CLASS__, 'BeforeFileDump', [$file, $this]);
+        $this->eventDispatcher->dispatch(new BeforeFileDumpEvent($file, $this));
 
         if (ExtensionConfiguration::trackDownloads()) {
             $columns = [
