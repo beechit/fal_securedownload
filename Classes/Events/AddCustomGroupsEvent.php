@@ -11,17 +11,11 @@ final class AddCustomGroupsEvent
         $this->customUserGroups = $customUserGroups;
     }
 
-    /**
-     * @return array
-     */
     public function getCustomUserGroups(): array
     {
         return $this->customUserGroups;
     }
 
-    /**
-     * @param array $customUserGroups
-     */
     public function setCustomUserGroups(array $customUserGroups): void
     {
         $this->customUserGroups = $customUserGroups;

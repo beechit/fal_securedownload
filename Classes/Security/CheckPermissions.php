@@ -85,7 +85,7 @@ class CheckPermissions implements SingletonInterface
      * @param bool|array $userFeGroups FALSE = no login, array() fe groups of user
      * @return bool
      */
-    public function checkFileAccess($file, $userFeGroups)
+    public function checkFileAccess($file, array|bool $userFeGroups)
     {
         // all files in public storage are accessible
         if ($file->getStorage()->isPublic()) {
@@ -122,11 +122,10 @@ class CheckPermissions implements SingletonInterface
     /**
      * Check if given FeGroups have enough rights to access given folder
      *
-     * @param Folder $folder
      * @param bool|array $userFeGroups FALSE = no login, array() is the groups of the user
      * @return bool
      */
-    public function checkFolderRootLineAccess(Folder $folder, $userFeGroups)
+    public function checkFolderRootLineAccess(Folder $folder, array|bool $userFeGroups)
     {
         $cacheIdentifier = sha1(
             $folder->getHashedIdentifier() .
@@ -156,10 +155,9 @@ class CheckPermissions implements SingletonInterface
     /**
      * Get permissions set on folder (no root line check)
      *
-     * @param FolderInterface $folder
      * @return bool|string FALSE or comma separated list of fe_group uids
      */
-    public function getFolderPermissions(FolderInterface $folder)
+    public function getFolderPermissions(FolderInterface $folder): bool|string
     {
         $permissions = false;
         $folderRecord = $this->utilityService->getFolderRecord($folder);
@@ -172,7 +170,6 @@ class CheckPermissions implements SingletonInterface
     /**
      * Get FeGroups that are allowed to view a file/folder (checks full rootline)
      *
-     * @param ResourceInterface $resource
      * @return string
      */
     public function getPermissions(ResourceInterface $resource)
@@ -207,7 +204,6 @@ class CheckPermissions implements SingletonInterface
     /**
      * Get all folders in root line of given folder
      *
-     * @param FolderInterface $folder
      * @return Folder[]
      */
     public function getFolderRootLine(FolderInterface $folder)
@@ -235,7 +231,7 @@ class CheckPermissions implements SingletonInterface
      * @param bool|array $userFeGroups FALSE = no login, array() is the groups of the user
      * @return bool
      */
-    public function matchFeGroupsWithFeUser($groups, $userFeGroups)
+    public function matchFeGroupsWithFeUser($groups, array|bool $userFeGroups)
     {
 
         // no groups specified everyone has access
@@ -249,7 +245,7 @@ class CheckPermissions implements SingletonInterface
         }
 
         // enabled for all loggedIn Users
-        if (strpos($groups, '-2') !== false) {
+        if (str_contains($groups, '-2')) {
             return true;
         }
 

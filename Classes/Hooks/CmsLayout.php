@@ -37,9 +37,6 @@ class CmsLayout
      */
     protected $resourceFactory;
 
-    /**
-     * @param ResourceFactory $resourceFactory
-     */
     public function __construct(ResourceFactory $resourceFactory = null)
     {
         $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);

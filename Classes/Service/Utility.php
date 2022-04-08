@@ -50,11 +50,8 @@ class Utility implements SingletonInterface
 
     /**
      * Get folder configuration record
-     *
-     * @param Folder $folder
-     * @return array|false
      */
-    public function getFolderRecord(Folder $folder)
+    public function getFolderRecord(Folder $folder): array|false
     {
         if (!isset(self::$folderRecordCache[$folder->getCombinedIdentifier()])
             || !array_key_exists($folder->getCombinedIdentifier(), self::$folderRecordCache)

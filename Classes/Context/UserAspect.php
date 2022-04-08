@@ -44,9 +44,6 @@ class UserAspect implements AspectInterface
         $this->user = $user ?? $this->createPseudoUser();
     }
 
-    /**
-     * @return object
-     */
     private function createPseudoUser(): object
     {
         $user = new \stdClass();
@@ -57,16 +54,13 @@ class UserAspect implements AspectInterface
     /**
      * Fetch common information about the user
      *
-     * @param string $name
-     * @return int|bool|string|array
      * @throws AspectPropertyNotFoundException
      */
-    public function get(string $name)
+    public function get(string $name): array|bool|int|string
     {
-        switch ($name) {
-            case 'user':
-                return $this->user;
-        }
-        throw new AspectPropertyNotFoundException('Property "' . $name . '" not found in Aspect "' . __CLASS__ . '".', 1597220199);
+        return match ($name) {
+            'user' => $this->user,
+            default => throw new AspectPropertyNotFoundException('Property "' . $name . '" not found in Aspect "' . __CLASS__ . '".', 1597220199),
+        };
     }
 }

@@ -37,7 +37,7 @@ class BePublicUrlController extends AbstractApplication
     public function __construct(ResourceFactory $resourceFactory = null, ResponseFactoryInterface $responseFactory)
     {
         $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
-        $this->responseFactory = $responseFactory ?? GeneralUtility::makeInstance(ResponseFactoryInterface::class);
+        $this->responseFactory = $responseFactory;
     }
 
     /**

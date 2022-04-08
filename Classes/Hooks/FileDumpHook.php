@@ -385,7 +385,6 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      * Resolve the URL (currently only page and external URL are supported)
      *
      * @param string $url
-     * @return string
      */
     protected function resolveUrl($url): string
     {

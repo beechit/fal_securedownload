@@ -46,9 +46,6 @@ abstract class AbstractBeButtons
      */
     protected $resourceFactory;
 
-    /**
-     * @param ResourceFactory $resourceFactory
-     */
     public function __construct(ResourceFactory $resourceFactory = null)
     {
         $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
@@ -179,9 +176,8 @@ abstract class AbstractBeButtons
      * @param string $icon
      * @param string $url
      * @param bool $addReturnUrl
-     * @return string|array
      */
-    abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true);
+    abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true): array|string;
 
     /**
      * @return LanguageService
