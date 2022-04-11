@@ -25,6 +25,9 @@
 
 namespace BeechIt\FalSecuredownload\Configuration;
 
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration as ExtensionConfigurationCore;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * Wrapper for the extension configuration
  */
@@ -42,7 +45,7 @@ class ExtensionConfiguration
     {
         if (!self::$isInitialized) {
             self::$isInitialized = true;
-            $extensionConfig = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Configuration\ExtensionConfiguration::class)->get('fal_securedownload');
+            $extensionConfig = GeneralUtility::makeInstance(ExtensionConfigurationCore::class)->get('fal_securedownload');
             self::$loginRedirectUrl = $extensionConfig['login_redirect_url'];
             self::$noAccessRedirectUrl = $extensionConfig['no_access_redirect_url'];
             self::$forceDownload = (bool)$extensionConfig['force_download'];
