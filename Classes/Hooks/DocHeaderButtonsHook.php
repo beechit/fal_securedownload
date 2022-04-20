@@ -63,7 +63,7 @@ class DocHeaderButtonsHook extends AbstractBeButtons
      * @param string $url
      * @param bool $addReturnUrl
      */
-    protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true): array|string
+    protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true)
     {
         $link = [
             'title' => $title,

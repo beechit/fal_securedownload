@@ -93,7 +93,7 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
      *
      * @return boolean|array FALSE when not logged in or else frontend.user.groupIds
      */
-    protected static function getFeUserGroups(): array|bool
+    protected static function getFeUserGroups()
     {
         $context = GeneralUtility::makeInstance(Context::class);
         if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {

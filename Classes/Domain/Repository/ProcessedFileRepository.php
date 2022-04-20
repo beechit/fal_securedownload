@@ -42,7 +42,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
-    public function findByUid($uid): object|ProcessedFile
+    public function findByUid($uid)
     {
         if (!MathUtility::canBeInterpretedAsInteger($uid)) {
             throw new \InvalidArgumentException('uid has to be integer.', 1316779798);

@@ -176,8 +176,10 @@ abstract class AbstractBeButtons
      * @param string $icon
      * @param string $url
      * @param bool $addReturnUrl
+     * @return string|array
      */
-    abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true): array|string;
+    abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true);
+
 
     /**
      * @return LanguageService

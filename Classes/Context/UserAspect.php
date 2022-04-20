@@ -54,13 +54,16 @@ class UserAspect implements AspectInterface
     /**
      * Fetch common information about the user
      *
+     * @param string $name
+     * @return int|bool|string|array
      * @throws AspectPropertyNotFoundException
      */
-    public function get(string $name): array|bool|int|string
+    public function get(string $name)
     {
-        return match ($name) {
-            'user' => $this->user,
-            default => throw new AspectPropertyNotFoundException('Property "' . $name . '" not found in Aspect "' . __CLASS__ . '".', 1597220199),
-        };
+        switch ($name) {
+            case 'user':
+                return $this->user;
+        }
+        throw new AspectPropertyNotFoundException('Property "' . $name . '" not found in Aspect "' . __CLASS__ . '".', 1597220199);
     }
 }
