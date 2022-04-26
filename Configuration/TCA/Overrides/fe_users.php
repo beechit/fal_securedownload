@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') || die();
+defined('TYPO3') || die();
 
 if (!\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::trackDownloads()) {
     return;

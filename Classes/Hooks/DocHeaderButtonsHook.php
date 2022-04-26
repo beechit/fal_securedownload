@@ -62,7 +62,6 @@ class DocHeaderButtonsHook extends AbstractBeButtons
      * @param string $icon
      * @param string $url
      * @param bool $addReturnUrl
-     * @return string|array
      */
     protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true)
     {
@@ -76,10 +75,6 @@ class DocHeaderButtonsHook extends AbstractBeButtons
 
     /**
      * Get buttons
-     *
-     * @param array $params
-     * @param ButtonBar $buttonBar
-     * @return array
      */
     public function getButtons(array $params, ButtonBar $buttonBar): array
     {

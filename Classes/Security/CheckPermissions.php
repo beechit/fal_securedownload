@@ -24,7 +24,9 @@ namespace BeechIt\FalSecuredownload\Security;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent;
 use BeechIt\FalSecuredownload\Service\Utility;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
@@ -51,17 +53,23 @@ class CheckPermissions implements SingletonInterface
     protected $checkFolderRootLineAccessCache = [];
 
     /**
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->utilityService = GeneralUtility::makeInstance(Utility::class);
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
      * Check file access for current FeUser
      *
-     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @param File $file
      * @return bool
      */
     public function checkFileAccessForCurrentFeUser($file)
@@ -73,7 +81,7 @@ class CheckPermissions implements SingletonInterface
     /**
      * Check file access for given FeGroups combination
      *
-     * @param \TYPO3\CMS\Core\Resource\File $file
+     * @param File $file
      * @param bool|array $userFeGroups FALSE = no login, array() fe groups of user
      * @return bool
      */
@@ -85,10 +93,10 @@ class CheckPermissions implements SingletonInterface
         }
 
         $customUserGroups = [];
-        /** @var Dispatcher $signalSlotDispatcher */
-        $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
-        $signalArguments = $signalSlotDispatcher->dispatch(__CLASS__, 'AddCustomGroups', [$customUserGroups]);
-        $customUserGroups = array_shift($signalArguments);
+        /** @var AddCustomGroupsEvent $event */
+        $event = $this->eventDispatcher->dispatch(new AddCustomGroupsEvent([$customUserGroups]));
+        $eventArguments = $event->getCustomUserGroups();
+        $customUserGroups = array_shift($eventArguments);
 
         if (is_array($userFeGroups)) {
             $userFeGroups = array_unique(array_merge($userFeGroups, $customUserGroups));
@@ -114,7 +122,6 @@ class CheckPermissions implements SingletonInterface
     /**
      * Check if given FeGroups have enough rights to access given folder
      *
-     * @param Folder $folder
      * @param bool|array $userFeGroups FALSE = no login, array() is the groups of the user
      * @return bool
      */
@@ -148,7 +155,6 @@ class CheckPermissions implements SingletonInterface
     /**
      * Get permissions set on folder (no root line check)
      *
-     * @param FolderInterface $folder
      * @return bool|string FALSE or comma separated list of fe_group uids
      */
     public function getFolderPermissions(FolderInterface $folder)
@@ -164,7 +170,6 @@ class CheckPermissions implements SingletonInterface
     /**
      * Get FeGroups that are allowed to view a file/folder (checks full rootline)
      *
-     * @param ResourceInterface $resource
      * @return string
      */
     public function getPermissions(ResourceInterface $resource)
@@ -199,7 +204,6 @@ class CheckPermissions implements SingletonInterface
     /**
      * Get all folders in root line of given folder
      *
-     * @param FolderInterface $folder
      * @return Folder[]
      */
     public function getFolderRootLine(FolderInterface $folder)
@@ -241,7 +245,7 @@ class CheckPermissions implements SingletonInterface
         }
 
         // enabled for all loggedIn Users
-        if (strpos($groups, '-2') !== false) {
+        if (str_contains($groups, '-2')) {
             return true;
         }
 

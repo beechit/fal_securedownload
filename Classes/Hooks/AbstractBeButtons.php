@@ -23,7 +23,7 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
+use TYPO3\CMS\Core\Localization\LanguageService;
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Imaging\Icon;
@@ -46,9 +46,6 @@ abstract class AbstractBeButtons
      */
     protected $resourceFactory;
 
-    /**
-     * @param ResourceFactory $resourceFactory
-     */
     public function __construct(ResourceFactory $resourceFactory = null)
     {
         $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
@@ -183,8 +180,9 @@ abstract class AbstractBeButtons
      */
     abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true);
 
+
     /**
-     * @return \TYPO3\CMS\Lang\LanguageService
+     * @return LanguageService
      */
     protected function getLangService()
     {

@@ -23,7 +23,12 @@ namespace BeechIt\FalSecuredownload\Aspects;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
+use TYPO3\CMS\Core\Resource\ResourceStorage;
+use TYPO3\CMS\Core\Resource\Driver\DriverInterface;
+use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Resource;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -72,20 +77,20 @@ class PublicUrlAspect implements SingletonInterface
      * @param array $urlData
      */
     public function generatePublicUrl(
-        Resource\ResourceStorage $storage,
-        Resource\Driver\DriverInterface $driver,
-        Resource\ResourceInterface $resourceObject,
+        ResourceStorage $storage,
+        DriverInterface $driver,
+        ResourceInterface $resourceObject,
         $relativeToCurrentScript,
         array $urlData
     ) {
 
         // We only render special links for non-public files
-        if ($this->enabled && $resourceObject instanceof Resource\FileInterface && !$storage->isPublic()) {
+        if ($this->enabled && $resourceObject instanceof FileInterface && !$storage->isPublic()) {
             $queryParameterArray = ['eID' => 'dumpFile', 't' => ''];
-            if ($resourceObject instanceof Resource\File) {
+            if ($resourceObject instanceof File) {
                 $queryParameterArray['f'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'f';
-            } elseif ($resourceObject instanceof Resource\ProcessedFile) {
+            } elseif ($resourceObject instanceof ProcessedFile) {
                 $queryParameterArray['p'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'p';
             }

@@ -1,10 +1,10 @@
 <?php
-namespace BeechIt\FalSecuredownload\Hooks;
+namespace BeechIt\FalSecuredownload\EventListener;
 
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2014 Frans Saris <frans@beech.it>
+ *  (c) 2022 Frans Saris <frans@beech.it>
  *  All rights reserved
  *
  *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -25,6 +25,12 @@ namespace BeechIt\FalSecuredownload\Hooks;
  ***************************************************************/
 
 use BeechIt\FalSecuredownload\Service\Utility;
+use TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent;
+use TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent;
+use TYPO3\CMS\Core\Resource\Event\AfterFolderRenamedEvent;
+use TYPO3\CMS\Core\Resource\Event\BeforeFolderDeletedEvent;
+use TYPO3\CMS\Core\Resource\Event\BeforeFolderMovedEvent;
+use TYPO3\CMS\Core\Resource\Event\BeforeFolderRenamedEvent;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -32,7 +38,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 /**
  * Slots that pick up signals after (re)moving folders to update folder record
  */
-class FolderChangedSlot implements SingletonInterface
+class FolderChangedEventListener implements SingletonInterface
 {
     protected $folderMapping = [];
 
@@ -52,26 +58,19 @@ class FolderChangedSlot implements SingletonInterface
     /**
      * Get sub folder structure of folder before is gets moved
      * Is needed to update folder records when move was successful
-     *
-     * @param Folder $folder
-     * @param Folder $targetFolder
-     * @param string $newName
      */
-    public function preFolderMove(Folder $folder, Folder $targetFolder, $newName)
+    public function preFolderMove(BeforeFolderMovedEvent $event)
     {
-        $this->folderMapping[$folder->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($folder);
+        $this->folderMapping[$event->getFolder()->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($event->getFolder());
     }
 
     /**
      * Update folder permissions records when folder is moved
-     *
-     * @param Folder $folder
-     * @param Folder $targetFolder
-     * @param string $newName
      */
-    public function postFolderMove(Folder $folder, Folder $targetFolder, $newName)
+    public function postFolderMove(AfterFolderMovedEvent $event)
     {
-        $newFolder = $targetFolder->getSubfolder($newName);
+        $folder = $event->getFolder();
+        $newFolder = $event->getTargetFolder()->getSubfolder($event->getTargetFolder()->getName());
         $oldStorageUid = $folder->getStorage()->getUid();
         $newStorageUid = $newFolder->getStorage()->getUid();
 
@@ -106,21 +105,18 @@ class FolderChangedSlot implements SingletonInterface
     /**
      * Get sub folder structure of folder before is gets deleted
      * Is needed to update folder records when delete was successful
-     *
-     * @param Folder $folder
      */
-    public function preFolderDelete(Folder $folder)
+    public function preFolderDelete(BeforeFolderDeletedEvent $event)
     {
-        $this->folderMapping[$folder->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($folder);
+        $this->folderMapping[$event->getFolder()->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($event->getFolder());
     }
 
     /**
      * Update folder permissions records when folder is deleted
-     *
-     * @param Folder $folder
      */
-    public function postFolderDelete(Folder $folder)
+    public function postFolderDelete(AfterFolderDeletedEvent $event)
     {
+        $folder = $event->getFolder();
         $storageUid = $folder->getStorage()->getUid();
         $this->utilityService->deleteFolderRecord(
             $storageUid,
@@ -135,24 +131,19 @@ class FolderChangedSlot implements SingletonInterface
     /**
      * Get sub folder structure of folder before is gets renamed
      * Is needed to update folder records when renaming was successful
-     *
-     * @param Folder $folder
-     * @param $newName
      */
-    public function preFolderRename(Folder $folder, $newName)
+    public function preFolderRename(BeforeFolderRenamedEvent $event)
     {
-        $this->folderMapping[$folder->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($folder);
+        $this->folderMapping[$event->getFolder()->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($event->getFolder());
     }
 
     /**
      * Update folder permissions records when a folder is renamed
-     *
-     * @param Folder $folder
-     * @param string $newName
      */
-    public function postFolderRename(Folder $folder, $newName)
+    public function postFolderRename(AfterFolderRenamedEvent $event)
     {
-        $newFolder = $folder->getParentFolder()->getSubfolder($newName);
+        $folder = $event->getFolder();
+        $newFolder = $folder->getParentFolder()->getSubfolder($folder->getName());
         $oldStorageUid = $folder->getStorage()->getUid();
         $newStorageUid = $newFolder->getStorage()->getUid();
 

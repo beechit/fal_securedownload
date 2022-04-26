@@ -25,11 +25,11 @@
 
 namespace BeechIt\FalSecuredownload\FormEngine;
 
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
-use TYPO3\CMS\Lang\LanguageService;
 
 class DownloadStatistics extends AbstractNode
 {
