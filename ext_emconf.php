@@ -21,7 +21,7 @@ $EM_CONF[$_EXTKEY] = [
         'conflicts' => [],
         'suggests' => [
             'ke_search' => '4.3.1',
-            'solrfal' => '4.1.0',
+            'solrfal' => '10.0.0',
         ],
     ],
 ];
