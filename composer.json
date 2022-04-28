@@ -26,9 +26,6 @@
   "require": {
     "typo3/cms-core": "^11.5"
   },
-  "require-dev": {
-    "typo3/cms-core": "^11.5"
-  },
   "replace": {
     "typo3-ter/fal-securedownload": "self.version"
   },
