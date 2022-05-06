@@ -61,6 +61,11 @@ abstract class AbstractBeButtons
     {
         $buttons = [];
 
+        if (!$GLOBALS['BE_USER']->user)
+        {
+            return $buttons;
+        }
+
         // In some folder copy/move actions in file list a invalid id is passed
         try {
             /** @var $file \TYPO3\CMS\Core\Resource\Folder */
