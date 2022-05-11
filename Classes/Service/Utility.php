@@ -66,7 +66,7 @@ class Utility implements SingletonInterface
                 ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$folder->getStorage()->getUid(), \PDO::PARAM_INT)))
                 ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folder->getHashedIdentifier(), \PDO::PARAM_STR)))
                 ->execute()
-                ->fetch();
+                ->fetchAssociative();
 
             // cache results
             self::$folderRecordCache[$folder->getCombinedIdentifier()] = $record;
