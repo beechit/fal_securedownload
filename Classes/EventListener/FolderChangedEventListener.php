@@ -34,7 +34,6 @@ use TYPO3\CMS\Core\Resource\Event\BeforeFolderRenamedEvent;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Slots that pick up signals after (re)moving folders to update folder record
