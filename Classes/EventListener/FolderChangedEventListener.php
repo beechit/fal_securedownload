@@ -34,6 +34,7 @@ use TYPO3\CMS\Core\Resource\Event\BeforeFolderRenamedEvent;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Slots that pick up signals after (re)moving folders to update folder record
@@ -142,8 +143,8 @@ class FolderChangedEventListener implements SingletonInterface
      */
     public function postFolderRename(AfterFolderRenamedEvent $event)
     {
-        $folder = $event->getFolder();
-        $newFolder = $folder->getParentFolder()->getSubfolder($folder->getName());
+        $folder = $event->getSourceFolder();
+        $newFolder = $event->getFolder();
         $oldStorageUid = $folder->getStorage()->getUid();
         $newStorageUid = $newFolder->getStorage()->getUid();
 
