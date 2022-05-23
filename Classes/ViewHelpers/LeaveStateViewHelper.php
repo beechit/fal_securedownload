@@ -50,7 +50,7 @@ class LeaveStateViewHelper extends AbstractConditionViewHelper
         $folder = $arguments['folder'];
 
         $leafStateService = GeneralUtility::makeInstance(LeafStateService::class);
-        $feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : false;
+        $feUser = $GLOBALS['TSFE']->fe_user ?? false;
 
         return $feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier());
     }
