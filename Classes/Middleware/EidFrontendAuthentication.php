@@ -6,6 +6,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use TYPO3\CMS\Backend\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Exception;
@@ -39,6 +40,9 @@ class EidFrontendAuthentication implements MiddlewareInterface
         if ($eID === null || !in_array($eID, ['dumpFile', 'FalSecuredownloadFileTreeState'])) {
             return $handler->handle($request);
         }
+
+        $GLOBALS['TYPO3_REQUEST'] = $request;
+
         $frontendUser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
 
         // List of page IDs where to look for frontend user records
@@ -53,8 +57,16 @@ class EidFrontendAuthentication implements MiddlewareInterface
 
         // Register the frontend user as aspect and within the session
         $this->setFrontendUserAspect($frontendUser);
-        $response = $handler->handle($request);
-        return $response;
+
+        $backendUserObject = GeneralUtility::makeInstance(FrontendBackendUserAuthentication::class);
+        $backendUserObject->start();
+        $backendUserObject->unpack_uc();
+        if (!empty($backendUserObject->user['uid'])) {
+            $backendUserObject->fetchGroupData();
+        }
+        $this->setBackendUserAspect($backendUserObject);
+
+        return $handler->handle($request);
     }
 
     /**
@@ -65,5 +77,16 @@ class EidFrontendAuthentication implements MiddlewareInterface
     protected function setFrontendUserAspect(AbstractUserAuthentication $user)
     {
         $this->context->setAspect('beechit.user', GeneralUtility::makeInstance(UserAspect::class, $user));
+    }
+
+    /**
+     * Register the backend user as aspect
+     *
+     * @param AbstractUserAuthentication $user
+     */
+    protected function setBackendUserAspect(AbstractUserAuthentication $user)
+    {
+        $this->context->setAspect('beechit.beuser', GeneralUtility::makeInstance(UserAspect::class, $user));
+        $GLOBALS['BE_USER'] = $user;
     }
 }
