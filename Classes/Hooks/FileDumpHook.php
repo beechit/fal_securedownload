@@ -214,7 +214,11 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      */
     protected function dumpFileContents($file, $asDownload, $resumableDownload)
     {
-        $downloadName = $file->getProperty('download_name') ?: $file->getName();
+        if( $file->hasProperty('download_name') ){
+            $downloadName = $file->getProperty('download_name');
+        } else {
+            $downloadName = $file->getName();
+        }
 
         // Make sure downloadName has a file extension
         $fileParts = pathinfo($downloadName);
