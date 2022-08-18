@@ -1,5 +1,5 @@
 <?php
-defined('TYPO3_MODE') or die();
+defined('TYPO3') or die();
 
 return [
     'ctrl' => [
@@ -14,8 +14,6 @@ return [
             'ignoreRootLevelRestriction' => true,
         ],
         'iconfile' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.png'
-    ],
-    'interface' => [
     ],
     'types' => [
         '0' => ['showitem' => 'fe_groups,--palette--;;filePalette'],
@@ -33,7 +31,6 @@ return [
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:storage',
             'config' => [
                 'type' => 'group',
-                'internal_type' => 'db',
                 'size' => 1,
                 'maxitems' => 1,
                 'minitems' => 1,
@@ -58,7 +55,7 @@ return [
         ],
         'fe_groups' => [
             'exclude' => false,
-            'label' => 'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.fe_group',
+            'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.fe_group',
             'config' => [
                 'type' => 'select',
                 'renderType' => 'selectMultipleSideBySide',
@@ -66,18 +63,17 @@ return [
                 'maxitems' => 40,
                 'items' => [
                     [
-                        'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
+                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
                         -2
                     ],
                     [
-                        'LLL:EXT:lang/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
+                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
                         '--div--'
                     ]
                 ],
                 'exclusiveKeys' => '-1,-2',
                 'foreign_table' => 'fe_groups',
                 'foreign_table_where' => 'ORDER BY fe_groups.title',
-                'enableMultiSelectFilterTextfield' => true,
             ]
         ]
     ]

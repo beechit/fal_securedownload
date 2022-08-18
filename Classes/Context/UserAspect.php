@@ -44,9 +44,6 @@ class UserAspect implements AspectInterface
         $this->user = $user ?? $this->createPseudoUser();
     }
 
-    /**
-     * @return object
-     */
     private function createPseudoUser(): object
     {
         $user = new \stdClass();

@@ -31,3 +31,34 @@ services:
 
   BeechIt\FalSecuredownload\Middleware\FileTreeState:
     public: true
+
+  BeechIt\FalSecuredownload\EventListener\FolderChangedEventListener:
+    tags:
+      - name: event.listener
+        method: 'preFolderMove'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFolderMovedEvent
+      - name: event.listener
+        method: 'postFolderMove'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent
+      - name: event.listener
+        method: 'preFolderDelete'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFolderDeletedEvent
+      - name: event.listener
+        method: 'postFolderDelete'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent
+      - name: event.listener
+        method: 'preFolderRename'
+        event: TYPO3\CMS\Core\Resource\Event\BeforeFolderRenamedEvent
+      - name: event.listener
+        method: 'postFolderRename'
+        event: TYPO3\CMS\Core\Resource\Event\AfterFolderRenamedEvent
+
+  BeechIt\FalSecuredownload\EventListener\ModifyIconForResourcePropertiesEventListener:
+    tags:
+      - name: event.listener
+        event: TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent
+
+  BeechIt\FalSecuredownload\EventListener\GeneratePublicUrlForResourceEventListener:
+    tags:
+      - name: event.listener
+        event: TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent

@@ -23,7 +23,7 @@ namespace BeechIt\FalSecuredownload\Domain\Repository;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
+use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
@@ -38,7 +38,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
      * Find ProcessedFile by Uid
      *
      * @param int $uid
-     * @return object|\TYPO3\CMS\Core\Resource\ProcessedFile
+     * @return object|ProcessedFile
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
@@ -54,7 +54,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
             ->from($this->table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int)$uid, \PDO::PARAM_INT)))
             ->execute()
-            ->fetch();
+            ->fetchAssociative();
 
         if (empty($row) || !is_array($row)) {
             throw new \RuntimeException(
