@@ -73,7 +73,7 @@ class PublicUrlAspect implements SingletonInterface
      * @param Resource\ResourceStorage $storage
      * @param Resource\Driver\DriverInterface $driver
      * @param Resource\ResourceInterface $resourceObject
-     * @param $relativeToCurrentScript
+     * @param mixed $relativeToCurrentScript Deprecated. Will be removed in a future version
      * @param array $urlData
      */
     public function generatePublicUrl(
