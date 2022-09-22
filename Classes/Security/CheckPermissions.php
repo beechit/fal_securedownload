@@ -27,6 +27,12 @@ namespace BeechIt\FalSecuredownload\Security;
 use BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent;
 use BeechIt\FalSecuredownload\Service\Utility;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use TYPO3\CMS\Backend\FrontendBackendUserAuthentication;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaRequiredException;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\UserAspect;
+use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\FolderInterface;
@@ -76,6 +82,56 @@ class CheckPermissions implements SingletonInterface
     {
         $userFeGroups = !isset($GLOBALS['TSFE']->fe_user->user) ? false : $GLOBALS['TSFE']->fe_user->groupData['uid'];
         return $this->checkFileAccess($file, $userFeGroups);
+    }
+
+    /**
+     * Check backend user file access
+     *
+     * @param File $file
+     * @return bool
+     */
+    public function checkBackendUserFileAccess(File $file): bool
+    {
+        $backendUser = $GLOBALS['BE_USER'] ?? null;
+        if (!$backendUser instanceof BackendUserAuthentication || empty($backendUser->user['uid'])) {
+            return false;
+        }
+        if ($backendUser->isAdmin()) {
+            return true;
+        }
+        $resourceStorage = $file->getStorage();
+        $resourceStorage->setUserPermissions($GLOBALS['BE_USER']->getFilePermissionsForStorage($resourceStorage));
+        foreach ($GLOBALS['BE_USER']->getFileMountRecords() as $fileMountRow) {
+            if ((int)$fileMountRow['base'] === (int)$resourceStorage->getUid()) {
+                try {
+                    $resourceStorage->addFileMount($fileMountRow['path'], $fileMountRow);
+                } catch (FolderDoesNotExistException $e) {
+                    // That file mount does not seem to be valid, fail silently
+                }
+            }
+        }
+        $originalEvaluatePermissions = $resourceStorage->getEvaluatePermissions();
+        $resourceStorage->setEvaluatePermissions(true);
+        $access = $resourceStorage->checkFileActionPermission('read', $file);
+        $resourceStorage->setEvaluatePermissions($originalEvaluatePermissions);
+        return $access;
+    }
+
+    /**
+     * Get backend user object
+     *
+     * @return FrontendBackendUserAuthentication
+     * @throws MfaRequiredException
+     */
+    protected function getBackendUser(): FrontendBackendUserAuthentication
+    {
+        $backendUserObject = GeneralUtility::makeInstance(FrontendBackendUserAuthentication::class);
+        $backendUserObject->start();
+        $backendUserObject->unpack_uc();
+        if (!empty($backendUserObject->user['uid'])) {
+            $backendUserObject->fetchGroupData();
+        }
+        return $backendUserObject;
     }
 
     /**
