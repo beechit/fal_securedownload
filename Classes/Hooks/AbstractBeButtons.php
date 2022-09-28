@@ -77,6 +77,7 @@ abstract class AbstractBeButtons
         }
 
         if ($folder && $folder instanceof Folder
+            && $folder->checkActionPermission('write')
             && !$folder->getStorage()->isPublic()
             && in_array(
                 $folder->getRole(),
