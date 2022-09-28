@@ -66,6 +66,7 @@ class ItemProvider extends AbstractProvider
             ->retrieveFileOrFolderObject($this->identifier);
 
         if ($resource instanceof Folder
+            && $folder->checkActionPermission('write')
             && !$resource->getStorage()->isPublic()
             && in_array(
                 $resource->getRole(),
