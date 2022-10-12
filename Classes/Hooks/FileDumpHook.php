@@ -275,7 +275,6 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
             $buffer = @fread($filePointer, $partSize);
             $dumpedSize += strlen($buffer);
             print $buffer;
-            ob_flush();
             flush();
 
             if (connection_status() !== 0) {
