@@ -24,6 +24,9 @@ Instead of throwing a "Authentication required!" message you can redirect the us
 .. code-block::
 
     /login/?redirect_url=###REQUEST_URI###
+    
+    # Or a typolink
+    t3://page?uid=5&redirect_url=###REQUEST_URI###
 
 
 No Access redirect
@@ -36,6 +39,9 @@ Instead of throwing a "Access denied" message you can redirect the user to a cer
 .. code-block::
 
     /no-access/?redirect_url=###REQUEST_URI###
+    
+    # Or a typolink
+    t3://page?uid=5&redirect_url=###REQUEST_URI###
 
 
 Force download
