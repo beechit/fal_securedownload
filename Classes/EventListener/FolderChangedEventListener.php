@@ -70,7 +70,7 @@ class FolderChangedEventListener implements SingletonInterface
     public function postFolderMove(AfterFolderMovedEvent $event)
     {
         $folder = $event->getFolder();
-        $newFolder = $event->getTargetFolder()->getSubfolder($event->getTargetFolder()->getName());
+        $newFolder = $event->getTargetFolder();
         $oldStorageUid = $folder->getStorage()->getUid();
         $newStorageUid = $newFolder->getStorage()->getUid();
 
