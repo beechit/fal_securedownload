@@ -229,7 +229,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         }
 
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
-        header('Content-Disposition: ' . $contentDisposition . '; filename="' . $downloadName . '"');
+        header('Content-Disposition: ' . $contentDisposition . '; filename=*=UTF-8\'\'' . rawurlencode($downloadName));
         header('Content-Type: ' . $file->getMimeType());
         header('Expires: -1');
         header('Cache-Control: public, must-revalidate, post-check=0, pre-check=0');
