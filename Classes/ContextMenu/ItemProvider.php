@@ -10,11 +10,12 @@ namespace BeechIt\FalSecuredownload\ContextMenu;
 
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
+use TYPO3\CMS\Backend\ContextMenu\ItemProviders\ProviderInterface;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class ItemProvider extends AbstractProvider
+class ItemProvider extends AbstractProvider implements ProviderInterface
 {
 
     /**
@@ -97,7 +98,7 @@ class ItemProvider extends AbstractProvider
         $folderRecord = $utility->getFolderRecord($this->folder);
 
         return [
-            'data-callback-module' => 'TYPO3/CMS/FalSecuredownload/ContextMenuActions',
+            'data-callback-module' => '@typo3/fal_securedownload/context-menu-actions',
             'data-folder-record-uid' => $folderRecord['uid'] ?? 0,
             'data-storage' => $this->folder->getStorage()->getUid(),
             'data-folder' => $this->folder->getIdentifier(),
