@@ -1,16 +1,12 @@
 /**
- * Module: TYPO3/CMS/FalSecuredownload/ContextMenuActions
+ * Module: @typo3/fal_securedownload/
  *
  * JavaScript to handle the click action of the "FalSecuredownload" context menu item
  * @exports TYPO3/CMS/FalSecuredownload/ContextMenuActions
  */
-define(function () {
-    'use strict';
 
-    /**
-     * @exports TYPO3/CMS/FalSecuredownload/ContextMenuActions
-     */
-    var ContextMenuActions = {};
+
+class ContextMenuActions {
 
     /**
      * Open folder permissions edit form
@@ -18,7 +14,7 @@ define(function () {
      * @param {string} table
      * @param {string} uid combined folder identifier
      */
-    ContextMenuActions.folderPermissions = function (table, uid) {
+     static folderPermissions(table, uid) {
         var folderRecordUid = this.data('folderRecordUid') || 0;
 
         if (folderRecordUid > 0) {
@@ -39,9 +35,9 @@ define(function () {
         }
     };
 
-    ContextMenuActions.getReturnUrl = function () {
+    static getReturnUrl() {
         return encodeURIComponent(top.list_frame.document.location.pathname + top.list_frame.document.location.search);
     };
+};
 
-    return ContextMenuActions;
-});
+export default ContextMenuActions;
