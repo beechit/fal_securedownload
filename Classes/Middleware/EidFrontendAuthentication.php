@@ -52,14 +52,14 @@ class EidFrontendAuthentication implements MiddlewareInterface
         }
 
         // Authenticate now
-        $frontendUser->start();
+        $frontendUser->start($request);
         $frontendUser->unpack_uc();
 
         // Register the frontend user as aspect and within the session
         $this->setFrontendUserAspect($frontendUser);
 
         $backendUserObject = GeneralUtility::makeInstance(FrontendBackendUserAuthentication::class);
-        $backendUserObject->start();
+        $backendUserObject->start($request);
         $backendUserObject->unpack_uc();
         if (!empty($backendUserObject->user['uid'])) {
             $backendUserObject->fetchGroupData();
