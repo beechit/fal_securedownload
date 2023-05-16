@@ -234,26 +234,28 @@ class CheckPermissions implements SingletonInterface
         $resource->getStorage()->setEvaluatePermissions(false);
 
         $feGroups = [];
-        // loop trough the root line of an folder and check the permissions of every folder
-        foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
-            // fetch folder permissions record
-            $folderRecord = $this->utilityService->getFolderRecord($folder);
+        // Check file record for permissions
+        if ($resource instanceof File && $resource->getProperty('fe_groups')) {
+            $feGroups = GeneralUtility::intExplode(',', $resource->getProperty('fe_groups'), true);
+        }
 
-            // if record found check permissions
-            if ($folderRecord) {
-                if ($feGroups === []) {
-                    $feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], true);
+        // If file record does not have permissions set, check folders
+        if ($feGroups === []) {
+            $folders = array_reverse($this->getFolderRootLine($resource->getParentFolder()));
+            foreach ($folders as $folder) {
+                $folderRecord = $this->utilityService->getFolderRecord($folder);
+                if ($folderRecord && !empty($folderRecord['fe_groups'])) {
+                    $feGroups = GeneralUtility::intExplode(',', $folderRecord['fe_groups'], true);
+
+                    if ($feGroups !== []) {
+                        break;
+                    }
                 }
-                if ($folderRecord['fe_groups']) {
-                    $feGroups = ArrayUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
-                }
-                break;
             }
         }
-        if ($resource instanceof File && $resource->getProperty('fe_groups')) {
-            $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
-        }
+
         $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
+
         return implode(',', $feGroups);
     }
 
