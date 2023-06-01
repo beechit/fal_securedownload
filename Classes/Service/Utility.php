@@ -65,7 +65,7 @@ class Utility implements SingletonInterface
                 ->from('tx_falsecuredownload_folder')
                 ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$folder->getStorage()->getUid(), \PDO::PARAM_INT)))
                 ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folder->getHashedIdentifier(), \PDO::PARAM_STR)))
-                ->execute()
+                ->executeQuery()
                 ->fetchAssociative();
 
             // cache results
@@ -126,7 +126,7 @@ class Utility implements SingletonInterface
             ->delete('tx_falsecuredownload_folder')
             ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$storageUid, \PDO::PARAM_INT)))
             ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash, \PDO::PARAM_STR)))
-            ->execute();
+            ->executeStatement();
 
         // clear cache if exists
         if (isset(self::$folderRecordCache[$storageUid . ':' . $identifier])) {

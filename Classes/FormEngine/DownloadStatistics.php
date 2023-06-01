@@ -68,7 +68,7 @@ class DownloadStatistics extends AbstractNode
             ->where($queryBuilder->expr()->eq('tx_falsecuredownload_download.feuser', $queryBuilder->createNamedParameter((int)$row['uid'], \PDO::PARAM_INT)))
             ->groupBy('sys_file.name')
             ->orderBy('sys_file.name')
-            ->execute()
+            ->executeQuery()
             ->fetchAll();
 
         $lang = $this->getLanguageService();

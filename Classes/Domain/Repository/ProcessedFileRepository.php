@@ -53,7 +53,7 @@ class ProcessedFileRepository extends \TYPO3\CMS\Core\Resource\ProcessedFileRepo
             ->select('*')
             ->from($this->table)
             ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter((int)$uid, \PDO::PARAM_INT)))
-            ->execute()
+            ->executeQuery()
             ->fetchAssociative();
 
         if (empty($row) || !is_array($row)) {
