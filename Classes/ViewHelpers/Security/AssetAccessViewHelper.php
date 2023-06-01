@@ -23,7 +23,7 @@ namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
-
+use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -67,7 +67,7 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
         $file = $arguments['file'];
 
         /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
-        $checkPermissionsService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
+        $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
         $userFeGroups = self::getFeUserGroups();
         $access = false;
 

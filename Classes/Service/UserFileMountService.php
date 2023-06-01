@@ -23,6 +23,7 @@ namespace BeechIt\FalSecuredownload\Service;
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
@@ -81,7 +82,7 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
                 $queue->enqueue(new FlashMessage(
                     'Storage "' . $storage->getName() . '" is not browsable. No folder is currently selectable.',
                     '',
-                    FlashMessage::WARNING
+                    AbstractMessage::WARNING
                 ));
 
                 if (!count($PA['items'])) {
