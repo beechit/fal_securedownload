@@ -75,35 +75,7 @@ class FolderChangedEventListener implements SingletonInterface
     {
         $folder = $event->getFolder();
         $newFolder = $event->getTargetFolder();
-        $oldStorageUid = $folder->getStorage()->getUid();
-        $newStorageUid = $newFolder->getStorage()->getUid();
-
-        $this->utilityService->updateFolderRecord(
-            $oldStorageUid,
-            $folder->getHashedIdentifier(),
-            $folder->getIdentifier(),
-            [
-                'storage' => $newStorageUid,
-                'folder_hash' => $newFolder->getHashedIdentifier(),
-                'folder' => $newFolder->getIdentifier()
-            ]
-        );
-
-        if (!empty($this->folderMapping[$folder->getCombinedIdentifier()])) {
-            $newMapping = $this->getSubFolderIdentifiers($newFolder);
-            foreach ($this->folderMapping[$folder->getCombinedIdentifier()] as $key => $folderInfo) {
-                $this->utilityService->updateFolderRecord(
-                    $oldStorageUid,
-                    $folderInfo[0],
-                    $folderInfo[1],
-                    [
-                        'storage' => $newStorageUid,
-                        'folder_hash' => $newMapping[$key][0],
-                        'folder' => $newMapping[$key][1]
-                    ]
-                );
-            }
-        }
+        $this->updateFolderPermissions($folder, $newFolder);
     }
 
     /**
@@ -156,6 +128,11 @@ class FolderChangedEventListener implements SingletonInterface
     {
         $folder = $event->getSourceFolder();
         $newFolder = $event->getFolder();
+        $this->updateFolderPermissions($folder, $newFolder);
+    }
+
+    private function updateFolderPermissions(Folder $folder, Folder $newFolder): void
+    {
         $oldStorageUid = $folder->getStorage()->getUid();
         $newStorageUid = $newFolder->getStorage()->getUid();
 
