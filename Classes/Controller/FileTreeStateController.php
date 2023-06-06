@@ -45,10 +45,10 @@ class FileTreeStateController
     protected Context $context;
     protected LeafStateService $leafStateService;
 
-    public function __construct(Context $context = null, LeafStateService $leafStateService = null)
+    public function __construct(Context $context, LeafStateService $leafStateService)
     {
-        $this->context = $context ?? GeneralUtility::makeInstance(Context::class);
-        $this->leafStateService = $leafStateService ?? GeneralUtility::makeInstance(LeafStateService::class);
+        $this->context = $context;
+        $this->leafStateService = $leafStateService;
     }
 
     /**
