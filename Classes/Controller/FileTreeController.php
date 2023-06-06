@@ -48,8 +48,9 @@ class FileTreeController extends ActionController
     public function treeAction(): ResponseInterface
     {
         if ($this->settings['storage'] === '') {
-            return $this->htmlResponse(null);
+            return $this->htmlResponse('Storage is not configured');
         }
+
         try {
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
         } catch (FolderDoesNotExistException $exception) {
@@ -58,6 +59,7 @@ class FileTreeController extends ActionController
         }
 
         $this->view->assign('folder', $folder);
+
         return $this->htmlResponse();
     }
 }
