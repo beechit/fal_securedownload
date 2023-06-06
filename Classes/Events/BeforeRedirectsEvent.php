@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\Events;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2022 Frans Saris <frans@beech.it>
@@ -23,7 +23,9 @@ namespace BeechIt\FalSecuredownload\Events;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Events;
 
 use BeechIt\FalSecuredownload\Hooks\FileDumpHook;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
@@ -48,6 +50,7 @@ final class BeforeRedirectsEvent
         return $this->loginRedirectUrl;
     }
 
+    /** @noinspection PhpUnused */
     public function setLoginRedirectUrl(?string $loginRedirectUrl): void
     {
         $this->loginRedirectUrl = $loginRedirectUrl;
@@ -58,31 +61,34 @@ final class BeforeRedirectsEvent
         return $this->noAccessRedirectUrl;
     }
 
+    /** @noinspection PhpUnused */
     public function setNoAccessRedirectUrl(?string $noAccessRedirectUrl): void
     {
         $this->noAccessRedirectUrl = $noAccessRedirectUrl;
     }
 
+    /** @noinspection PhpUnused */
     public function getFile(): ResourceInterface
     {
         return $this->file;
     }
 
+    /** @noinspection PhpUnused */
     public function setFile(ResourceInterface $file): void
     {
         $this->file = $file;
     }
 
+    /** @noinspection PhpUnused */
     public function getCaller(): FileDumpHook
     {
         return $this->caller;
     }
 
+    /** @noinspection PhpUnused */
     public function setCaller(FileDumpHook $caller): void
     {
         $this->caller = $caller;
     }
-
-
 
 }

@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\Events;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2022 Frans Saris <frans@beech.it>
@@ -23,7 +23,9 @@ namespace BeechIt\FalSecuredownload\Events;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Events;
 
 final class AddCustomGroupsEvent
 {
@@ -39,6 +41,7 @@ final class AddCustomGroupsEvent
         return $this->customUserGroups;
     }
 
+    /** @noinspection PhpUnused */
     public function setCustomUserGroups(array $customUserGroups): void
     {
         $this->customUserGroups = $customUserGroups;
