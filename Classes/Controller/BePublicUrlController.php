@@ -12,7 +12,9 @@ namespace BeechIt\FalSecuredownload\Controller;
 
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 use TYPO3\CMS\Core\Http\AbstractApplication;
+use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
 use TYPO3\CMS\Core\Resource\ProcessedFileRepository;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -60,14 +62,22 @@ class BePublicUrlController extends AbstractApplication
             ) === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {
-                $file = $this->resourceFactory->getFileObject($parameters['f']);
+                try {
+                    $file = $this->resourceFactory->getFileObject($parameters['f']);
+                } catch (FileDoesNotExistException $e) {
+                    return $this->responseFactory->createResponse(404);
+                }
                 if ($file->isDeleted() || $file->isMissing()) {
-                    $file = null;
+                    return $this->responseFactory->createResponse(404);
                 }
                 $orgFile = $file;
             } else {
-                /** @var ProcessedFile $file */
-                $file = $this->processedFileRepository->findByUid($parameters['p']);
+                try {
+                    /** @var ProcessedFile $file */
+                    $file = $this->processedFileRepository->findByUid($parameters['p']);
+                } catch (RuntimeException $e) {
+                    return $this->responseFactory->createResponse(404);
+                }
                 if ($file->isDeleted()) {
                     return $this->responseFactory->createResponse(404);
                 }
@@ -77,10 +87,6 @@ class BePublicUrlController extends AbstractApplication
             // Check file read permissions
             if (!$orgFile->getStorage()->checkFileActionPermission('read', $orgFile)) {
                 return $this->responseFactory->createResponse(403);
-            }
-
-            if ($file === null) {
-                return $this->responseFactory->createResponse(404);;
             }
 
             ob_start();
