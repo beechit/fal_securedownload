@@ -1,6 +1,8 @@
 <?php
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2016 Markus Klein <markus.klein@reelworx.at>
@@ -21,7 +23,7 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
 namespace BeechIt\FalSecuredownload\Configuration;
 
@@ -33,15 +35,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class ExtensionConfiguration
 {
-    private static $isInitialized = false;
-    private static $loginRedirectUrl = '';
-    private static $noAccessRedirectUrl = '';
-    private static $forceDownload = false;
-    private static $forceDownloadForExt = '';
-    private static $trackDownloads = false;
-    private static $resumableDownload = true;
+    private static bool $isInitialized = false;
+    private static string $loginRedirectUrl = '';
+    private static string $noAccessRedirectUrl = '';
+    private static bool $forceDownload = false;
+    private static string $forceDownloadForExt = '';
+    private static bool $trackDownloads = false;
+    private static bool $resumableDownload = true;
 
-    private static function init()
+    private static function init(): void
     {
         if (!self::$isInitialized) {
             self::$isInitialized = true;
@@ -51,41 +53,29 @@ class ExtensionConfiguration
             self::$forceDownload = (bool)$extensionConfig['force_download'];
             self::$forceDownloadForExt = $extensionConfig['force_download_for_ext'];
             self::$trackDownloads = (bool)$extensionConfig['track_downloads'];
-            self::$resumableDownload = (isset($extensionConfig['resumable_download']) ? (bool)$extensionConfig['resumable_download'] : false);
+            self::$resumableDownload = isset($extensionConfig['resumable_download']) && $extensionConfig['resumable_download'];
         }
     }
 
-    /**
-     * @return string
-     */
-    public static function loginRedirectUrl()
+    public static function loginRedirectUrl(): string
     {
         self::init();
         return self::$loginRedirectUrl;
     }
 
-    /**
-     * @return string
-     */
-    public static function noAccessRedirectUrl()
+    public static function noAccessRedirectUrl(): string
     {
         self::init();
         return self::$noAccessRedirectUrl;
     }
 
-    /**
-     * @return bool
-     */
-    public static function forceDownload()
+    public static function forceDownload(): bool
     {
         self::init();
         return self::$forceDownload;
     }
 
-    /**
-     * @return string
-     */
-    public static function forceDownloadForExt()
+    public static function forceDownloadForExt(): string
     {
         self::init();
         return self::$forceDownloadForExt;
@@ -93,19 +83,14 @@ class ExtensionConfiguration
 
     /**
      * Track user downloads
-     *
-     * @return bool
      */
-    public static function trackDownloads()
+    public static function trackDownloads(): bool
     {
         self::init();
         return self::$trackDownloads;
     }
 
-    /**
-     * @return bool
-     */
-    public static function resumableDownload()
+    public static function resumableDownload(): bool
     {
         self::init();
         return self::$resumableDownload;
