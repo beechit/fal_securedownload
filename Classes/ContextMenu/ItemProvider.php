@@ -1,6 +1,6 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\ContextMenu;
+declare(strict_types=1);
 
 /*
  * This source file is proprietary property of Beech Applications B.V.
@@ -8,8 +8,11 @@ namespace BeechIt\FalSecuredownload\ContextMenu;
  * All code (c) Beech Applications B.V. all rights reserved
  */
 
+namespace BeechIt\FalSecuredownload\ContextMenu;
+
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
+use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -17,25 +20,23 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class ItemProvider extends AbstractProvider
 {
 
-    /**
-     * @var ResourceFactory
-     */
-    protected $resourceFactory;
+    protected ResourceFactory $resourceFactory;
+    protected ?Folder $folder = null;
 
     /**
-     * ItemProvider constructor.
+     * Constructor arguments are only needed for TYPO3 v11
+     * @see https://docs.typo3.org/c/typo3/cms-core/12.4/en-us/Changelog/12.0/Breaking-96333-AutoConfigurationOfContextMenuItemProviders.html
+     *
+     * @param string $table
+     * @param string $identifier
+     * @param string $context
      * @param ResourceFactory|null $resourceFactory
      */
-    public function __construct(string $table, string $identifier, string $context = '', ResourceFactory $resourceFactory = null)
+    public function __construct(string $table, string $identifier, string $context = '', ?ResourceFactory $resourceFactory = null)
     {
         $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
         parent::__construct($table, $identifier, $context);
     }
-
-    /**
-     * @var Folder
-     */
-    protected $folder;
 
     public function getPriority(): int
     {
@@ -49,8 +50,10 @@ class ItemProvider extends AbstractProvider
 
     /**
      * Initialize file object
+     *
+     * @throws ResourceDoesNotExistException
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         parent::initialize();
         $resource = $this->resourceFactory
@@ -70,6 +73,8 @@ class ItemProvider extends AbstractProvider
 
     /**
      * Adds the folder permission menu item for folder of a non-public storage
+     *
+     * @throws ResourceDoesNotExistException
      */
     public function addItems(array $items): array
     {

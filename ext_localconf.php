@@ -46,6 +46,8 @@ $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar
     DocHeaderButtonsHook::class . '->getButtons';
 
 // Context menu
+// Only needed for TYPO3 v11
+// https://docs.typo3.org/c/typo3/cms-core/12.4/en-us/Changelog/12.0/Breaking-96333-AutoConfigurationOfContextMenuItemProviders.html
 $GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1547242135] = ItemProvider::class;
 
 // refresh file tree after change in tx_falsecuredownload_folder record
