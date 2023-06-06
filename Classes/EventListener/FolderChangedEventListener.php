@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\EventListener;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2022 Frans Saris <frans@beech.it>
@@ -22,7 +23,9 @@ namespace BeechIt\FalSecuredownload\EventListener;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\EventListener;
 
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent;
@@ -37,19 +40,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Slots that pick up signals after (re)moving folders to update folder record
+ *
+ * Events of class are registered in Services.yaml
+ *
+ * @noinspection PhpUnused
  */
 class FolderChangedEventListener implements SingletonInterface
 {
-    protected $folderMapping = [];
+    protected array $folderMapping = [];
+    protected Utility $utilityService;
 
-    /**
-     * @var Utility
-     */
-    protected $utilityService;
-
-    /**
-     * __construct
-     */
     public function __construct()
     {
         $this->utilityService = GeneralUtility::makeInstance(Utility::class);
@@ -58,16 +58,20 @@ class FolderChangedEventListener implements SingletonInterface
     /**
      * Get sub folder structure of folder before is gets moved
      * Is needed to update folder records when move was successful
+     *
+     * @noinspection PhpUnused
      */
-    public function preFolderMove(BeforeFolderMovedEvent $event)
+    public function preFolderMove(BeforeFolderMovedEvent $event): void
     {
         $this->folderMapping[$event->getFolder()->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($event->getFolder());
     }
 
     /**
      * Update folder permissions records when folder is moved
+     *
+     * @noinspection PhpUnused
      */
-    public function postFolderMove(AfterFolderMovedEvent $event)
+    public function postFolderMove(AfterFolderMovedEvent $event): void
     {
         $folder = $event->getFolder();
         $newFolder = $event->getTargetFolder();
@@ -105,16 +109,20 @@ class FolderChangedEventListener implements SingletonInterface
     /**
      * Get sub folder structure of folder before is gets deleted
      * Is needed to update folder records when delete was successful
+     *
+     * @noinspection PhpUnused
      */
-    public function preFolderDelete(BeforeFolderDeletedEvent $event)
+    public function preFolderDelete(BeforeFolderDeletedEvent $event): void
     {
         $this->folderMapping[$event->getFolder()->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($event->getFolder());
     }
 
     /**
      * Update folder permissions records when folder is deleted
+     *
+     * @noinspection PhpUnused
      */
-    public function postFolderDelete(AfterFolderDeletedEvent $event)
+    public function postFolderDelete(AfterFolderDeletedEvent $event): void
     {
         $folder = $event->getFolder();
         $storageUid = $folder->getStorage()->getUid();
@@ -131,16 +139,20 @@ class FolderChangedEventListener implements SingletonInterface
     /**
      * Get sub folder structure of folder before is gets renamed
      * Is needed to update folder records when renaming was successful
+     *
+     * @noinspection PhpUnused
      */
-    public function preFolderRename(BeforeFolderRenamedEvent $event)
+    public function preFolderRename(BeforeFolderRenamedEvent $event): void
     {
         $this->folderMapping[$event->getFolder()->getCombinedIdentifier()] = $this->getSubFolderIdentifiers($event->getFolder());
     }
 
     /**
      * Update folder permissions records when a folder is renamed
+     *
+     * @noinspection PhpUnused
      */
-    public function postFolderRename(AfterFolderRenamedEvent $event)
+    public function postFolderRename(AfterFolderRenamedEvent $event): void
     {
         $folder = $event->getSourceFolder();
         $newFolder = $event->getFolder();
@@ -177,11 +189,8 @@ class FolderChangedEventListener implements SingletonInterface
 
     /**
      * Get folder
-     *
-     * @param Folder $folder
-     * @return array
      */
-    protected function getSubFolderIdentifiers(Folder $folder)
+    protected function getSubFolderIdentifiers(Folder $folder): array
     {
         $folderIdentifiers = [];
         foreach ($folder->getSubfolders() as $subFolder) {
