@@ -25,11 +25,17 @@ class BePublicUrlController extends AbstractApplication
 {
     protected ResourceFactory $resourceFactory;
     protected ResponseFactoryInterface $responseFactory;
+    private ProcessedFileRepository $processedFileRepository;
 
-    public function __construct(ResourceFactory $resourceFactory, ResponseFactoryInterface $responseFactory)
+    public function __construct(
+        ResourceFactory $resourceFactory,
+        ResponseFactoryInterface $responseFactory,
+        ProcessedFileRepository $processedFileRepository
+    )
     {
         $this->resourceFactory = $resourceFactory;
         $this->responseFactory = $responseFactory;
+        $this->processedFileRepository = $processedFileRepository;
     }
 
     /**
@@ -61,7 +67,7 @@ class BePublicUrlController extends AbstractApplication
                 $orgFile = $file;
             } else {
                 /** @var ProcessedFile $file */
-                $file = GeneralUtility::makeInstance(ProcessedFileRepository::class)->findByUid($parameters['p']);
+                $file = $this->processedFileRepository->findByUid($parameters['p']);
                 if ($file->isDeleted()) {
                     return $this->responseFactory->createResponse(404);
                 }
