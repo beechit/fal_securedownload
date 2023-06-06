@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\EventListener;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2022 Frans Saris <frans@beech.it>
@@ -23,19 +23,26 @@ namespace BeechIt\FalSecuredownload\EventListener;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\EventListener;
 
 use BeechIt\FalSecuredownload\Aspects\IconFactoryAspect;
 use TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * EventListener is registered in Services.yaml
+ *
+ * @noinspection PhpUnused
+ */
 class ModifyIconForResourcePropertiesEventListener
 {
     public function __invoke(ModifyIconForResourcePropertiesEvent $event): void
     {
         $iconFactoryAspect = GeneralUtility::makeInstance(IconFactoryAspect::class);
 
-        List($resource, $size, $options, $iconIdentifier, $overlayIdentifier) =
+        [, , , $iconIdentifier, $overlayIdentifier] =
             $iconFactoryAspect->buildIconForResource(
                 $event->getResource(),
                 $event->getSize(),
