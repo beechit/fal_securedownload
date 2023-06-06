@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 /*
  * This file is part of the TYPO3 CMS project.
@@ -17,6 +17,7 @@ declare(strict_types = 1);
 
 namespace BeechIt\FalSecuredownload\Context;
 
+use stdClass;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Context\AspectInterface;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
@@ -31,13 +32,12 @@ use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 class UserAspect implements AspectInterface
 {
     /**
-     * @var AbstractUserAuthentication
+     * @var AbstractUserAuthentication|stdClass
      */
     protected $user;
 
     /**
      * @param AbstractUserAuthentication|null $user
-     * @param array|null $alternativeGroups
      */
     public function __construct(AbstractUserAuthentication $user = null)
     {
@@ -46,7 +46,7 @@ class UserAspect implements AspectInterface
 
     private function createPseudoUser(): object
     {
-        $user = new \stdClass();
+        $user = new stdClass();
         $user->user = [];
         return $user;
     }
@@ -55,14 +55,13 @@ class UserAspect implements AspectInterface
      * Fetch common information about the user
      *
      * @param string $name
-     * @return int|bool|string|array
+     * @return AbstractUserAuthentication|stdClass
      * @throws AspectPropertyNotFoundException
      */
     public function get(string $name)
     {
-        switch ($name) {
-            case 'user':
-                return $this->user;
+        if ($name === 'user') {
+            return $this->user;
         }
         throw new AspectPropertyNotFoundException('Property "' . $name . '" not found in Aspect "' . __CLASS__ . '".', 1597220199);
     }
