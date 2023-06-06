@@ -1,68 +1,81 @@
 <?php
+
+use ApacheSolrForTypo3\Solrfal\Indexing\DocumentFactory;
+use BeechIt\FalSecuredownload\Aspects\SolrFalAspect;
+use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
+use BeechIt\FalSecuredownload\ContextMenu\ItemProvider;
+use BeechIt\FalSecuredownload\Controller\FileTreeController;
+use BeechIt\FalSecuredownload\Controller\FileTreeStateController;
+use BeechIt\FalSecuredownload\FormEngine\DownloadStatistics;
+use BeechIt\FalSecuredownload\Hooks\CmsLayout;
+use BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook;
+use BeechIt\FalSecuredownload\Hooks\FileDumpHook;
+use BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook;
+use BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+
 defined('TYPO3') or die();
 
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+ExtensionUtility::configurePlugin(
     'FalSecuredownload',
     'Filetree',
     [
-        BeechIt\FalSecuredownload\Controller\FileTreeController::class => 'tree',
+        FileTreeController::class => 'tree',
     ],
     // non-cacheable actions
     [
-        BeechIt\FalSecuredownload\Controller\FileTreeController::class => 'tree',
+        FileTreeController::class => 'tree',
     ]
 );
 
 // FE FileTree leaf open/close state dispatcher
-$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] =
-    \BeechIt\FalSecuredownload\Controller\FileTreeStateController::class . '::saveLeafState';
+$GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] = FileTreeStateController::class . '::saveLeafState';
 
 // FileDumpEID hook
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess']['FalSecuredownload'] =
-    \BeechIt\FalSecuredownload\Hooks\FileDumpHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess']['FalSecuredownload'] = FileDumpHook::class;
 
 // Page module hook
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree']['fal_securedownload'] =
-    \BeechIt\FalSecuredownload\Hooks\CmsLayout::class . '->getExtensionSummary';
+    CmsLayout::class . '->getExtensionSummary';
 
 // Add FolderPermission button to docheader of filelist
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload'] =
-    \BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook::class . '->getButtons';
+    DocHeaderButtonsHook::class . '->getButtons';
 
 // Context menu
-$GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1547242135]
-    = \BeechIt\FalSecuredownload\ContextMenu\ItemProvider::class;
+$GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1547242135] = ItemProvider::class;
 
 // refresh file tree after change in tx_falsecuredownload_folder record
-$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] =
-    \BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook::class;
-$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] =
-    \BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook::class;
+$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = ProcessDatamapHook::class;
+$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = ProcessDatamapHook::class;
 
 // ext:ke_search custom indexer hook
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = \BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook::class;
-$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = \BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = KeSearchFilesHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = KeSearchFilesHook::class;
 
-if (\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::isLoaded('solrfal')) {
-    /** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
-    $signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
+if (ExtensionManagementUtility::isLoaded('solrfal')) {
+    /** @var Dispatcher $signalSlotDispatcher */
+    $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
 
     // @Todo convert this to event listener
     // ext:solrfal enrich metadata and generate correct public url slot
     $signalSlotDispatcher->connect(
-        \ApacheSolrForTypo3\Solrfal\Indexing\DocumentFactory::class,
+        DocumentFactory::class,
         'fileMetaDataRetrieved',
-        \BeechIt\FalSecuredownload\Aspects\SolrFalAspect::class,
+        SolrFalAspect::class,
         'fileMetaDataRetrieved'
     );
 }
 
-if (\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::trackDownloads()) {
+if (ExtensionConfiguration::trackDownloads()) {
     // register FormEngine node for rendering download statistics in fe_users
     $GLOBALS['TYPO3_CONF_VARS']['SYS']['formEngine']['nodeRegistry'][1470920616] = [
         'nodeName' => 'falSecureDownloadStats',
         'priority' => 40,
-        'class' => \BeechIt\FalSecuredownload\FormEngine\DownloadStatistics::class,
+        'class' => DownloadStatistics::class,
     ];
 }
 
