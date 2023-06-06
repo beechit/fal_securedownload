@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\EventListener;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2022 Frans Saris <frans@beech.it>
@@ -23,20 +23,37 @@ namespace BeechIt\FalSecuredownload\EventListener;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\EventListener;
 
 use BeechIt\FalSecuredownload\Aspects\PublicUrlAspect;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+/**
+ * EventListener is registered in Services.yaml
+ *
+ * @noinspection PhpUnused
+ */
 class GeneratePublicUrlForResourceEventListener
 {
+    /**
+     * @throws RouteNotFoundException
+     */
     public function __invoke(GeneratePublicUrlForResourceEvent $event): void
     {
-        if (!(Environment::isCli())) {
+        if (!Environment::isCli()) {
             $publicUrlAspect = GeneralUtility::makeInstance(PublicUrlAspect::class);
-            $publicUrlAspect->generatePublicUrl($event->getStorage(), $event->getDriver(), $event->getResource(), false, ['publicUrl' => $event->getPublicUrl()]);
+            $publicUrlAspect->generatePublicUrl(
+                $event->getStorage(),
+                $event->getDriver(),
+                $event->getResource(),
+                false,
+                ['publicUrl' => $event->getPublicUrl()]
+            );
         }
     }
 }
