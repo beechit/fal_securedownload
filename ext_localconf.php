@@ -57,6 +57,10 @@ $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromCon
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = KeSearchFilesHook::class;
 
 if (ExtensionManagementUtility::isLoaded('solrfal')) {
+    // TODO Must be made compatible to TYPO3 v12 as there is no TYPO3\CMS\Extbase\SignalSlot\Dispatcher anymore
+    // https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/10.4/Deprecation-90625-ExtbaseSignalSlotDispatcher.html
+    // TODO to do this the EventDispatcher implementation of EXT:solrfal must be known
+    // https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Events/EventDispatcher/Index.html#eventdispatcher
     /** @var Dispatcher $signalSlotDispatcher */
     $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
 
