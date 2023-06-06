@@ -1,39 +1,29 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\Aspects;
+declare(strict_types=1);
 
-/**
+/*
  * This source file is proprietary property of Beech Applications B.V.
  * Date: 12-03-2015 11:07
  * All code (c) Beech Applications B.V. all rights reserved
  */
 
+namespace BeechIt\FalSecuredownload\Aspects;
+
 use ApacheSolrForTypo3\Solrfal\Queue\Item;
+use ArrayObject;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class SolrFalAspect
- */
 class SolrFalAspect implements SingletonInterface
 {
 
-    /**
-     * @var CheckPermissions
-     */
-    protected $checkPermissionsService;
+    protected CheckPermissions $checkPermissionsService;
+    protected PublicUrlAspect $publicUrlAspect;
 
-    /**
-     * @var PublicUrlAspect
-     */
-    protected $publicUrlAspect;
-
-    /**
-     * Constructor
-     */
     public function __construct()
     {
         $this->checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
@@ -44,9 +34,9 @@ class SolrFalAspect implements SingletonInterface
      * Add correct fe_group info and public_url
      *
      * @param Item $item
-     * @param \ArrayObject $metadata
+     * @param ArrayObject $metadata
      */
-    public function fileMetaDataRetrieved(Item $item, \ArrayObject $metadata)
+    public function fileMetaDataRetrieved(Item $item, ArrayObject $metadata): void
     {
         if ($item->getFile() instanceof File && !$item->getFile()->getStorage()->isPublic()) {
             $resourcePermissions = $this->checkPermissionsService->getPermissions($item->getFile());

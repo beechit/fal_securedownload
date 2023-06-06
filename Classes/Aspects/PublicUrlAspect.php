@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Aspects;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,47 +23,35 @@ namespace BeechIt\FalSecuredownload\Aspects;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-use TYPO3\CMS\Core\Resource\ResourceStorage;
-use TYPO3\CMS\Core\Resource\Driver\DriverInterface;
-use TYPO3\CMS\Core\Resource\ResourceInterface;
-use TYPO3\CMS\Core\Resource\FileInterface;
-use TYPO3\CMS\Core\Resource\File;
-use TYPO3\CMS\Core\Resource\ProcessedFile;
+ */
+
+namespace BeechIt\FalSecuredownload\Aspects;
+
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
-use TYPO3\CMS\Core\Resource;
+use TYPO3\CMS\Core\Resource\Driver\DriverInterface;
+use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\FileInterface;
+use TYPO3\CMS\Core\Resource\ProcessedFile;
+use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\Resource\ResourceStorage;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class PublicUrlAspect
- */
 class PublicUrlAspect implements SingletonInterface
 {
 
     /**
      * Flag to en-/disable rendering of BE user link instead of FE link
-     *
-     * @var bool
      */
-    protected $enabled = true;
+    protected bool $enabled = true;
 
-    /**
-     * Get enabled
-     *
-     * @return bool
-     */
-    public function getEnabled()
+    public function getEnabled(): bool
     {
         return $this->enabled;
     }
 
-    /**
-     * Set enabled
-     *
-     * @param bool $enabled
-     */
-    public function setEnabled($enabled)
+    public function setEnabled(bool $enabled): void
     {
         $this->enabled = $enabled;
     }
@@ -70,11 +59,12 @@ class PublicUrlAspect implements SingletonInterface
     /**
      * Generate public url for file
      *
-     * @param Resource\ResourceStorage $storage
-     * @param Resource\Driver\DriverInterface $driver
-     * @param Resource\ResourceInterface $resourceObject
+     * @param ResourceStorage $storage
+     * @param DriverInterface $driver
+     * @param ResourceInterface $resourceObject
      * @param mixed $relativeToCurrentScript Deprecated. Will be removed in a future version
      * @param array $urlData
+     * @throws RouteNotFoundException
      */
     public function generatePublicUrl(
         ResourceStorage $storage,
@@ -82,7 +72,8 @@ class PublicUrlAspect implements SingletonInterface
         ResourceInterface $resourceObject,
         $relativeToCurrentScript,
         array $urlData
-    ) {
+    ): void
+    {
 
         // We only render special links for non-public files
         if ($this->enabled && $resourceObject instanceof FileInterface && !$storage->isPublic()) {
@@ -99,8 +90,14 @@ class PublicUrlAspect implements SingletonInterface
                 'BeResourceStorageDumpFile'
             );
 
-            // $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
+            /** @var UriBuilder $uriBuilder */
             $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+
+            /**
+             * $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account
+             * @noinspection PhpArrayWriteIsNotUsedInspection
+             * @noinspection PhpArrayUsedOnlyForWriteInspection
+             */
             $urlData['publicUrl'] = (string)$uriBuilder->buildUriFromRoute(
                 'ajax_dump_file',
                 $queryParameterArray,

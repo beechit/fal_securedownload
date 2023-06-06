@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Aspects;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2017 Frans Saris <frans@beech.it>
@@ -22,7 +23,9 @@ namespace BeechIt\FalSecuredownload\Aspects;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Aspects;
 
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Resource\File;
@@ -30,27 +33,17 @@ use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class IconFactoryAspect
- */
 class IconFactoryAspect
 {
 
-    /**
-     * @param ResourceInterface $resource
-     * @param string $size
-     * @param array $options
-     * @param string $iconIdentifier
-     * @param string $overlayIdentifier
-     * @return array
-     */
     public function buildIconForResource(
         ResourceInterface $resource,
-        $size,
+        string $size,
         array $options,
-        $iconIdentifier,
-        $overlayIdentifier
-    ) {
+        string $iconIdentifier,
+        ?string $overlayIdentifier
+    ): array
+    {
         if (!$resource->getStorage()->isPublic()) {
             /** @var $checkPermissionsService CheckPermissions */
             $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
