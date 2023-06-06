@@ -30,7 +30,6 @@ namespace BeechIt\FalSecuredownload\Controller;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
 class FileTreeController extends ActionController
@@ -38,9 +37,9 @@ class FileTreeController extends ActionController
 
     protected ResourceFactory $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    public function __construct(ResourceFactory $resourceFactory)
     {
-        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+        $this->resourceFactory = $resourceFactory;
     }
 
     /**
