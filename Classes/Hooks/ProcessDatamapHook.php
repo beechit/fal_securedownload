@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Hooks;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -23,7 +24,9 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Hooks;
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\DataHandling\DataHandler;
@@ -37,19 +40,15 @@ class ProcessDatamapHook
     /**
      * Trigger updateFolderTree after change in tx_falsecuredownload_folder
      *
-     * @param string $status
-     * @param string $table
-     * @param $id
-     * @param array $fieldArray
-     * @param DataHandler $dataHandler
      */
     public function processDatamap_afterDatabaseOperations(
-        $status,
-        $table,
-        $id,
+        string $status,
+        string $table,
+        string $id,
         array $fieldArray,
         DataHandler $dataHandler
-    ) {
+    ): void
+    {
         if ($table === 'tx_falsecuredownload_folder') {
             BackendUtility::setUpdateSignal('updateFolderTree');
         }
@@ -60,21 +59,22 @@ class ProcessDatamapHook
      *
      * @param string $command
      * @param string $table
-     * @param int $id
+     * @param string $id
      * @param mixed $value
      * @param DataHandler $dataHandler
      * @param mixed $pasteUpdate
      * @param array $pasteDatamap
      */
     public function processCmdmap_postProcess(
-        $command,
-        $table,
-        $id,
+        string $command,
+        string $table,
+        string $id,
         $value,
         DataHandler $dataHandler,
         $pasteUpdate,
         array $pasteDatamap
-    ) {
+    ): void
+    {
         if ($table === 'tx_falsecuredownload_folder') {
             BackendUtility::setUpdateSignal('updateFolderTree');
         }
