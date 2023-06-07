@@ -12,6 +12,7 @@ namespace BeechIt\FalSecuredownload\ContextMenu;
 
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -101,8 +102,16 @@ class ItemProvider extends AbstractProvider
         $utility = GeneralUtility::makeInstance(Utility::class);
         $folderRecord = $utility->getFolderRecord($this->folder);
 
+        $typo3Version = new Typo3Version();
+        if ($typo3Version->getMajorVersion() > 11) {
+            $dataCallbackModule = '@beechit/fal-securedownload/context-menu-actions';
+        } else {
+            // keep RequireJs for TYPO3 below v12.0
+            $dataCallbackModule = 'TYPO3/CMS/FalSecuredownload/ContextMenuActions';
+        }
+
         return [
-            'data-callback-module' => 'TYPO3/CMS/FalSecuredownload/ContextMenuActions',
+            'data-callback-module' => $dataCallbackModule,
             'data-folder-record-uid' => $folderRecord['uid'] ?? 0,
             'data-storage' => $this->folder->getStorage()->getUid(),
             'data-folder' => $this->folder->getIdentifier(),
