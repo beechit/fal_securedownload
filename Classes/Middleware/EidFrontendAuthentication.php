@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace BeechIt\FalSecuredownload\Middleware;
 
 use BeechIt\FalSecuredownload\Context\UserAspect;
@@ -8,17 +11,14 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Backend\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
+use TYPO3\CMS\Core\Authentication\Mfa\MfaRequiredException;
 use TYPO3\CMS\Core\Context\Context;
-use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
-/**
- *
- */
 class EidFrontendAuthentication implements MiddlewareInterface
 {
-    protected $context;
+    protected Context $context;
 
     public function __construct(Context $context)
     {
@@ -28,10 +28,7 @@ class EidFrontendAuthentication implements MiddlewareInterface
     /**
      * Dispatches the request to the corresponding eID class or eID script
      *
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     * @throws Exception
+     * @throws MfaRequiredException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -71,20 +68,16 @@ class EidFrontendAuthentication implements MiddlewareInterface
 
     /**
      * Register the frontend user as aspect
-     *
-     * @param AbstractUserAuthentication $user
      */
-    protected function setFrontendUserAspect(AbstractUserAuthentication $user)
+    protected function setFrontendUserAspect(AbstractUserAuthentication $user): void
     {
         $this->context->setAspect('beechit.user', GeneralUtility::makeInstance(UserAspect::class, $user));
     }
 
     /**
      * Register the backend user as aspect
-     *
-     * @param AbstractUserAuthentication $user
      */
-    protected function setBackendUserAspect(AbstractUserAuthentication $user)
+    protected function setBackendUserAspect(AbstractUserAuthentication $user): void
     {
         $this->context->setAspect('beechit.beuser', GeneralUtility::makeInstance(UserAspect::class, $user));
         $GLOBALS['BE_USER'] = $user;
