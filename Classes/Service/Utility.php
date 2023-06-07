@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Service;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,26 +23,24 @@ namespace BeechIt\FalSecuredownload\Service;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
+namespace BeechIt\FalSecuredownload\Service;
+
+use Doctrine\DBAL\Exception;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryBuilder;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Resource\FolderInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class Utility
- */
 class Utility implements SingletonInterface
 {
 
-    static protected $folderRecordCache = [];
-
-    /**
-     * @var ConnectionPool
-     */
-    protected $connectionPool;
+    static protected array $folderRecordCache = [];
+    protected ConnectionPool $connectionPool;
 
     public function __construct()
     {
@@ -54,19 +53,33 @@ class Utility implements SingletonInterface
      * @param Folder $folder
      * @return array|false
      */
-    public function getFolderRecord(Folder $folder)
+    public function getFolderRecord(FolderInterface $folder)
     {
         if (!isset(self::$folderRecordCache[$folder->getCombinedIdentifier()])
             || !array_key_exists($folder->getCombinedIdentifier(), self::$folderRecordCache)
         ) {
             $queryBuilder = $this->getQueryBuilder();
-            $record = $queryBuilder
-                ->select('*')
-                ->from('tx_falsecuredownload_folder')
-                ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$folder->getStorage()->getUid(), \PDO::PARAM_INT)))
-                ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folder->getHashedIdentifier(), \PDO::PARAM_STR)))
-                ->executeQuery()
-                ->fetchAssociative();
+            try {
+                $record = $queryBuilder
+                    ->select('*')
+                    ->from('tx_falsecuredownload_folder')
+                    ->where(
+                        $queryBuilder->expr()->eq(
+                            'storage',
+                            $queryBuilder->createNamedParameter($folder->getStorage()->getUid(), Connection::PARAM_INT)
+                        )
+                    )
+                    ->andWhere(
+                        $queryBuilder->expr()->eq(
+                            'folder_hash',
+                            $queryBuilder->createNamedParameter($folder->getHashedIdentifier())
+                        )
+                    )
+                    ->executeQuery()
+                    ->fetchAssociative();
+            } catch (Exception $e) {
+                $record = false;
+            }
 
             // cache results
             self::$folderRecordCache[$folder->getCombinedIdentifier()] = $record;
@@ -77,13 +90,13 @@ class Utility implements SingletonInterface
 
     /**
      * Update folder record after move/rename
-     *
-     * @param int $oldStorageUid
-     * @param string $oldIdentifierHash
-     * @param string $oldIdentifier
-     * @param array $newRecord
      */
-    public function updateFolderRecord($oldStorageUid, $oldIdentifierHash, $oldIdentifier, $newRecord)
+    public function updateFolderRecord(
+        int $oldStorageUid,
+        string $oldIdentifierHash,
+        string $oldIdentifier,
+        array $newRecord
+    ): void
     {
         $allowedFields = ['storage', 'folder', 'folder_hash'];
         $record = [];
@@ -98,12 +111,23 @@ class Utility implements SingletonInterface
             $queryBuilder = $this->getQueryBuilder();
             $queryBuilder
                 ->update('tx_falsecuredownload_folder')
-                ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$oldStorageUid, \PDO::PARAM_INT)))
-                ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($oldIdentifierHash, \PDO::PARAM_STR)));
+                ->where(
+                    $queryBuilder->expr()->eq(
+                        'storage',
+                        $queryBuilder->createNamedParameter($oldStorageUid, Connection::PARAM_INT)
+                    )
+                )
+                ->andWhere(
+                    $queryBuilder->expr()->eq(
+                        'folder_hash',
+                        $queryBuilder->createNamedParameter($oldIdentifierHash)
+                    )
+                );
+
             foreach ($record as $field => $value) {
                 $queryBuilder->set($field, $value);
             }
-            $queryBuilder->execute();
+            $queryBuilder->executeStatement();
 
             // clear cache if exists
             if (isset(self::$folderRecordCache[$oldStorageUid . ':' . $oldIdentifier])) {
@@ -114,18 +138,20 @@ class Utility implements SingletonInterface
 
     /**
      * Delete folder record when folder is deleted
-     *
-     * @param int $storageUid
-     * @param string $folderHash
-     * @param string $identifier
      */
-    public function deleteFolderRecord($storageUid, $folderHash, $identifier)
+    public function deleteFolderRecord(int $storageUid, string $folderHash, string $identifier): void
     {
         $queryBuilder = $this->getQueryBuilder();
         $queryBuilder
             ->delete('tx_falsecuredownload_folder')
-            ->where($queryBuilder->expr()->eq('storage', $queryBuilder->createNamedParameter((int)$storageUid, \PDO::PARAM_INT)))
-            ->andWhere($queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash, \PDO::PARAM_STR)))
+            ->where(
+                $queryBuilder->expr()->eq(
+                    'storage', $queryBuilder->createNamedParameter($storageUid, Connection::PARAM_INT)
+                )
+            )
+            ->andWhere(
+                $queryBuilder->expr()->eq('folder_hash', $queryBuilder->createNamedParameter($folderHash))
+            )
             ->executeStatement();
 
         // clear cache if exists
@@ -134,12 +160,7 @@ class Utility implements SingletonInterface
         }
     }
 
-    /**
-     * Gets a query build
-     *
-     * @return QueryBuilder
-     */
-    protected function getQueryBuilder()
+    protected function getQueryBuilder(): QueryBuilder
     {
         return $this->connectionPool->getQueryBuilderForTable('tx_falsecuredownload_folder');
     }
