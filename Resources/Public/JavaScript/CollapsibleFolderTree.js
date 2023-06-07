@@ -17,8 +17,7 @@ $('.fal-securedownload ul li span.icon-folder').on('click', function () {
             open: 1
         });
     }
-});
-$('.fal-securedownload ul li span.icon-folder').each(function () {
+}).each(function () {
     $(this).next('ul').hide();
     if ($(this).hasClass('icon-folder-open')) {
         $(this).next('ul').slideDown();
