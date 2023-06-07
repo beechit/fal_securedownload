@@ -38,27 +38,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DocHeaderButtonsHook extends AbstractBeButtons
 {
-    /**
-     * Add folder permissions button to top bar of file list
-     *
-     * @param array $params ['buttons' => $buttons, 'markers' => &$markers, 'pObj' => &$this]
-     * @throws RouteNotFoundException
-     */
-    public function addFolderPermissionsButton(array $params)
-    {
-        // only add button to file list module
-        if ($params['pObj']->scriptID === 'ext/filelist/mod1/index.php') {
-            $extraButtons = $this->generateButtons(GeneralUtility::_GP('id'));
-            if (!empty($extraButtons)) {
-                $params['markers']['BUTTONLIST_LEFT'] =
-                    preg_replace(
-                        '`</div>$`',
-                        implode('', $extraButtons) . '</div>',
-                        $params['markers']['BUTTONLIST_LEFT']
-                    );
-            }
-        }
-    }
 
     /**
      * Create button
