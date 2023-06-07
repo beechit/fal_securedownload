@@ -72,12 +72,6 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->context = GeneralUtility::makeInstance(Context::class);
-        if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'])) {
-            $this->loginRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'];
-        }
-        if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'])) {
-            $this->noAccessRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'];
-        }
 
         if (ExtensionConfiguration::loginRedirectUrl()) {
             $this->loginRedirectUrl = ExtensionConfiguration::loginRedirectUrl();
