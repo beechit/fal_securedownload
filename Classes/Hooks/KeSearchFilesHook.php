@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Hooks;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,26 +23,21 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Hooks;
+
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class KeSearchFilesHook
- */
 class KeSearchFilesHook implements SingletonInterface
 {
-    /**
-     * @var CheckPermissions
-     */
-    protected $checkPermissionsService;
 
-    /**
-     * Constructor
-     */
+    protected CheckPermissions $checkPermissionsService;
+
     public function __construct()
     {
         $this->checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
@@ -63,16 +59,17 @@ class KeSearchFilesHook implements SingletonInterface
      */
     public function modifyFileIndexEntryFromContentIndexer(
         $fileObject,
-        $content,
-        $fileIndexerObject,
-        &$feGroups,
-        $ttContentRow,
-        $storagePid,
-        $title,
-        $tags,
-        $abstract,
-        $additionalFields
-    ) {
+        string $content,
+        \tx_kesearch_indexer_types_file $fileIndexerObject,
+        string &$feGroups,
+        array $ttContentRow,
+        int $storagePid,
+        string $title,
+        string $tags,
+        string $abstract,
+        array $additionalFields
+    ): void
+    {
         if ($fileObject instanceof File && !$fileObject->getStorage()->isPublic()) {
             $resourcePermissions = $this->checkPermissionsService->getPermissions($fileObject);
             // If there are already permissions set, refine these with actual file permissions
@@ -96,7 +93,13 @@ class KeSearchFilesHook implements SingletonInterface
      * @param array $indexRecordValues
      * @param \tx_kesearch_indexer_types_file $indexer
      */
-    public function modifyFileIndexEntry($file, $content, $additionalFields, &$indexRecordValues, $indexer)
+    public function modifyFileIndexEntry(
+        $file,
+        string $content,
+        array $additionalFields,
+        array &$indexRecordValues,
+        \tx_kesearch_indexer_types_file $indexer
+    ): void
     {
         if ($file instanceof File && !$file->getStorage()->isPublic()) {
             $indexRecordValues['fe_group'] = $this->checkPermissionsService->getPermissions($file);
