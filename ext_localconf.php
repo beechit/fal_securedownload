@@ -9,7 +9,6 @@ use BeechIt\FalSecuredownload\Controller\FileTreeStateController;
 use BeechIt\FalSecuredownload\FormEngine\DownloadStatistics;
 use BeechIt\FalSecuredownload\Hooks\CmsLayout;
 use BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook;
-use BeechIt\FalSecuredownload\Hooks\FileDumpHook;
 use BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook;
 use BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
@@ -35,9 +34,6 @@ ExtensionUtility::configurePlugin(
 
 // FE FileTree leaf open/close state dispatcher
 $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] = FileTreeStateController::class . '::saveLeafState';
-
-// FileDumpEID hook
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['FileDumpEID.php']['checkFileAccess']['FalSecuredownload'] = FileDumpHook::class;
 
 // Page module hook
 $GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree']['fal_securedownload'] =

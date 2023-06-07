@@ -53,6 +53,11 @@ services:
         method: 'postFolderRename'
         event: TYPO3\CMS\Core\Resource\Event\AfterFolderRenamedEvent
 
+  BeechIt\FalSecuredownload\EventListener\ModifyFileDumpEventListener:
+    tags:
+      - name: event.listener
+        event: TYPO3\CMS\Core\Resource\Event\ModifyFileDumpEvent
+
   BeechIt\FalSecuredownload\EventListener\ModifyIconForResourcePropertiesEventListener:
     tags:
       - name: event.listener

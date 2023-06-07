@@ -25,7 +25,7 @@ declare(strict_types=1);
  *  This copyright notice MUST APPEAR in all copies of the script!
  */
 
-namespace BeechIt\FalSecuredownload\Hooks;
+namespace BeechIt\FalSecuredownload\EventListener;
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Context\UserAspect;
@@ -35,32 +35,27 @@ use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Http\AbstractApplication;
 use TYPO3\CMS\Core\LinkHandling\Exception\UnknownLinkHandlerException;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
+use TYPO3\CMS\Core\Resource\Event\ModifyFileDumpEvent;
+use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
-/**
- * FileDumpHook
- *
- * TODO: Migrate to \TYPO3\CMS\Core\Resource\Event\ModifyFileDumpEvent
- * @see https://docs.typo3.org/c/typo3/cms-core/11.5/en-us/Changelog/11.4/Deprecation-95080-FileDumpCheckFileAccessHook.html
- * @see https://docs.typo3.org/m/typo3/reference-coreapi/12.4/en-us/ApiOverview/Events/Events/Core/Resource/ModifyFileDumpEvent.html
- */
-class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterface
+class ModifyFileDumpEventListener
 {
 
     protected ?FrontendUserAuthentication $feUser = null;
-    protected File $originalFile;
+    protected FileInterface $originalFile;
     protected string $loginRedirectUrl = '';
     protected string $noAccessRedirectUrl = '';
     protected bool $forceDownload = false;
@@ -68,6 +63,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
     protected bool $resumableDownload = false;
     protected Context $context;
     private EventDispatcherInterface $eventDispatcher;
+    private ModifyFileDumpEvent $event;
 
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
@@ -87,6 +83,12 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    public function __invoke(ModifyFileDumpEvent $event): void
+    {
+        $this->event = $event;
+        $this->checkFileAccess($event->getFile());
+    }
+
     /**
      * @see https://github.com/beechit/fal_securedownload/issues/37
      * @noinspection PhpUnused
@@ -103,7 +105,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      *
      * @param ResourceInterface $file
      */
-    public function checkFileAccess(ResourceInterface $file)
+    private function checkFileAccess(ResourceInterface $file)
     {
         if (!$file instanceof FileInterface) {
             throw new \RuntimeException('Given $file is not a file.', 1469019515);
@@ -124,13 +126,13 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
         if (!$this->checkPermissions()) {
             if (!$this->isLoggedIn()) {
-                if ($loginRedirectUrl !== null) {
+                if (!empty($loginRedirectUrl)) {
                     $this->redirectToUrl($loginRedirectUrl);
                 } else {
                     $this->exitScript('Authentication required!');
                 }
             } else {
-                if ($noAccessRedirectUrl !== null) {
+                if (!empty($noAccessRedirectUrl)) {
                     $this->redirectToUrl($noAccessRedirectUrl);
                 } else {
                     $this->exitScript('No access!');
@@ -187,7 +189,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
         if (!$resumableDownload) {
             $response = $file->getStorage()->streamFile($file, $asDownload, $downloadName);
-            $this->sendResponse($response);
+            $this->event->setResponse($response);
             exit;
         }
 
@@ -271,9 +273,12 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      */
     protected function isLoggedIn(): bool
     {
-        $this->initializeUserAuthentication();
-
-        return is_array($this->feUser->user) && $this->feUser->user['uid'];
+        try {
+            $this->initializeUserAuthentication();
+            return is_array($this->feUser->user) && $this->feUser->user['uid'];
+        } catch (AspectNotFoundException|AspectPropertyNotFoundException $e) {
+            return false;
+        }
     }
 
     /**
@@ -281,7 +286,11 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      */
     protected function checkPermissions(): bool
     {
-        $this->initializeUserAuthentication();
+        try {
+            $this->initializeUserAuthentication();
+        } catch (AspectNotFoundException|AspectPropertyNotFoundException $e) {
+            return false;
+        }
 
         /** @var $checkPermissionsService CheckPermissions */
         $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
@@ -292,11 +301,17 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
         $userFeGroups = !$this->feUser->user ? false : $this->feUser->groupData['uid'];
 
-        return $checkPermissionsService->checkFileAccess($this->originalFile, $userFeGroups);
+        try {
+            return $checkPermissionsService->checkFileAccess($this->originalFile, $userFeGroups);
+        } catch (FolderDoesNotExistException $e) {
+            return false;
+        }
     }
 
     /**
-     * Initialise feUser
+     * Initialize feUser
+     * @throws AspectNotFoundException
+     * @throws AspectPropertyNotFoundException
      */
     protected function initializeUserAuthentication()
     {
@@ -304,7 +319,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
             /** @var UserAspect $userAspect */
             $userAspect = $this->context->getAspect('beechit.user');
             $this->feUser = $userAspect->get('user');
-            $this->feUser->fetchGroupData();
+            $this->feUser->fetchGroupData($this->event->getRequest());
         }
     }
 

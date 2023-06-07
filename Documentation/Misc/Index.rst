@@ -24,7 +24,7 @@ Instead of throwing a "Authentication required!" message you can redirect the us
 .. code-block::
 
     /login/?redirect_url=###REQUEST_URI###
-    
+
     # Or a typolink
     t3://page?uid=5&redirect_url=###REQUEST_URI###
 
@@ -39,7 +39,7 @@ Instead of throwing a "Access denied" message you can redirect the user to a cer
 .. code-block::
 
     /no-access/?redirect_url=###REQUEST_URI###
-    
+
     # Or a typolink
     t3://page?uid=5&redirect_url=###REQUEST_URI###
 
@@ -112,89 +112,117 @@ To have correct urls to indexed files you need to add/adjust following ext:solr 
 *This feature is sponsored by: STIMME DER HOFFNUNG Adventist Media Center*
 
 
-Signals and slots
-=================
+EventListeners
+==============
 
 BeforeRedirects
 ---------------
 
-This signal will be fired everytime a file is going to download or display. This signal will not be fired, if
+This event will be fired everytime a file is going to download or display. This event will not be fired, if
 access to requested file is restricted for current logged in frontend user. So you can modify some redirect params if needed.
 
-Example of how to register a slot for this signal (in your ext_localconf.php):
+Example of how to register a listener for this event in your `EXT:my_extension/Configuration/Services.yaml`:
 
-.. code-block:: php
+.. code-block:: yaml
 
-	/** Define a redirect page for inaccessible file resources */
-	/** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
-	$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Extbase\SignalSlot\Dispatcher::class);
-	$signalSlotDispatcher->connect(
-		'BeechIt\FalSecuredownload\Hooks\FileDumpHook',
-		'BeforeRedirects',
-		'endor\ExtensionName\Slot\BeforeRedirectsSlot',
-		'beforeRedirects'
-	);
+    services:
+      Vendor\MyExtension\EventListener\BeforeRedirectsEventListener:
+        tags:
+          - name: event.listener
+            identifier: 'myBeforeRedirectsEventListener'
+            event: BeechIt\FalSecuredownload\Events\BeforeRedirectsEvent
+
+An example listener `EXT:my_extension/Classes/EventListener/BeforeRedirectsEventListener.php` could look like this:
 
 .. code-block:: php
 
 	<?php
-	namespace Vendor\ExtensionName\Slot;
-	
-	class BeforeRedirectsSlot
-	{
-	    public function beforeRedirects($loginRedirectUrl, $noAccessRedirectUrl, $file, $caller): array
-	    {
-	
-		//do your stuff
-	
-	        return [
-	            'loginRedirectUrl' => $loginRedirectUrl,
-	            'noAccessRedirectUrl' => $noAccessRedirectUrl,
-	            'file' => $file,
-	            'caller' => $caller,
-	        ];
-	    }
-	}
+	namespace Vendor\MyExtension\EventListener;
 
-That way you can modify these params if needed 'loginRedirectUrl', 'noAccessRedirectUrl', 'file', 'caller'
+    use \BeechIt\FalSecuredownload\Events\BeforeRedirectsEvent;
+
+	class BeforeRedirectsEventListener
+	{
+        public function __invoke(BeforeRedirectsEvent $event): void
+        {
+            $event->setLoginRedirectUrl('XXX');
+            $event->setNoAccessRedirectUrl('XXX');
+        }
+
+That way you can modify 'loginRedirectUrl', 'noAccessRedirectUrl', 'file', 'caller' if needed.
 
 
 BeforeFileDump
 --------------
 
-This signal will be fired everytime a file is going to download or display. This signal will not be fired, if
+This event will be fired everytime a file is going to download or display. This event will not be fired, if
 access to requested file is restricted for current logged in frontend user. BeforeFileDump is useful for e.g. tracking access of downloaded files.
 
-Example of how to register a slot for this signal (in your ext_localconf.php):
+Example of how to register a listener for this event in your `EXT:my_extension/Configuration/Services.yaml`:
+
+.. code-block:: yaml
+
+    services:
+      Vendor\MyExtension\EventListener\BeforeFileDumpEventListener:
+        tags:
+          - name: event.listener
+            identifier: 'myBeforeFileDumpEventListener'
+            event: BeechIt\FalSecuredownload\Events\BeforeFileDumpEvent
+
+An example listener `EXT:my_extension/Classes/EventListener/BeforeFileDumpEventListener.php` could look like this:
 
 .. code-block:: php
 
-	/** @var \TYPO3\CMS\Extbase\SignalSlot\Dispatcher $signalSlotDispatcher */
-	$signalSlotDispatcher = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\SignalSlot\\Dispatcher');
-	$signalSlotDispatcher->connect(
-		'BeechIt\FalSecuredownload\Hooks\FileDumpHook',
-		'BeforeFileDump',
-		'Vendor\ExtensionName\Slot\BeforeFileDumpSlot',
-		'logFileDump'
-	);
+	<?php
+	namespace Vendor\MyExtension\EventListener;
+
+    use \BeechIt\FalSecuredownload\Events\BeforeFileDumpEvent;
+
+	class BeforeFileDumpEventListener
+	{
+        public function __invoke(BeforeFileDumpEvent $event): void
+        {
+            $event->setFile('XXX');
+        }
+
+That way you can modify 'file', 'caller' if needed.
 
 AddCustomGroups
 ---------------
 
-This signal is fired every time, the permissions are checked. It will add new groups to the list of authenticated groups,
+This event is fired every time when the permissions are checked. It will add new groups to the list of authenticated groups,
 which are not detected by the standard group mechanism. An example is, if you are using ip based authentication, where
 no frontend user is logged in.
 
 The slot must return an array which contains the array of the custom usergroups. This array will then be merged with the
 original array of groups.
 
+Example of how to register a listener for this event in your `EXT:my_extension/Configuration/Services.yaml`:
+
+.. code-block:: yaml
+
+    services:
+      Vendor\MyExtension\EventListener\AddCustomGroupsEventListener:
+        tags:
+          - name: event.listener
+            identifier: 'myAddCustomGroupsEventListener'
+            event: BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent
+
+An example listener `EXT:my_extension/Classes/EventListener/AddCustomGroupsEventListener.php` could look like this:
+
 .. code-block:: php
 
-     public function addCustomGroups($customGroups)
-     {
-         // add your group ids here
-         return array($customGroups);
-     }
+	<?php
+	namespace Vendor\MyExtension\EventListener;
+
+    use \BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent;
+
+	class AddCustomGroupsEventListener
+	{
+        public function __invoke(AddCustomGroupsEvent $event): void
+        {
+            $event->setCustomUserGroups($myCustomGroups);
+        }
 
 EXT:fal_securedownload vs EXT:naw_securedl
 ==========================================
@@ -212,10 +240,6 @@ EXT:fal_securedownload vs EXT:naw_securedl
 Known issues
 ============
 
-* My FileDumpEID hook isn't executed
-	The DownloadLinkViewHelper used in the FileTree plugin adds a &download to the asset link.
-	The hook that is used to check if you have permissions to access the asset will force a download when this parameter is set.
-	Problem with this is that all other FileDumpEID hooks registered after fal_securedownload will not be executed anymore then.
 * I got javascript errors after including the provided typoscript template
 	This is properly because you do not have jQuery available on the FE. You can easily disable the provided javascript be adding this line to you typoscript template
 

@@ -27,7 +27,7 @@ declare(strict_types=1);
 
 namespace BeechIt\FalSecuredownload\Events;
 
-use BeechIt\FalSecuredownload\Hooks\FileDumpHook;
+use BeechIt\FalSecuredownload\EventListener\ModifyFileDumpEventListener;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 final class BeforeRedirectsEvent
@@ -35,9 +35,9 @@ final class BeforeRedirectsEvent
     private ?string $loginRedirectUrl;
     private ?string $noAccessRedirectUrl;
     private ResourceInterface $file;
-    private FileDumpHook $caller;
+    private ModifyFileDumpEventListener $caller;
 
-    public function __construct(?string $loginRedirectUrl, ?string $noAccessRedirectUrl, ResourceInterface $file, FileDumpHook $caller)
+    public function __construct(?string $loginRedirectUrl, ?string $noAccessRedirectUrl, ResourceInterface $file, ModifyFileDumpEventListener $caller)
     {
         $this->loginRedirectUrl = $loginRedirectUrl;
         $this->noAccessRedirectUrl = $noAccessRedirectUrl;
@@ -80,13 +80,13 @@ final class BeforeRedirectsEvent
     }
 
     /** @noinspection PhpUnused */
-    public function getCaller(): FileDumpHook
+    public function getCaller(): ModifyFileDumpEventListener
     {
         return $this->caller;
     }
 
     /** @noinspection PhpUnused */
-    public function setCaller(FileDumpHook $caller): void
+    public function setCaller(ModifyFileDumpEventListener $caller): void
     {
         $this->caller = $caller;
     }
