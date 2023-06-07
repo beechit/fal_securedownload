@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Hooks;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,7 +23,12 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Hooks;
+
+use Psr\Http\Message\UriInterface;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
@@ -35,16 +41,12 @@ use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Abstract utility class for classes that want to add BE buttons
- * to edit folder permissions
+ * Abstract utility class for classes that want to add BE buttons to edit folder permissions
  */
 abstract class AbstractBeButtons
 {
 
-    /**
-     * @var ResourceFactory
-     */
-    protected $resourceFactory;
+    protected ResourceFactory $resourceFactory;
 
     public function __construct(ResourceFactory $resourceFactory = null)
     {
@@ -54,29 +56,24 @@ abstract class AbstractBeButtons
     /**
      * Generate album add/edit buttons for click menu or toolbar
      *
-     * @param string $combinedIdentifier
-     * @return array
+     * @throws RouteNotFoundException
      */
-    protected function generateButtons($combinedIdentifier)
+    protected function generateButtons(string $combinedIdentifier): array
     {
         $buttons = [];
 
-        if (!$GLOBALS['BE_USER']->user)
-        {
+        if (!$GLOBALS['BE_USER']->user) {
             return $buttons;
         }
 
-        // In some folder copy/move actions in file list a invalid id is passed
+        // In some folder copy/move actions in file list an invalid id is passed
         try {
-            /** @var $file \TYPO3\CMS\Core\Resource\Folder */
             $folder = $this->resourceFactory->retrieveFileOrFolderObject($combinedIdentifier);
-        } catch (ResourceDoesNotExistException $exception) {
-            $folder = null;
-        } catch (InsufficientFolderAccessPermissionsException $exception) {
+        } catch (ResourceDoesNotExistException|InsufficientFolderAccessPermissionsException $exception) {
             $folder = null;
         }
 
-        if ($folder && $folder instanceof Folder
+        if ($folder instanceof Folder
             && !$folder->getStorage()->isPublic()
             && in_array(
                 $folder->getRole(),
@@ -86,8 +83,6 @@ abstract class AbstractBeButtons
             /** @var Utility $utility */
             $utility = GeneralUtility::makeInstance(Utility::class);
             $folderRecord = $utility->getFolderRecord($folder);
-
-            $menuItems[] = 'spacer';
 
             if ($folderRecord) {
                 $buttons[] = $this->createLink(
@@ -105,14 +100,11 @@ abstract class AbstractBeButtons
                 );
             }
         }
+
         return $buttons;
     }
 
-    /**
-     * @param string $name
-     * @return Icon
-     */
-    protected function getIcon($name)
+    protected function getIcon(string $name): Icon
     {
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
         return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
@@ -122,9 +114,10 @@ abstract class AbstractBeButtons
      * Build edit url
      *
      * @param int $uid Media album uid
-     * @return string
+     * @return UriInterface
+     * @throws RouteNotFoundException
      */
-    protected function buildEditUrl($uid)
+    protected function buildEditUrl(int $uid): UriInterface
     {
         return $this->buildUrl([
             'edit' => [
@@ -138,10 +131,9 @@ abstract class AbstractBeButtons
     /**
      * Build Add new media album url
      *
-     * @param Folder $folder
-     * @return string
+     * @throws RouteNotFoundException
      */
-    protected function buildAddUrl(Folder $folder)
+    protected function buildAddUrl(Folder $folder): UriInterface
     {
         return $this->buildUrl([
             'edit' => [
@@ -163,11 +155,14 @@ abstract class AbstractBeButtons
      * Build record edit url
      *
      * @param array $parameters URL parameters
-     * @return string
+     * @return UriInterface
+     * @throws RouteNotFoundException
      */
-    protected function buildUrl(array $parameters)
+    protected function buildUrl(array $parameters): UriInterface
     {
         $parameters['returnUrl'] = GeneralUtility::getIndpEnv('REQUEST_URI');
+
+        /** @var UriBuilder $uriBuilder */
         $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
 
         return $uriBuilder->buildUriFromRoute('record_edit', $parameters);
@@ -178,33 +173,24 @@ abstract class AbstractBeButtons
      *
      * @param string $title
      * @param string $shortTitle
-     * @param string $icon
-     * @param string $url
+     * @param Icon $icon
+     * @param UriInterface $url
      * @param bool $addReturnUrl
      * @return string|array
      */
-    abstract protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true);
+    abstract protected function createLink(string $title, string $shortTitle, Icon $icon, UriInterface $url, bool $addReturnUrl = true);
 
 
-    /**
-     * @return LanguageService
-     */
-    protected function getLangService()
+    protected function getLangService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }
 
     /**
      * Get language string
-     *
-     * @param string $key
-     * @param string $languageFile
-     * @return string
      */
-    protected function sL(
-        $key,
-        $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf'
-    ) {
-        return $this->getLangService()->sL($languageFile . ':' . $key);
+    protected function sL(string $key): string
+    {
+        return $this->getLangService()->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:' . $key);
     }
 }
