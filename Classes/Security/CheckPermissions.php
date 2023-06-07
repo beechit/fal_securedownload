@@ -67,7 +67,11 @@ class CheckPermissions implements SingletonInterface
     public function checkFileAccessForCurrentFeUser(FileInterface $file): bool
     {
         $userFeGroups = !isset($GLOBALS['TSFE']->fe_user->user) ? false : $GLOBALS['TSFE']->fe_user->groupData['uid'];
-        return $this->checkFileAccess($file, $userFeGroups);
+        try {
+            return $this->checkFileAccess($file, $userFeGroups);
+        } catch (FolderDoesNotExistException $e) {
+            return false;
+        }
     }
 
     /**
@@ -122,6 +126,7 @@ class CheckPermissions implements SingletonInterface
      * @param FileInterface $file
      * @param bool|array $userFeGroups FALSE = no login, array() fe groups of user
      * @return bool
+     * @throws FolderDoesNotExistException
      */
     public function checkFileAccess(FileInterface $file, $userFeGroups): bool
     {
@@ -143,6 +148,7 @@ class CheckPermissions implements SingletonInterface
             $userFeGroups = $customUserGroups;
         }
 
+        // $file->getParentFolder() may throw a FolderDoesNotExistException which currently is not documented in PHPDoc
         $parentFolder = $file->getParentFolder();
         // check folder access
         if ($this->checkFolderRootLineAccess($parentFolder, $userFeGroups)) {
@@ -174,17 +180,21 @@ class CheckPermissions implements SingletonInterface
             $this->checkFolderRootLineAccessCache[$cacheIdentifier] = true;
 
             // loop through the root line of a folder and check the permissions of every folder
-            foreach ($this->getFolderRootLine($folder) as $rootlineFolder) {
-                // fetch folder permissions record
-                $folderRecord = $this->utilityService->getFolderRecord($rootlineFolder);
+            try {
+                foreach ($this->getFolderRootLine($folder) as $rootlineFolder) {
+                    // fetch folder permissions record
+                    $folderRecord = $this->utilityService->getFolderRecord($rootlineFolder);
 
-                // if record found check permissions
-                if ($folderRecord) {
-                    if (!$this->matchFeGroupsWithFeUser($folderRecord['fe_groups'], $userFeGroups)) {
-                        $this->checkFolderRootLineAccessCache[$cacheIdentifier] = false;
-                        break;
+                    // if record found check permissions
+                    if ($folderRecord) {
+                        if (!$this->matchFeGroupsWithFeUser($folderRecord['fe_groups'], $userFeGroups)) {
+                            $this->checkFolderRootLineAccessCache[$cacheIdentifier] = false;
+                            break;
+                        }
                     }
                 }
+            } catch (FolderDoesNotExistException $e) {
+                return false;
             }
         }
         return $this->checkFolderRootLineAccessCache[$cacheIdentifier];
@@ -216,20 +226,23 @@ class CheckPermissions implements SingletonInterface
 
         $feGroups = [];
         // loop through the root line of a folder and check the permissions of every folder
-        foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
-            // fetch folder permissions record
-            $folderRecord = $this->utilityService->getFolderRecord($folder);
+        try {
+            foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
+                // fetch folder permissions record
+                $folderRecord = $this->utilityService->getFolderRecord($folder);
 
-            // if record found check permissions
-            if ($folderRecord) {
-                if ($feGroups === []) {
-                    $feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], true);
+                // if record found check permissions
+                if ($folderRecord) {
+                    if ($feGroups === []) {
+                        $feGroups = GeneralUtility::trimExplode(',', $folderRecord['fe_groups'], true);
+                    }
+                    if ($folderRecord['fe_groups']) {
+                        $feGroups = ArrayUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
+                    }
+                    break;
                 }
-                if ($folderRecord['fe_groups']) {
-                    $feGroups = ArrayUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
-                }
-                break;
             }
+        } catch (FolderDoesNotExistException $e) {
         }
         if ($resource instanceof FileInterface && $resource->getProperty('fe_groups')) {
             $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
@@ -242,10 +255,12 @@ class CheckPermissions implements SingletonInterface
      * Get all folders in root line of given folder
      *
      * @return FolderInterface[]
+     * @throws FolderDoesNotExistException
      */
     public function getFolderRootLine(FolderInterface $folder): array
     {
         $rootLine = [$folder];
+        // $folder->getParentFolder() may throw a FolderDoesNotExistException which currently is not documented in PHPDoc
         $parentFolder = $folder->getParentFolder();
         $count = 0;
         while ($parentFolder->getIdentifier() !== $folder->getIdentifier()) {

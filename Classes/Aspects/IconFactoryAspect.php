@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace BeechIt\FalSecuredownload\Aspects;
 
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
+use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
@@ -51,18 +52,23 @@ class IconFactoryAspect
             $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
             $resource->getStorage()->setEvaluatePermissions(false);
 
-            $folder = $resource instanceof Folder ? $resource : $resource->getParentFolder();
+            try {
+                $folder = $resource instanceof Folder ? $resource : $resource->getParentFolder();
 
-            if ($resource instanceof File && $resource->getProperty('fe_groups')) {
-                $overlayIdentifier = 'overlay-restricted';
+                if ($resource instanceof File && $resource->getProperty('fe_groups')) {
+                    $overlayIdentifier = 'overlay-restricted';
 
-            // check if there are permissions set on this specific folder
-            } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== false) {
-                $overlayIdentifier = 'overlay-restricted';
+                    // check if there are permissions set on this specific folder
+                } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== false) {
+                    $overlayIdentifier = 'overlay-restricted';
 
-            // check if there are access restrictions in the root line of this folder
-            } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, false)) {
-                $overlayIdentifier = 'overlay-inherited-permissions';
+                    // check if there are access restrictions in the root line of this folder
+                } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, false)) {
+                    $overlayIdentifier = 'overlay-inherited-permissions';
+                }
+
+            } catch (FolderDoesNotExistException $e) {
+                // $resource->getParentFolder() may throw a FolderDoesNotExistException which currently is not documented in PHPDoc
             }
 
             $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
