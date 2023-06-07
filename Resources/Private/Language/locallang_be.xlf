@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <xliff version="1.0">
-	<file source-language="en" datatype="plaintext" original="messages" date="2014-02-19T09:16:58Z" product-name="fal_securedownload">
+	<file source-language="en" datatype="plaintext" original="messages" date="2014-02-19T09:16:58Z"
+		  product-name="fal_securedownload">
 		<header/>
 		<body>
 			<trans-unit id="plugin.title">
@@ -27,10 +28,14 @@
 			</trans-unit>
 
 			<trans-unit id="extmng.login_redirect_url">
-				<source>Instead of throwing an "Authentication required!" message redirect the user to this url (optional variable = ###REQUEST_URI###)</source>
+				<source>Instead of throwing an "Authentication required!" message redirect the user to this url
+					(optional variable = ###REQUEST_URI###)
+				</source>
 			</trans-unit>
 			<trans-unit id="extmng.no_access_redirect_url">
-				<source>Instead of throwing an "Access denied" message redirect the user to this url (optional variable = ###REQUEST_URI###)</source>
+				<source>Instead of throwing an "Access denied" message redirect the user to this url (optional variable
+					= ###REQUEST_URI###)
+				</source>
 			</trans-unit>
 			<trans-unit id="extmng.force_download">
 				<source>Force download of all files from protected/non-public storages</source>
