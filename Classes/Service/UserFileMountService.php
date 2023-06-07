@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Service;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,9 +23,12 @@ namespace BeechIt\FalSecuredownload\Service;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-use TYPO3\CMS\Core\Messaging\AbstractMessage;
+ */
+
+namespace BeechIt\FalSecuredownload\Service;
+
 use TYPO3\CMS\Core\Exception;
+use TYPO3\CMS\Core\Messaging\AbstractMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Messaging\FlashMessageService;
 use TYPO3\CMS\Core\Resource\StorageRepository;
@@ -32,6 +36,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * FlexForm file mount service
+ *
+ * Registered in Configuration/FlexForms/FileTree.xml
+ * @noinspection PhpUnused
  */
 class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMountService
 {
@@ -42,8 +49,9 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
      *
      * @param array $PA the array with additional configuration options.
      * @throws Exception
+     * @noinspection PhpUnused
      */
-    public function renderFlexFormSelectDropdown(&$PA)
+    public function renderFlexFormSelectDropdown(array &$PA): void
     {
         // get storageUid from flexform
         $storageUid = $PA['row']['settings.storage'][0];
@@ -55,7 +63,6 @@ class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMoun
 
             /** @var $storageRepository StorageRepository */
             $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
-            /** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
             $storage = $storageRepository->findByUid($storageUid);
             if ($storage->isBrowsable()) {
                 if (!empty($storage->getFileMounts())) {
