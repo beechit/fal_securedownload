@@ -50,14 +50,6 @@
                             <config>
                                 <type>select</type>
                                 <renderType>selectSingle</renderType>
-                                <items>
-                                    <numIndex index="0" type="array">
-                                        <numIndex index="0">
-                                            LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.folder.selectStorage
-                                        </numIndex>
-                                        <numIndex index="1"></numIndex>
-                                    </numIndex>
-                                </items>
                                 <itemsProcFunc>
                                     BeechIt\FalSecuredownload\Service\UserFileMountService->renderFlexFormSelectDropdown
                                 </itemsProcFunc>

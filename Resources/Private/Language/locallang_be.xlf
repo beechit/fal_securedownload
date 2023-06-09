@@ -19,9 +19,6 @@
 			<trans-unit id="flexform.folder">
 				<source>Folder</source>
 			</trans-unit>
-			<trans-unit id="flexform.folder.selectStorage">
-				<source>- First select a storage -</source>
-			</trans-unit>
 
 			<trans-unit id="clickmenu.folderpermissions">
 				<source>Folder permissions</source>
