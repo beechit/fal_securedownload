@@ -30,9 +30,7 @@ namespace BeechIt\FalSecuredownload\Security;
 use BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent;
 use BeechIt\FalSecuredownload\Service\Utility;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use TYPO3\CMS\Backend\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Authentication\Mfa\MfaRequiredException;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FolderInterface;
@@ -102,22 +100,6 @@ class CheckPermissions implements SingletonInterface
         $access = $resourceStorage->checkFileActionPermission('read', $file);
         $resourceStorage->setEvaluatePermissions($originalEvaluatePermissions);
         return $access;
-    }
-
-    /**
-     * Get backend user object
-     *
-     * @throws MfaRequiredException
-     */
-    protected function getBackendUser(): FrontendBackendUserAuthentication
-    {
-        $backendUserObject = GeneralUtility::makeInstance(FrontendBackendUserAuthentication::class);
-        $backendUserObject->start();
-        $backendUserObject->unpack_uc();
-        if (!empty($backendUserObject->user['uid'])) {
-            $backendUserObject->fetchGroupData();
-        }
-        return $backendUserObject;
     }
 
     /**
