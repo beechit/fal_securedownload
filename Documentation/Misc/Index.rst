@@ -228,12 +228,12 @@ Known issues
 ============
 
 * I got javascript errors after including the provided typoscript template
-	This is properly because you do not have jQuery available on the FE. You can easily disable the provided javascript be adding this line to you typoscript template
+	This is properly because you do not have jQuery available on the FE. You can disable the provided javascript by adding this line to your typoscript template
 
 
 .. code-block:: ts
 
-   page.jsFooterInline.303030 >
+   plugin.tx_falsecuredownload.settings.includeJavascript = 0
 
 * Files in my "secure" folder aren't processed by ext:tika
 	If the folder is outside of the document root you need to set `$GLOBALS['TYPO3_CONF_VARS']['BE']['lockRootPath']` else ext:tika will not process the files.

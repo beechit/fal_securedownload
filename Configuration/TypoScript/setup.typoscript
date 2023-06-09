@@ -7,4 +7,6 @@ plugin.tx_falsecuredownload {
     layoutRootPaths.0 = EXT:fal_securedownload/Resources/Private/Layouts/
     layoutRootPaths.10 = {$plugin.tx_falsecuredownload.view.layoutRootPath}
   }
+
+  settings.includeJavascript = {$plugin.tx_falsecuredownload.settings.includeJavascript}
 }
