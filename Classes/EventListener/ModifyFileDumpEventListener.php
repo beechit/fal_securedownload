@@ -119,10 +119,9 @@ class ModifyFileDumpEventListener
         $loginRedirectUrl = $this->loginRedirectUrl;
         $noAccessRedirectUrl = $this->noAccessRedirectUrl;
 
-        /** @var BeforeRedirectsEvent $event */
-        $event = $this->eventDispatcher->dispatch(new BeforeRedirectsEvent($loginRedirectUrl, $noAccessRedirectUrl, $file, $this));
-        $loginRedirectUrl = $event->getLoginRedirectUrl();
-        $noAccessRedirectUrl = $event->getNoAccessRedirectUrl();
+        $beforeRedirectsEvent = $this->eventDispatcher->dispatch(new BeforeRedirectsEvent($loginRedirectUrl, $noAccessRedirectUrl, $file, $this));
+        $loginRedirectUrl = $beforeRedirectsEvent->getLoginRedirectUrl();
+        $noAccessRedirectUrl = $beforeRedirectsEvent->getNoAccessRedirectUrl();
 
         if (!$this->checkPermissions()) {
             if (!$this->isLoggedIn()) {

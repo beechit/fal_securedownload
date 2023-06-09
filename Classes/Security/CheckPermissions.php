@@ -136,9 +136,8 @@ class CheckPermissions implements SingletonInterface
         }
 
         $customUserGroups = [];
-        /** @var AddCustomGroupsEvent $event */
-        $event = $this->eventDispatcher->dispatch(new AddCustomGroupsEvent([$customUserGroups]));
-        $eventArguments = $event->getCustomUserGroups();
+        $addCustomGroupsEvent = $this->eventDispatcher->dispatch(new AddCustomGroupsEvent([$customUserGroups]));
+        $eventArguments = $addCustomGroupsEvent->getCustomUserGroups();
         $customUserGroups = array_shift($eventArguments);
 
         if (is_array($userFeGroups)) {
