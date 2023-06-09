@@ -32,10 +32,18 @@ use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class IconFactoryAspect
+class IconFactoryAspect implements SingletonInterface
 {
+
+    private CheckPermissions $checkPermissions;
+
+    public function __construct()
+    {
+        $this->checkPermissions = GeneralUtility::makeInstance(CheckPermissions::class);;
+    }
 
     public function buildIconForResource(
         ResourceInterface $resource,
@@ -45,12 +53,11 @@ class IconFactoryAspect
         ?string $overlayIdentifier
     ): array
     {
-        if (!$resource->getStorage()->isPublic()) {
-            /** @var $checkPermissionsService CheckPermissions */
-            $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
+        $storage = $resource->getStorage();
+        if (!$storage->isPublic()) {
 
-            $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
-            $resource->getStorage()->setEvaluatePermissions(false);
+            $currentPermissionsCheck = $storage->getEvaluatePermissions();
+            $storage->setEvaluatePermissions(false);
 
             try {
                 $folder = $resource instanceof Folder ? $resource : $resource->getParentFolder();
@@ -59,11 +66,11 @@ class IconFactoryAspect
                     $overlayIdentifier = 'overlay-restricted';
 
                     // check if there are permissions set on this specific folder
-                } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== false) {
+                } elseif ($folder === $resource && $this->checkPermissions->getFolderPermissions($folder) !== false) {
                     $overlayIdentifier = 'overlay-restricted';
 
                     // check if there are access restrictions in the root line of this folder
-                } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, false)) {
+                } elseif (!$this->checkPermissions->checkFolderRootLineAccess($folder, false)) {
                     $overlayIdentifier = 'overlay-inherited-permissions';
                 }
 
@@ -71,7 +78,7 @@ class IconFactoryAspect
                 // $resource->getParentFolder() may throw a FolderDoesNotExistException which currently is not documented in PHPDoc
             }
 
-            $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
+            $storage->setEvaluatePermissions($currentPermissionsCheck);
         }
         return [$resource, $size, $options, $iconIdentifier, $overlayIdentifier];
     }
