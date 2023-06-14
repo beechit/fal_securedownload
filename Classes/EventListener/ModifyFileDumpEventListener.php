@@ -43,7 +43,6 @@ use TYPO3\CMS\Core\LinkHandling\Exception\UnknownLinkHandlerException;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\Event\ModifyFileDumpEvent;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
-use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
@@ -172,11 +171,11 @@ class ModifyFileDumpEventListener
      *
      * TODO: Try to get the resumable option part of TYPO3 core itself find a nicer way to force the download. Other hooks are blocked by this.
      *
-     * @param File $file
+     * @param FileInterface $file
      * @param bool $asDownload
      * @param bool $resumableDownload
      */
-    protected function dumpFileContents(File $file, bool $asDownload, bool $resumableDownload)
+    protected function dumpFileContents(FileInterface $file, bool $asDownload, bool $resumableDownload)
     {
         $downloadName = $file->hasProperty('download_name') && $file->getProperty('download_name') ? $file->getProperty('download_name') : $file->getName();
 
