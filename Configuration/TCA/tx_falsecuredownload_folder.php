@@ -1,7 +1,10 @@
 <?php
+
+use TYPO3\CMS\Core\Information\Typo3Version;
+
 defined('TYPO3') or die();
 
-return [
+$tca = [
     'ctrl' => [
         'title' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:tx_falsecuredownload_folder',
         'label' => 'folder',
@@ -63,12 +66,12 @@ return [
                 'maxitems' => 40,
                 'items' => [
                     [
-                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
-                        -2
+                        'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
+                        'value' => -2
                     ],
                     [
-                        'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
-                        '--div--'
+                        'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
+                        'value' => '--div--'
                     ]
                 ],
                 'exclusiveKeys' => '-1,-2',
@@ -78,3 +81,12 @@ return [
         ]
     ]
 ];
+
+$typo3Version = new Typo3Version();
+if ($typo3Version->getMajorVersion() === 11) {
+    foreach ($tca['columns']['fe_groups']['config']['items'] as &$item) {
+        $item = array_values($item);
+    }
+}
+
+return $tca;
