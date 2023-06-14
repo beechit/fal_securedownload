@@ -277,7 +277,7 @@ class CheckPermissions implements SingletonInterface
         }
 
         // enabled for all loggedIn Users
-        if (strpos($groups, '-2') !== false) {
+        if (str_contains($groups, '-2')) {
             return true;
         }
 
