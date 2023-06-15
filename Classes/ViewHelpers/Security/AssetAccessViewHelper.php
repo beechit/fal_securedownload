@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,24 +23,30 @@ namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
+namespace BeechIt\FalSecuredownload\ViewHelpers\Security;
+
+use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
- * Asset access ViewHelper
+ * Registered as ViewHelper in fluid templates
+ *
+ * @noinspection PhpUnused
  */
 class AssetAccessViewHelper extends AbstractConditionViewHelper
 {
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('folder', 'object', '', true);
-        $this->registerArgument('file', 'object', '', false, null);
+        $this->registerArgument('file', 'object', '');
     }
 
     /**
@@ -47,8 +54,9 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
      * otherwise renders <f:else> child.
      *
      * @return string
+     * @throws AspectNotFoundException
      */
-    public function render()
+    public function render(): string
     {
         return self::evaluateCondition($this->arguments) ? $this->renderThenChild() : $this->renderElseChild();
     }
@@ -58,16 +66,17 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
      *
      * @param array $arguments
      * @return bool
+     * @throws AspectNotFoundException
      */
-    protected static function evaluateCondition($arguments = null)
+    protected static function evaluateCondition($arguments = null): bool
     {
         /** @var Folder $folder */
         $folder = $arguments['folder'];
         /** @var File $file */
         $file = $arguments['file'];
 
-        /** @var $checkPermissionsService \BeechIt\FalSecuredownload\Security\CheckPermissions */
-        $checkPermissionsService = GeneralUtility::makeInstance('BeechIt\\FalSecuredownload\\Security\\CheckPermissions');
+        /** @var $checkPermissionsService CheckPermissions */
+        $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
         $userFeGroups = self::getFeUserGroups();
         $access = false;
 
@@ -91,10 +100,12 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
     /**
      * Determines whether the currently logged in FE user belongs to the specified usergroup
      *
-     * @return boolean|array FALSE when not logged in or else frontend.user.groupIds
+     * @return bool|array FALSE when not logged in or else frontend.user.groupIds
+     * @throws AspectNotFoundException
      */
     protected static function getFeUserGroups()
     {
+        /** @var Context $context */
         $context = GeneralUtility::makeInstance(Context::class);
         if (!$context->getPropertyFromAspect('frontend.user', 'isLoggedIn')) {
             return false;

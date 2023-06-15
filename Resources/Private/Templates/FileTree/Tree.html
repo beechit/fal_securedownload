@@ -1,24 +1,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en"
-	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-	  xmlns:sd="http://typo3.org/ns/BeechIt/FalSecuredownload/ViewHelpers"
-	  data-namespace-typo3-fluid="true">
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:sd="http://typo3.org/ns/BeechIt/FalSecuredownload/ViewHelpers"
+      data-namespace-typo3-fluid="true">
 
-<f:layout name="Default" />
+<f:layout name="Default"/>
 
 <f:section name="main">
 
-	<f:if condition="{folder}">
-		<f:then>
-			<h3>{folder.name}</h3>
-			<sd:security.assetAccess folder="{folder}">
-				<f:render partial="FileTree/Leaf" arguments="{folder:folder}" />
-			</sd:security.assetAccess>
-		</f:then>
+    <f:if condition="{folder}">
+        <f:then>
+            <h3>{folder.name}</h3>
+            <sd:security.assetAccess folder="{folder}">
+                <f:render partial="FileTree/Leaf" arguments="{folder:folder}"/>
+            </sd:security.assetAccess>
+        </f:then>
 
-		<f:else>
-			<f:translate key="noFolderSelected">No folder selected</f:translate>
-		</f:else>
-	</f:if>
+        <f:else>
+            <f:translate key="noFolderSelected">No folder selected</f:translate>
+        </f:else>
+    </f:if>
 
 </f:section>
 

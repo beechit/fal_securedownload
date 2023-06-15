@@ -1,4 +1,8 @@
 <?php
+
+use TYPO3\CMS\Core\Information\Typo3Version;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3') or die();
 
 $additionalColumns = [
@@ -12,12 +16,12 @@ $additionalColumns = [
             'maxitems' => 20,
             'items' => [
                 [
-                    'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
-                    -2
+                    'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
+                    'value' => -2
                 ],
                 [
-                    'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
-                    '--div--'
+                    'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
+                    'value' => '--div--'
                 ]
             ],
             'exclusiveKeys' => '-1,-2',
@@ -27,5 +31,12 @@ $additionalColumns = [
     ]
 ];
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('sys_file_metadata', $additionalColumns);
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('sys_file_metadata', 'fe_groups');
+$typo3Version = new Typo3Version();
+if ($typo3Version->getMajorVersion() === 11) {
+    foreach ($additionalColumns['fe_groups']['config']['items'] as &$item) {
+        $item = array_values($item);
+    }
+}
+
+ExtensionManagementUtility::addTCAcolumns('sys_file_metadata', $additionalColumns);
+ExtensionManagementUtility::addToAllTCAtypes('sys_file_metadata', 'fe_groups');

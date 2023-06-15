@@ -1,21 +1,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en"
-	  xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
-	  xmlns:sd="http://typo3.org/ns/BeechIt/FalSecuredownload/ViewHelpers"
-	  data-namespace-typo3-fluid="true">
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      xmlns:sd="http://typo3.org/ns/BeechIt/FalSecuredownload/ViewHelpers"
+      data-namespace-typo3-fluid="true">
 
 <ul>
-	<f:for each="{folder.subFolders}" as="subFolder">
-		<sd:security.assetAccess folder="{subFolder}">
-			<li><span class="icon-folder {sd:leaveState(folder:subFolder, then:'icon-folder-open')}" data-folder="{subFolder.combinedIdentifier}">{subFolder.name}</span>
-				<f:render partial="FileTree/Leaf" arguments="{folder:subFolder}" />
-			</li>
-		</sd:security.assetAccess>
-	</f:for>
-	<f:for each="{folder.files}" as="file">
-		<sd:security.assetAccess folder="{folder}" file="{file}">
-			<li><span class="icon-file icon-file-{file.extension}"></span><sd:downloadLink file="{file}">{file.name}</sd:downloadLink></li>
-		</sd:security.assetAccess>
-	</f:for>
+    <f:for each="{folder.subFolders}" as="subFolder">
+        <sd:security.assetAccess folder="{subFolder}">
+            <li><span class="icon-folder {sd:leaveState(folder:subFolder, then:'icon-folder-open')}"
+                      data-folder="{subFolder.combinedIdentifier}">{subFolder.name}</span>
+                <f:render partial="FileTree/Leaf" arguments="{folder:subFolder}"/>
+            </li>
+        </sd:security.assetAccess>
+    </f:for>
+    <f:for each="{folder.files}" as="file">
+        <sd:security.assetAccess folder="{folder}" file="{file}">
+            <li><span class="icon-file icon-file-{file.extension}"></span>
+                <sd:downloadLink file="{file}">{file.name}</sd:downloadLink>
+            </li>
+        </sd:security.assetAccess>
+    </f:for>
 </ul>
 
 </html>

@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\Events;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2022 Frans Saris <frans@beech.it>
@@ -23,42 +23,46 @@ namespace BeechIt\FalSecuredownload\Events;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
-use BeechIt\FalSecuredownload\Hooks\FileDumpHook;
+namespace BeechIt\FalSecuredownload\Events;
+
+use BeechIt\FalSecuredownload\EventListener\ModifyFileDumpEventListener;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 final class BeforeFileDumpEvent
 {
     private ResourceInterface $file;
-    private FileDumpHook $caller;
+    private ModifyFileDumpEventListener $caller;
 
-    public function __construct(ResourceInterface $file, FileDumpHook $caller)
+    public function __construct(ResourceInterface $file, ModifyFileDumpEventListener $caller)
     {
         $this->file = $file;
         $this->caller = $caller;
     }
 
+    /** @noinspection PhpUnused */
     public function getFile(): ResourceInterface
     {
         return $this->file;
     }
 
+    /** @noinspection PhpUnused */
     public function setFile(ResourceInterface $file): void
     {
         $this->file = $file;
     }
 
-    public function getCaller(): FileDumpHook
+    /** @noinspection PhpUnused */
+    public function getCaller(): ModifyFileDumpEventListener
     {
         return $this->caller;
     }
 
-    public function setCaller(FileDumpHook $caller): void
+    /** @noinspection PhpUnused */
+    public function setCaller(ModifyFileDumpEventListener $caller): void
     {
         $this->caller = $caller;
     }
-
-
 
 }

@@ -1,9 +1,17 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+      data-namespace-typo3-fluid="true">
+
 <div class="fal-securedownload">
-	<f:render section="main" />
+    <f:render section="main"/>
 </div>
 
-<f:asset.script
-    src="EXT:fal_securedownload/Resources/Public/JavaScript/CollapsibleFolderTree.js"
-    identifier="fal_securedownload"
-    defer="true"
-    type="text/javascript"/>
+<f:if condition="{settings.includeJavascript}">
+    <f:asset.script
+        src="EXT:fal_securedownload/Resources/Public/JavaScript/CollapsibleFolderTree.js"
+        identifier="fal_securedownload"
+        defer="true"
+        type="text/javascript"/>
+</f:if>
+
+</html>

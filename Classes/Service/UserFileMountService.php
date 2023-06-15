@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Service;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,75 +23,31 @@ namespace BeechIt\FalSecuredownload\Service;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
-use TYPO3\CMS\Core\Exception;
-use TYPO3\CMS\Core\Messaging\FlashMessage;
-use TYPO3\CMS\Core\Messaging\FlashMessageService;
-use TYPO3\CMS\Core\Resource\StorageRepository;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+ */
+
+namespace BeechIt\FalSecuredownload\Service;
+
+use TYPO3\CMS\Core\Resource\Service\UserFileMountService as TYPO3UserFileMountService;
 
 /**
  * FlexForm file mount service
+ *
+ * Registered in Configuration/FlexForms/FileTree.xml
+ *
+ * @noinspection PhpUnused
  */
-class UserFileMountService extends \TYPO3\CMS\Core\Resource\Service\UserFileMountService
+class UserFileMountService extends TYPO3UserFileMountService
 {
 
     /**
-     * User function for to render a dropdown for selecting a folder
-     * of a selected storage
+     * User function for to render a dropdown for selecting a folder of a selected storage
      *
      * @param array $PA the array with additional configuration options.
-     * @throws Exception
+     * @noinspection PhpUnused
      */
-    public function renderFlexFormSelectDropdown(&$PA)
+    public function renderFlexFormSelectDropdown(array &$PA): void
     {
-        // get storageUid from flexform
-        $storageUid = $PA['row']['settings.storage'][0];
-
-        // if storageUid found get folders
-        if ($storageUid > 0) {
-            // reset items
-            $PA['items'] = [];
-
-            /** @var $storageRepository StorageRepository */
-            $storageRepository = GeneralUtility::makeInstance(StorageRepository::class);
-            /** @var $storage \TYPO3\CMS\Core\Resource\ResourceStorage */
-            $storage = $storageRepository->findByUid($storageUid);
-            if ($storage->isBrowsable()) {
-                if (!empty($storage->getFileMounts())) {
-                    $fileMounts = $storage->getFileMounts();
-                    $folderItems = [];
-                    foreach ($fileMounts as $fileMount) {
-                        $folderItems[] = $this->getSubfoldersForOptionList($fileMount['folder']);
-                    }
-                    $folderItems = array_merge(...$folderItems);
-                } else {
-                    $rootLevelFolder = $storage->getRootLevelFolder();
-                    $folderItems = $this->getSubfoldersForOptionList($rootLevelFolder);
-                }
-                foreach ($folderItems as $item) {
-                    $PA['items'][] = [
-                        $item->getIdentifier(),
-                        $item->getIdentifier()
-                    ];
-                }
-            } else {
-                /** @var FlashMessageService $flashMessageService */
-                $flashMessageService = GeneralUtility::makeInstance(FlashMessageService::class);
-                $queue = $flashMessageService->getMessageQueueByIdentifier();
-                $queue->enqueue(new FlashMessage(
-                    'Storage "' . $storage->getName() . '" is not browsable. No folder is currently selectable.',
-                    '',
-                    FlashMessage::WARNING
-                ));
-
-                if (!count($PA['items'])) {
-                    $PA['items'][] = [
-                        '',
-                        ''
-                    ];
-                }
-            }
-        }
+        $PA['row']['storage'] = $PA['row']['settings.storage'];
+        parent::renderTceformsSelectDropdown($PA);
     }
 }

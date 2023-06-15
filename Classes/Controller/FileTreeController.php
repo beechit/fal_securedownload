@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Controller;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,26 +23,23 @@ namespace BeechIt\FalSecuredownload\Controller;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Controller;
+
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 
-/**
- * FileTreeController
- */
 class FileTreeController extends ActionController
 {
-    /**
-     * @var ResourceFactory
-     */
-    protected $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    protected ResourceFactory $resourceFactory;
+
+    public function __construct(ResourceFactory $resourceFactory)
     {
-        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+        $this->resourceFactory = $resourceFactory;
     }
 
     /**
@@ -50,8 +48,9 @@ class FileTreeController extends ActionController
     public function treeAction(): ResponseInterface
     {
         if ($this->settings['storage'] === '') {
-            return $this->htmlResponse(null);
+            return $this->htmlResponse('Storage is not configured');
         }
+
         try {
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($this->settings['storage'] . ':' . $this->settings['folder']);
         } catch (FolderDoesNotExistException $exception) {
@@ -60,6 +59,7 @@ class FileTreeController extends ActionController
         }
 
         $this->view->assign('folder', $folder);
+
         return $this->htmlResponse();
     }
 }

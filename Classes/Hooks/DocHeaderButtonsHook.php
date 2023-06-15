@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\Hooks;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -23,9 +23,14 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
+namespace BeechIt\FalSecuredownload\Hooks;
+
+use Psr\Http\Message\UriInterface;
+use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
+use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -33,48 +38,25 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class DocHeaderButtonsHook extends AbstractBeButtons
 {
-    /**
-     * Add folder permissions button to top bar of file list
-     *
-     * @param array $params ['buttons' => $buttons, 'markers' => &$markers, 'pObj' => &$this]
-     */
-    public function addFolderPermissionsButton(array $params)
-    {
-        // only add button to file list module
-        if ($params['pObj']->scriptID === 'ext/filelist/mod1/index.php') {
-            $extraButtons = $this->generateButtons(GeneralUtility::_GP('id'));
-            if (count($extraButtons)) {
-                $params['markers']['BUTTONLIST_LEFT'] =
-                    preg_replace(
-                        '`</div>$`',
-                        implode('', $extraButtons) . '</div>',
-                        $params['markers']['BUTTONLIST_LEFT']
-                    );
-            }
-        }
-    }
 
     /**
      * Create button
-     *
-     * @param string $title
-     * @param string $shortTitle
-     * @param string $icon
-     * @param string $url
-     * @param bool $addReturnUrl
      */
-    protected function createLink($title, $shortTitle, $icon, $url, $addReturnUrl = true)
+    protected function createLink(string $title, string $shortTitle, Icon $icon, UriInterface $url, bool $addReturnUrl = true): array
     {
-        $link = [
+        return [
             'title' => $title,
             'icon' => $icon,
             'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : '')
         ];
-        return $link;
     }
 
     /**
      * Get buttons
+     *
+     * Registered in ext_localconf.php as ['Backend\Template\Components\ButtonBar']['getButtonsHook']
+     *
+     * @throws RouteNotFoundException
      */
     public function getButtons(array $params, ButtonBar $buttonBar): array
     {

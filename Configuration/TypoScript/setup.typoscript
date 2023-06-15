@@ -1,0 +1,12 @@
+plugin.tx_falsecuredownload {
+  view {
+    templateRootPaths.0 = EXT:fal_securedownload/Resources/Private/Templates/
+    templateRootPaths.10 = {$plugin.tx_falsecuredownload.view.templateRootPath}
+    partialRootPaths.0 = EXT:fal_securedownload/Resources/Private/Partials/
+    partialRootPaths.10 = {$plugin.tx_falsecuredownload.view.partialRootPath}
+    layoutRootPaths.0 = EXT:fal_securedownload/Resources/Private/Layouts/
+    layoutRootPaths.10 = {$plugin.tx_falsecuredownload.view.layoutRootPath}
+  }
+
+  settings.includeJavascript = {$plugin.tx_falsecuredownload.settings.includeJavascript}
+}

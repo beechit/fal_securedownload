@@ -1,0 +1,15 @@
+plugin.tx_falsecuredownload {
+  view {
+    # cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template overrides (FE)
+    templateRootPath =
+    # cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template partial overrides (FE)
+    partialRootPath =
+    # cat=plugin.tx_falsecuredownload/file; type=string; label=Path to template layout overrides (FE)
+    layoutRootPath =
+  }
+
+  settings {
+    # cat=plugin.tx_falsecuredownload/settings; type=bool; label=Whether to include Javascript to open/collapse folders
+    includeJavascript = 1
+  }
+}

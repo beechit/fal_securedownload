@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\Hooks;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -23,7 +23,9 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\EventListener;
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\Context\UserAspect;
@@ -33,80 +35,38 @@ use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
+use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Http\AbstractApplication;
+use TYPO3\CMS\Core\LinkHandling\Exception\UnknownLinkHandlerException;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
-use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\Event\ModifyFileDumpEvent;
+use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FileReference;
-use TYPO3\CMS\Core\Resource\Hook\FileDumpEIDHookInterface;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
-/**
- * FileDumpHook
- */
-class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterface
+class ModifyFileDumpEventListener
 {
 
-    /**
-     * @var FrontendUserAuthentication
-     */
-    protected $feUser;
+    protected ?FrontendUserAuthentication $feUser = null;
+    protected FileInterface $originalFile;
+    protected string $loginRedirectUrl = '';
+    protected string $noAccessRedirectUrl = '';
+    protected bool $forceDownload = false;
+    protected string $forceDownloadForExt = '';
+    protected bool $resumableDownload = false;
+    protected Context $context;
+    private EventDispatcherInterface $eventDispatcher;
+    private ModifyFileDumpEvent $event;
 
-    /**
-     * @var File
-     */
-    protected $originalFile;
-
-    /**
-     * @var string
-     */
-    protected $loginRedirectUrl;
-
-    /**
-     * @var string
-     */
-    protected $noAccessRedirectUrl;
-
-    /**
-     * @var bool
-     */
-    protected $forceDownload = false;
-
-    /**
-     * @var string
-     */
-    protected $forceDownloadForExt = '';
-
-    /**
-     * @var bool
-     */
-    protected $resumableDownload = false;
-
-    protected $context;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    private $eventDispatcher;
-
-    /**
-     * Constructor
-     */
     public function __construct(EventDispatcherInterface $eventDispatcher)
     {
         $this->context = GeneralUtility::makeInstance(Context::class);
-        if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'])) {
-            $this->loginRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['login_redirect_url'];
-        }
-        if (!empty($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'])) {
-            $this->noAccessRedirectUrl = $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['fal_securedownload']['no_access_redirect_url'];
-        }
 
         if (ExtensionConfiguration::loginRedirectUrl()) {
             $this->loginRedirectUrl = ExtensionConfiguration::loginRedirectUrl();
@@ -122,12 +82,17 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         $this->eventDispatcher = $eventDispatcher;
     }
 
+    public function __invoke(ModifyFileDumpEvent $event): void
+    {
+        $this->event = $event;
+        $this->checkFileAccess($event->getFile());
+    }
+
     /**
-     * Get feUser
-     *
-     * @return FrontendUserAuthentication
+     * @see https://github.com/beechit/fal_securedownload/issues/37
+     * @noinspection PhpUnused
      */
-    public function getFeUser()
+    public function getFeUser(): FrontendUserAuthentication
     {
         return $this->feUser;
     }
@@ -139,7 +104,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      *
      * @param ResourceInterface $file
      */
-    public function checkFileAccess(ResourceInterface $file)
+    private function checkFileAccess(ResourceInterface $file)
     {
         if (!$file instanceof FileInterface) {
             throw new \RuntimeException('Given $file is not a file.', 1469019515);
@@ -153,20 +118,19 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         $loginRedirectUrl = $this->loginRedirectUrl;
         $noAccessRedirectUrl = $this->noAccessRedirectUrl;
 
-        /** @var BeforeRedirectsEvent $event */
-        $event = $this->eventDispatcher->dispatch(new BeforeRedirectsEvent($loginRedirectUrl, $noAccessRedirectUrl, $file, $this));
-        $loginRedirectUrl = $event->getLoginRedirectUrl();
-        $noAccessRedirectUrl = $event->getNoAccessRedirectUrl();
+        $beforeRedirectsEvent = $this->eventDispatcher->dispatch(new BeforeRedirectsEvent($loginRedirectUrl, $noAccessRedirectUrl, $file, $this));
+        $loginRedirectUrl = $beforeRedirectsEvent->getLoginRedirectUrl();
+        $noAccessRedirectUrl = $beforeRedirectsEvent->getNoAccessRedirectUrl();
 
         if (!$this->checkPermissions()) {
             if (!$this->isLoggedIn()) {
-                if ($loginRedirectUrl !== null) {
+                if (!empty($loginRedirectUrl)) {
                     $this->redirectToUrl($loginRedirectUrl);
                 } else {
                     $this->exitScript('Authentication required!');
                 }
             } else {
-                if ($noAccessRedirectUrl !== null) {
+                if (!empty($noAccessRedirectUrl)) {
                     $this->redirectToUrl($noAccessRedirectUrl);
                 } else {
                     $this->exitScript('No access!');
@@ -188,7 +152,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
                 ->insert(
                     'tx_falsecuredownload_download',
                     $columns,
-                    [\PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT, \PDO::PARAM_INT]
+                    [Connection::PARAM_INT, Connection::PARAM_INT, Connection::PARAM_INT, Connection::PARAM_INT]
                 );
         }
 
@@ -205,14 +169,13 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
     /**
      * Dump file contents
      *
-     * @todo: find a nicer way to force the download. Other hooks are blocked by this.
-     * @todo: Try to get the resumable option part of TYPO3 core itself
+     * TODO: Try to get the resumable option part of TYPO3 core itself find a nicer way to force the download. Other hooks are blocked by this.
      *
-     * @param File $file
+     * @param FileInterface $file
      * @param bool $asDownload
      * @param bool $resumableDownload
      */
-    protected function dumpFileContents($file, $asDownload, $resumableDownload)
+    protected function dumpFileContents(FileInterface $file, bool $asDownload, bool $resumableDownload)
     {
         $downloadName = $file->hasProperty('download_name') && $file->getProperty('download_name') ? $file->getProperty('download_name') : $file->getName();
 
@@ -224,7 +187,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
         if (!$resumableDownload) {
             $response = $file->getStorage()->streamFile($file, $asDownload, $downloadName);
-            $this->sendResponse($response);
+            $this->event->setResponse($response);
             exit;
         }
 
@@ -250,7 +213,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         }
 
         $dumpSize = $fileSize;
-        list($begin, $end) = $range;
+        [$begin, $end] = $range;
         if ($begin !== 0 || $end !== $fileSize - 1) {
             header('HTTP/1.1 206 Partial Content');
             header('Content-Range: bytes ' . $begin . '-' . $end . '/' . $fileSize);
@@ -288,11 +251,8 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
     /**
      * Determine if we want to force a file download
-     *
-     * @param string $fileExtension
-     * @return bool
      */
-    protected function forceDownload($fileExtension)
+    protected function forceDownload(string $fileExtension): bool
     {
         $forceDownload = false;
         if ($this->forceDownload) {
@@ -308,23 +268,27 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
     /**
      * Check if user is logged in
-     *
-     * @return bool
      */
-    protected function isLoggedIn()
+    protected function isLoggedIn(): bool
     {
-        $this->initializeUserAuthentication();
-        return is_array($this->feUser->user) && $this->feUser->user['uid'] ? true : false;
+        try {
+            $this->initializeUserAuthentication();
+            return is_array($this->feUser->user) && $this->feUser->user['uid'];
+        } catch (AspectNotFoundException|AspectPropertyNotFoundException $e) {
+            return false;
+        }
     }
 
     /**
      * Check if current user has enough permissions to view file
-     *
-     * @return bool
      */
-    protected function checkPermissions()
+    protected function checkPermissions(): bool
     {
-        $this->initializeUserAuthentication();
+        try {
+            $this->initializeUserAuthentication();
+        } catch (AspectNotFoundException|AspectPropertyNotFoundException $e) {
+            return false;
+        }
 
         /** @var $checkPermissionsService CheckPermissions */
         $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
@@ -335,11 +299,17 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
         $userFeGroups = !$this->feUser->user ? false : $this->feUser->groupData['uid'];
 
-        return $checkPermissionsService->checkFileAccess($this->originalFile, $userFeGroups);
+        try {
+            return $checkPermissionsService->checkFileAccess($this->originalFile, $userFeGroups);
+        } catch (FolderDoesNotExistException $e) {
+            return false;
+        }
     }
 
     /**
-     * Initialise feUser
+     * Initialize feUser
+     * @throws AspectNotFoundException
+     * @throws AspectPropertyNotFoundException
      */
     protected function initializeUserAuthentication()
     {
@@ -347,28 +317,23 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
             /** @var UserAspect $userAspect */
             $userAspect = $this->context->getAspect('beechit.user');
             $this->feUser = $userAspect->get('user');
-            $this->feUser->fetchGroupData();
+            $this->feUser->fetchGroupData($this->event->getRequest());
         }
     }
 
     /**
-     * Exit with a error message
-     *
-     * @param string $message
-     * @param int $httpCode
+     * Exit with an error message
      */
-    protected function exitScript($message, $httpCode = 403)
+    protected function exitScript(string $message, int $httpCode = 403)
     {
-        header('HTTP/1.1 ' . (int)$httpCode . ' Forbidden');
+        header('HTTP/1.1 ' . $httpCode . ' Forbidden');
         exit($message);
     }
 
     /**
      * Redirect to url
-     *
-     * @param $url
      */
-    protected function redirectToUrl($url)
+    protected function redirectToUrl(string $url)
     {
         $url = str_replace(
             '###REQUEST_URI###',
@@ -386,12 +351,17 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
 
     /**
      * Resolve the URL (currently only page and external URL are supported)
-     *
-     * @param string $url
      */
-    protected function resolveUrl($url): string
+    protected function resolveUrl(string $url): string
     {
-        $urlParameters = GeneralUtility::makeInstance(LinkService::class)->resolve($url);
+        try {
+            $urlParameters = GeneralUtility::makeInstance(LinkService::class)->resolve($url);
+        } catch (UnknownLinkHandlerException $e) {
+            throw new InvalidArgumentException(
+                'Redirects URL can only handle TYPO3 urls of types "page" or "url".',
+                1686123053
+            );
+        }
 
         if ($urlParameters['type'] !== LinkService::TYPE_PAGE && $urlParameters['type'] !== LinkService::TYPE_URL) {
             throw new InvalidArgumentException(
@@ -403,6 +373,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
         if ($urlParameters['type'] === LinkService::TYPE_URL) {
             $uri = $urlParameters['url'];
         } else {
+            /** @var ContentObjectRenderer $contentObject */
             $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class, null);
             $contentObject->start([], '');
 
@@ -426,9 +397,9 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
      * @param int $fileSize the size of the file
      * @return array the range (begin, end), or empty array if the range request is invalid.
      */
-    protected function getHttpRange($fileSize)
+    protected function getHttpRange(int $fileSize): array
     {
-        $range = isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false;
+        $range = $_SERVER['HTTP_RANGE'] ?? false;
         if (!$range || $range === '-') {
             return [0, $fileSize - 1];
         }
@@ -449,7 +420,7 @@ class FileDumpHook extends AbstractApplication implements FileDumpEIDHookInterfa
             $end = $fileSize - 1;
         }
         if ($start < 0 || $start > $end) {
-            return false;
+            return [];
         }
         return [$start, $end];
     }

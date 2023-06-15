@@ -1,9 +1,11 @@
 <?php
 
+use BeechIt\FalSecuredownload\Middleware\EidFrontendAuthentication;
+
 return [
     'frontend' => [
         'beechit/eid-frontend/authentication' => [
-            'target' => \BeechIt\FalSecuredownload\Middleware\EidFrontendAuthentication::class,
+            'target' => EidFrontendAuthentication::class,
             'after' => [
                 'typo3/cms-core/normalized-params-attribute',
             ],

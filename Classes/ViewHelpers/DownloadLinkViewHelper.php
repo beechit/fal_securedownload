@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\ViewHelpers;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -24,6 +25,8 @@ namespace BeechIt\FalSecuredownload\ViewHelpers;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+namespace BeechIt\FalSecuredownload\ViewHelpers;
+
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
@@ -32,6 +35,8 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 
 /**
  * Download link view helper. Generates links that force a download action.
+ *
+ * @noinspection PhpUnused
  */
 class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
 {
@@ -46,7 +51,7 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
      *
      * @api
      */
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerUniversalTagAttributes();
@@ -63,7 +68,7 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
      *
      * @return string
      */
-    public function render()
+    public function render(): string
     {
         /** @var FileInterface $file */
         $file = $this->arguments['file'];

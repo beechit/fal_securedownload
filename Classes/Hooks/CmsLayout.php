@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Hooks;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,7 +23,11 @@ namespace BeechIt\FalSecuredownload\Hooks;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Hooks;
+
+use Exception;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -32,30 +37,29 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CmsLayout
 {
-    /**
-     * @var ResourceFactory
-     */
-    protected $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    protected ResourceFactory $resourceFactory;
+
+    public function __construct(ResourceFactory $resourceFactory)
     {
-        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+        $this->resourceFactory = $resourceFactory;
     }
 
     /**
      * Flexform information
-     *
-     * @var array
      */
-    public $flexformData = [];
+    public array $flexformData = [];
 
     /**
      * Returns information about this extension's pi1 plugin
      *
+     * Registered as "Page module hook" in ext_localconf.php
+     *
      * @param array $params Parameters to the hook
      * @return string Information about pi1 plugin
+     * @noinspection PhpUnused
      */
-    public function getExtensionSummary(array $params)
+    public function getExtensionSummary(array $params): string
     {
         $tableData = [];
         $result = '<u><strong>' . $this->sL('plugin.title') . '</strong></u>';
@@ -68,7 +72,7 @@ class CmsLayout
             try {
                 $storageUid = $this->getFieldFromFlexform('settings.storage');
                 $storageName = $this->resourceFactory->getStorageObject($storageUid)->getName();
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
             }
 
             if ($storageName) {
@@ -95,11 +99,8 @@ class CmsLayout
     /**
      * Render the settings as table for Web>Page module
      * System settings are displayed in mono font
-     *
-     * @param array $tableData
-     * @return string
      */
-    protected function renderSettingsAsTable(array $tableData)
+    protected function renderSettingsAsTable(array $tableData): string
     {
         if (count($tableData) == 0) {
             return '';
@@ -121,7 +122,7 @@ class CmsLayout
      * @param string $sheet name of the sheet
      * @return string|null if nothing found, value if found
      */
-    protected function getFieldFromFlexform($key, $sheet = 'sDEF')
+    protected function getFieldFromFlexform(string $key, string $sheet = 'sDEF'): ?string
     {
         $flexform = $this->flexformData;
         if (isset($flexform['data'])) {
@@ -137,22 +138,13 @@ class CmsLayout
 
     /**
      * Get language string
-     *
-     * @param string $key
-     * @param string $languageFile
-     * @return string
      */
-    protected function sL(
-        $key,
-        $languageFile = 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf'
-    ) {
-        return $this->getLangService()->sL($languageFile . ':' . $key);
+    protected function sL(string $key): string
+    {
+        return $this->getLangService()->sL('LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:' . $key);
     }
 
-    /**
-     * @return LanguageService
-     */
-    protected function getLangService()
+    protected function getLangService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }

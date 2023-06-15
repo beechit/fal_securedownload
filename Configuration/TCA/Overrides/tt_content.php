@@ -1,7 +1,11 @@
 <?php
+
+use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3') || die();
 
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::registerPlugin(
+ExtensionUtility::registerPlugin(
     'fal_securedownload',
     'Filetree',
     'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:plugin.title'
@@ -9,7 +13,7 @@ defined('TYPO3') || die();
 
 $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['falsecuredownload_filetree'] = 'layout,recursive,select_key,pages';
 $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['falsecuredownload_filetree'] = 'pi_flexform';
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(
+ExtensionManagementUtility::addPiFlexFormValue(
     'falsecuredownload_filetree',
     'FILE:EXT:fal_securedownload/Configuration/FlexForms/FileTree.xml'
 );

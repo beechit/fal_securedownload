@@ -1,8 +1,8 @@
 <?php
 
-namespace BeechIt\FalSecuredownload\Events;
+declare(strict_types=1);
 
-/***************************************************************
+/*
  *  Copyright notice
  *
  *  (c) 2022 Frans Saris <frans@beech.it>
@@ -23,9 +23,11 @@ namespace BeechIt\FalSecuredownload\Events;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
-use BeechIt\FalSecuredownload\Hooks\FileDumpHook;
+namespace BeechIt\FalSecuredownload\Events;
+
+use BeechIt\FalSecuredownload\EventListener\ModifyFileDumpEventListener;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 final class BeforeRedirectsEvent
@@ -33,9 +35,9 @@ final class BeforeRedirectsEvent
     private ?string $loginRedirectUrl;
     private ?string $noAccessRedirectUrl;
     private ResourceInterface $file;
-    private FileDumpHook $caller;
+    private ModifyFileDumpEventListener $caller;
 
-    public function __construct(?string $loginRedirectUrl, ?string $noAccessRedirectUrl, ResourceInterface $file, FileDumpHook $caller)
+    public function __construct(?string $loginRedirectUrl, ?string $noAccessRedirectUrl, ResourceInterface $file, ModifyFileDumpEventListener $caller)
     {
         $this->loginRedirectUrl = $loginRedirectUrl;
         $this->noAccessRedirectUrl = $noAccessRedirectUrl;
@@ -48,6 +50,7 @@ final class BeforeRedirectsEvent
         return $this->loginRedirectUrl;
     }
 
+    /** @noinspection PhpUnused */
     public function setLoginRedirectUrl(?string $loginRedirectUrl): void
     {
         $this->loginRedirectUrl = $loginRedirectUrl;
@@ -58,31 +61,34 @@ final class BeforeRedirectsEvent
         return $this->noAccessRedirectUrl;
     }
 
+    /** @noinspection PhpUnused */
     public function setNoAccessRedirectUrl(?string $noAccessRedirectUrl): void
     {
         $this->noAccessRedirectUrl = $noAccessRedirectUrl;
     }
 
+    /** @noinspection PhpUnused */
     public function getFile(): ResourceInterface
     {
         return $this->file;
     }
 
+    /** @noinspection PhpUnused */
     public function setFile(ResourceInterface $file): void
     {
         $this->file = $file;
     }
 
-    public function getCaller(): FileDumpHook
+    /** @noinspection PhpUnused */
+    public function getCaller(): ModifyFileDumpEventListener
     {
         return $this->caller;
     }
 
-    public function setCaller(FileDumpHook $caller): void
+    /** @noinspection PhpUnused */
+    public function setCaller(ModifyFileDumpEventListener $caller): void
     {
         $this->caller = $caller;
     }
-
-
 
 }

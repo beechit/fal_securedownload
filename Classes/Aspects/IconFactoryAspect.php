@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Aspects;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2017 Frans Saris <frans@beech.it>
@@ -22,57 +23,62 @@ namespace BeechIt\FalSecuredownload\Aspects;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Aspects;
 
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
+use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
+use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-/**
- * Class IconFactoryAspect
- */
-class IconFactoryAspect
+class IconFactoryAspect implements SingletonInterface
 {
 
-    /**
-     * @param ResourceInterface $resource
-     * @param string $size
-     * @param array $options
-     * @param string $iconIdentifier
-     * @param string $overlayIdentifier
-     * @return array
-     */
+    private CheckPermissions $checkPermissions;
+
+    public function __construct()
+    {
+        $this->checkPermissions = GeneralUtility::makeInstance(CheckPermissions::class);;
+    }
+
     public function buildIconForResource(
         ResourceInterface $resource,
-        $size,
+        string $size,
         array $options,
-        $iconIdentifier,
-        $overlayIdentifier
-    ) {
-        if (!$resource->getStorage()->isPublic()) {
-            /** @var $checkPermissionsService CheckPermissions */
-            $checkPermissionsService = GeneralUtility::makeInstance(CheckPermissions::class);
+        string $iconIdentifier,
+        ?string $overlayIdentifier
+    ): array
+    {
+        $storage = $resource->getStorage();
+        if (!$storage->isPublic()) {
 
-            $currentPermissionsCheck = $resource->getStorage()->getEvaluatePermissions();
-            $resource->getStorage()->setEvaluatePermissions(false);
+            $currentPermissionsCheck = $storage->getEvaluatePermissions();
+            $storage->setEvaluatePermissions(false);
 
-            $folder = $resource instanceof Folder ? $resource : $resource->getParentFolder();
+            try {
+                $folder = $resource instanceof Folder ? $resource : $resource->getParentFolder();
 
-            if ($resource instanceof File && $resource->getProperty('fe_groups')) {
-                $overlayIdentifier = 'overlay-restricted';
+                if ($resource instanceof File && $resource->getProperty('fe_groups')) {
+                    $overlayIdentifier = 'overlay-restricted';
 
-            // check if there are permissions set on this specific folder
-            } elseif ($folder === $resource && $checkPermissionsService->getFolderPermissions($folder) !== false) {
-                $overlayIdentifier = 'overlay-restricted';
+                    // check if there are permissions set on this specific folder
+                } elseif ($folder === $resource && $this->checkPermissions->getFolderPermissions($folder) !== false) {
+                    $overlayIdentifier = 'overlay-restricted';
 
-            // check if there are access restrictions in the root line of this folder
-            } elseif (!$checkPermissionsService->checkFolderRootLineAccess($folder, false)) {
-                $overlayIdentifier = 'overlay-inherited-permissions';
+                    // check if there are access restrictions in the root line of this folder
+                } elseif (!$this->checkPermissions->checkFolderRootLineAccess($folder, false)) {
+                    $overlayIdentifier = 'overlay-inherited-permissions';
+                }
+
+            } catch (FolderDoesNotExistException $e) {
+                // $resource->getParentFolder() may throw a FolderDoesNotExistException which currently is not documented in PHPDoc
             }
 
-            $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
+            $storage->setEvaluatePermissions($currentPermissionsCheck);
         }
         return [$resource, $size, $options, $iconIdentifier, $overlayIdentifier];
     }

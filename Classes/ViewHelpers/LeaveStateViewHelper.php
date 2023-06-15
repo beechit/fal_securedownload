@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\ViewHelpers;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,7 +23,9 @@ namespace BeechIt\FalSecuredownload\ViewHelpers;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\ViewHelpers;
 
 use BeechIt\FalSecuredownload\Service\LeafStateService;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -30,7 +33,9 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
- * Class LeaveStateViewHelper
+ * Registered as ViewHelper in fluid templates
+ *
+ * @noinspection PhpUnused
  */
 class LeaveStateViewHelper extends AbstractConditionViewHelper
 {
@@ -44,11 +49,12 @@ class LeaveStateViewHelper extends AbstractConditionViewHelper
      * @param array $arguments
      * @return bool
      */
-    protected static function evaluateCondition($arguments = null)
+    protected static function evaluateCondition($arguments = null): bool
     {
         /** @var Folder $folder */
         $folder = $arguments['folder'];
 
+        /** @var LeafStateService $leafStateService */
         $leafStateService = GeneralUtility::makeInstance(LeafStateService::class);
         $feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : false;
 
@@ -60,7 +66,7 @@ class LeaveStateViewHelper extends AbstractConditionViewHelper
      *
      * @return string the rendered string
      */
-    public function render()
+    public function render(): string
     {
         if (static::evaluateCondition($this->arguments)) {
             return $this->renderThenChild();

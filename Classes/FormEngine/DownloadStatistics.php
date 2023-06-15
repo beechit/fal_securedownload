@@ -1,6 +1,8 @@
 <?php
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2016 Markus Klein <markus.klein@reelworx.at>
@@ -21,10 +23,12 @@
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
 
 namespace BeechIt\FalSecuredownload\FormEngine;
 
+use Doctrine\DBAL\Exception;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -33,15 +37,9 @@ use TYPO3\CMS\Core\Utility\MathUtility;
 
 class DownloadStatistics extends AbstractNode
 {
-    /**
-     * @var array
-     */
-    protected $resultArray = [];
+    protected array $resultArray = [];
 
-    /**
-     * @return array
-     */
-    public function render()
+    public function render(): array
     {
         $this->resultArray = $this->initializeResultArray();
         $row = $this->data['databaseRow'];
@@ -51,25 +49,34 @@ class DownloadStatistics extends AbstractNode
         }
 
         $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
-        $statistics = $queryBuilder
-            ->selectLiteral(
-                $queryBuilder->getConnection()->getDatabasePlatform()->getCountExpression(
-                    $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file')
-                ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt')
-            )
-            ->addSelect('sys_file.name')
-            ->from('sys_file')
-            ->join(
-                'sys_file',
-                'tx_falsecuredownload_download',
-                'tx_falsecuredownload_download',
-                $queryBuilder->expr()->eq('tx_falsecuredownload_download.file', $queryBuilder->quoteIdentifier('sys_file.uid'))
-            )
-            ->where($queryBuilder->expr()->eq('tx_falsecuredownload_download.feuser', $queryBuilder->createNamedParameter((int)$row['uid'], \PDO::PARAM_INT)))
-            ->groupBy('sys_file.name')
-            ->orderBy('sys_file.name')
-            ->execute()
-            ->fetchAll();
+        try {
+            $statistics = $queryBuilder
+                ->selectLiteral(
+                    $queryBuilder->getConnection()->getDatabasePlatform()->getCountExpression(
+                        $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file')
+                    ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt')
+                )
+                ->addSelect('sys_file.name')
+                ->from('sys_file')
+                ->join(
+                    'sys_file',
+                    'tx_falsecuredownload_download',
+                    'tx_falsecuredownload_download',
+                    $queryBuilder->expr()->eq('tx_falsecuredownload_download.file', $queryBuilder->quoteIdentifier('sys_file.uid'))
+                )
+                ->where(
+                    $queryBuilder->expr()->eq(
+                        'tx_falsecuredownload_download.feuser',
+                        $queryBuilder->createNamedParameter((int)$row['uid'], Connection::PARAM_INT)
+                    )
+                )
+                ->groupBy('sys_file.name')
+                ->orderBy('sys_file.name')
+                ->executeQuery()
+                ->fetchAllAssociative();
+        } catch (Exception $e) {
+            $statistics = null;
+        }
 
         $lang = $this->getLanguageService();
         $markup = [];
@@ -95,10 +102,7 @@ class DownloadStatistics extends AbstractNode
         return $this->resultArray;
     }
 
-    /**
-     * @return LanguageService
-     */
-    protected function getLanguageService()
+    protected function getLanguageService(): LanguageService
     {
         return $GLOBALS['LANG'];
     }

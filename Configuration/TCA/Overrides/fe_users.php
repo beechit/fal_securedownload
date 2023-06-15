@@ -1,7 +1,11 @@
 <?php
+
+use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3') || die();
 
-if (!\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::trackDownloads()) {
+if (!ExtensionConfiguration::trackDownloads()) {
     return;
 }
 
@@ -16,5 +20,5 @@ $additionalColumns = [
     ]
 ];
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('fe_users', $additionalColumns);
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('fe_users', 'downloads');
+ExtensionManagementUtility::addTCAcolumns('fe_users', $additionalColumns);
+ExtensionManagementUtility::addToAllTCAtypes('fe_users', 'downloads');

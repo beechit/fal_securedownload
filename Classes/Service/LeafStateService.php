@@ -1,7 +1,8 @@
 <?php
-namespace BeechIt\FalSecuredownload\Service;
 
-/***************************************************************
+declare(strict_types=1);
+
+/*
  *  Copyright notice
  *
  *  (c) 2014 Frans Saris <frans@beech.it>
@@ -22,35 +23,29 @@ namespace BeechIt\FalSecuredownload\Service;
  *  GNU General Public License for more details.
  *
  *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ */
+
+namespace BeechIt\FalSecuredownload\Service;
 
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
-/**
- * Class LeafStateService
- */
 class LeafStateService implements SingletonInterface
 {
-    /**
-     * @var ResourceFactory
-     */
-    protected $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    protected ResourceFactory $resourceFactory;
+
+    public function __construct(ResourceFactory $resourceFactory)
     {
-        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
+        $this->resourceFactory = $resourceFactory;
     }
 
     /**
      * Save new leave state in user session
-     *
-     * @param string $folder
-     * @param bool $open
      */
-    public function saveLeafStateForUser(FrontendUserAuthentication $user, $folder, $open)
+    public function saveLeafStateForUser(FrontendUserAuthentication $user, string $folder, bool $open): void
     {
 
         // check if folder exists
@@ -69,11 +64,8 @@ class LeafStateService implements SingletonInterface
 
     /**
      * Get leaf state from user session
-     *
-     * @param string $folder
-     * @return bool
      */
-    public function getLeafStateForUser(FrontendUserAuthentication $user, $folder)
+    public function getLeafStateForUser(FrontendUserAuthentication $user, string $folder): bool
     {
         $folderStates = $this->getFolderState($user);
         return !empty($folderStates[$folder]);
@@ -99,7 +91,7 @@ class LeafStateService implements SingletonInterface
     /**
      * Save leaf states in user session
      */
-    protected function saveFolderState(FrontendUserAuthentication $user, array $folderState)
+    protected function saveFolderState(FrontendUserAuthentication $user, array $folderState): void
     {
         $user->setKey($user->user['uid'] ? 'user' : 'ses', 'LeafStateService', serialize($folderState));
         $user->storeSessionData();
