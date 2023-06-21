@@ -37,7 +37,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
  *
  * @noinspection PhpUnused
  */
-class LeaveStateViewHelper extends AbstractConditionViewHelper
+class LeafStateViewHelper extends AbstractConditionViewHelper
 {
     public function initializeArguments()
     {
