@@ -29,7 +29,6 @@ namespace BeechIt\FalSecuredownload\Service;
 
 use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 class LeafStateService implements SingletonInterface

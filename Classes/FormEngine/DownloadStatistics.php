@@ -28,10 +28,10 @@ declare(strict_types=1);
 namespace BeechIt\FalSecuredownload\FormEngine;
 
 use Doctrine\DBAL\Exception;
-use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Backend\Form\AbstractNode;
+use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 

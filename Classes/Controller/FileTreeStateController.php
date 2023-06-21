@@ -30,14 +30,11 @@ namespace BeechIt\FalSecuredownload\Controller;
 use BeechIt\FalSecuredownload\Service\LeafStateService;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
-use TYPO3\CMS\Core\Exception;
 use TYPO3\CMS\Core\Http\JsonResponse;
 use TYPO3\CMS\Core\Http\Response;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class FileTreeStateController
 {
