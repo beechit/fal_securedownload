@@ -7,8 +7,12 @@ services:
   BeechIt\FalSecuredownload\:
     resource: '../Classes/*'
 
-  BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook:
+  BeechIt\FalSecuredownload\ContextMenu\ItemProvider:
     public: true
+    arguments:
+      $table: ''
+      $identifier: ''
+      $context: ''
 
   BeechIt\FalSecuredownload\Controller\BePublicUrlController:
     public: true
@@ -22,15 +26,13 @@ services:
   BeechIt\FalSecuredownload\Hooks\CmsLayout:
     public: true
 
+  BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook:
+    public: true
+
   BeechIt\FalSecuredownload\Service\LeafStateService:
     public: true
 
-  BeechIt\FalSecuredownload\ContextMenu\ItemProvider:
-    public: true
-    arguments:
-      $table: ''
-      $identifier: ''
-      $context: ''
+  # EventListener
 
   BeechIt\FalSecuredownload\EventListener\FolderChangedEventListener:
     tags:
