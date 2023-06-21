@@ -16,6 +16,9 @@ services:
   BeechIt\FalSecuredownload\Controller\FileTreeController:
     public: true
 
+  BeechIt\FalSecuredownload\Controller\FileTreeStateController:
+    public: true
+
   BeechIt\FalSecuredownload\Hooks\CmsLayout:
     public: true
 
@@ -28,9 +31,6 @@ services:
       $table: ''
       $identifier: ''
       $context: ''
-
-  BeechIt\FalSecuredownload\Middleware\FileTreeState:
-    public: true
 
   BeechIt\FalSecuredownload\EventListener\FolderChangedEventListener:
     tags:
