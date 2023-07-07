@@ -198,7 +198,17 @@ class CheckPermissions implements SingletonInterface
     }
 
     /**
-     * Get FeGroups that are allowed to view a file/folder (checks full rootline)
+     * Get FeGroups that are allowed to view a file/folder (checks NOT full rootline)
+     * Check from the given folder up to root, i. e. the reverse! rootline. 
+     * First restriction matches.
+     * 
+     * This Bugfix should be sure because it's only called from:
+     *   - Aspects/SolrFalAspect.php
+     *   - Hooks/KeSearchFilesHook.php
+     *
+     * This Bugfix resolvees issues:
+     *   - https://github.com/beechit/fal_securedownload/issues/161
+     *   - https://github.com/beechit/fal_securedownload/issues/166
      */
     public function getPermissions(ResourceInterface $resource): string
     {
@@ -208,7 +218,7 @@ class CheckPermissions implements SingletonInterface
         $feGroups = [];
         // loop through the root line of a folder and check the permissions of every folder
         try {
-            foreach ($this->getFolderRootLine($resource->getParentFolder()) as $folder) {
+            foreach ($this->getReverseFolderRootLine($resource->getParentFolder()) as $folder) {
                 // fetch folder permissions record
                 $folderRecord = $this->utilityService->getFolderRecord($folder);
 
@@ -233,12 +243,12 @@ class CheckPermissions implements SingletonInterface
     }
 
     /**
-     * Get all folders in root line of given folder
+     * Get all folders in root line of given folder in reverse order
      *
      * @return FolderInterface[]
      * @throws FolderDoesNotExistException
      */
-    public function getFolderRootLine(FolderInterface $folder): array
+    public function getReverseFolderRootLine(FolderInterface $folder): array
     {
         $rootLine = [$folder];
         // $folder->getParentFolder() may throw a FolderDoesNotExistException which currently is not documented in PHPDoc
@@ -254,6 +264,16 @@ class CheckPermissions implements SingletonInterface
             $parentFolder = $parentFolder->getParentFolder();
         }
         return array_reverse($rootLine);
+    }
+
+    /**
+     * Get all folders in root line of given folder
+     *
+     * @return Folder[]
+     */
+    public function getFolderRootLine(FolderInterface $folder)
+    {
+        return array_reverse($this->getReverseFolderRootLine($folder));
     }
 
     /**
