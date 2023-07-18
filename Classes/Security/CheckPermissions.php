@@ -201,14 +201,6 @@ class CheckPermissions implements SingletonInterface
      * Get FeGroups that are allowed to view a file/folder (checks NOT full rootline)
      * Check from the given folder up to root, i. e. the reverse! rootline. 
      * First restriction matches.
-     * 
-     * This Bugfix should be sure because it's only called from:
-     *   - Aspects/SolrFalAspect.php
-     *   - Hooks/KeSearchFilesHook.php
-     *
-     * This Bugfix resolvees issues:
-     *   - https://github.com/beechit/fal_securedownload/issues/161
-     *   - https://github.com/beechit/fal_securedownload/issues/166
      */
     public function getPermissions(ResourceInterface $resource): string
     {
