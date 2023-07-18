@@ -255,7 +255,7 @@ class CheckPermissions implements SingletonInterface
             $folder = $parentFolder;
             $parentFolder = $parentFolder->getParentFolder();
         }
-        return array_reverse($rootLine);
+        return $rootLine;
     }
 
     /**
