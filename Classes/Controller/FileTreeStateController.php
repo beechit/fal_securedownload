@@ -62,12 +62,12 @@ class FileTreeStateController
      */
     public function saveLeafState(ServerRequestInterface $request): ResponseInterface
     {
-        $folder = $request->getParsedBody()['folder'] ?? $request->getQueryParams()['folder'];
+        $folder = $request->getParsedBody()['folder'] ?? $request->getQueryParams()['folder'] ?? null;
         if (empty($folder)) {
             return (new Response())->withStatus(404);
         }
 
-        $open = (bool)($request->getParsedBody()['open'] ?? $request->getQueryParams()['open']);
+        $open = (bool)($request->getParsedBody()['open'] ?? $request->getQueryParams()['open'] ?? false);
         $userAspect = $this->context->getAspect('beechit.user');
         $this->leafStateService->saveLeafStateForUser($userAspect->get('user'), $folder, $open);
 
