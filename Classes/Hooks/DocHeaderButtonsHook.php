@@ -62,6 +62,8 @@ class DocHeaderButtonsHook extends AbstractBeButtons
     {
         $buttons = $params['buttons'];
 
+        if(is_null(GeneralUtility::_GP('id'))) return $buttons;
+
         foreach ($this->generateButtons(GeneralUtility::_GP('id')) as $buttonInfo) {
             $button = $buttonBar->makeLinkButton();
             $button->setIcon($buttonInfo['icon']);
