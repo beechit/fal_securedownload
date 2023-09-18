@@ -52,7 +52,6 @@ use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 
 class ModifyFileDumpEventListener
 {
-
     protected ?FrontendUserAuthentication $feUser = null;
     protected FileInterface $originalFile;
     protected string $loginRedirectUrl = '';
@@ -144,7 +143,7 @@ class ModifyFileDumpEventListener
                 'tstamp' => time(),
                 'crdate' => time(),
                 'feuser' => (int)$this->feUser->user['uid'],
-                'file' => (int)$this->originalFile->getUid()
+                'file' => (int)$this->originalFile->getUid(),
             ];
 
             GeneralUtility::makeInstance(ConnectionPool::class)
@@ -380,11 +379,11 @@ class ModifyFileDumpEventListener
             $uri = $contentObject->typoLink_URL([
                 'addQueryString' => true,
                 'addQueryString.' => [
-                    'exclude' => 'eID,f,t,token'
+                    'exclude' => 'eID,f,t,token',
                 ],
                 'forceAbsoluteUrl' => true,
                 'parameter' => $url,
-                'returnLast' => 'url'
+                'returnLast' => 'url',
             ]);
         }
 

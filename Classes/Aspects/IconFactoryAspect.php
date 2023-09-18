@@ -37,12 +37,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class IconFactoryAspect implements SingletonInterface
 {
-
     private CheckPermissions $checkPermissions;
 
     public function __construct()
     {
-        $this->checkPermissions = GeneralUtility::makeInstance(CheckPermissions::class);;
+        $this->checkPermissions = GeneralUtility::makeInstance(CheckPermissions::class);
     }
 
     public function buildIconForResource(
@@ -51,11 +50,9 @@ class IconFactoryAspect implements SingletonInterface
         array $options,
         string $iconIdentifier,
         ?string $overlayIdentifier
-    ): array
-    {
+    ): array {
         $storage = $resource->getStorage();
         if (!$storage->isPublic()) {
-
             $currentPermissionsCheck = $storage->getEvaluatePermissions();
             $storage->setEvaluatePermissions(false);
 
@@ -65,15 +62,14 @@ class IconFactoryAspect implements SingletonInterface
                 if ($resource instanceof File && $resource->getProperty('fe_groups')) {
                     $overlayIdentifier = 'overlay-restricted';
 
-                    // check if there are permissions set on this specific folder
+                // check if there are permissions set on this specific folder
                 } elseif ($folder === $resource && $this->checkPermissions->getFolderPermissions($folder) !== false) {
                     $overlayIdentifier = 'overlay-restricted';
 
-                    // check if there are access restrictions in the root line of this folder
+                // check if there are access restrictions in the root line of this folder
                 } elseif (!$this->checkPermissions->checkFolderRootLineAccess($folder, false)) {
                     $overlayIdentifier = 'overlay-inherited-permissions';
                 }
-
             } catch (FolderDoesNotExistException $e) {
                 // $resource->getParentFolder() may throw a FolderDoesNotExistException which currently is not documented in PHPDoc
             }

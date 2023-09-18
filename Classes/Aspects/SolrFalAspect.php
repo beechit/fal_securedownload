@@ -20,7 +20,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class SolrFalAspect implements SingletonInterface
 {
-
     protected CheckPermissions $checkPermissionsService;
     protected PublicUrlAspect $publicUrlAspect;
 

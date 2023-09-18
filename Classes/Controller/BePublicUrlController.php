@@ -33,8 +33,7 @@ class BePublicUrlController extends AbstractApplication
         ResourceFactory $resourceFactory,
         ResponseFactoryInterface $responseFactory,
         ProcessedFileRepository $processedFileRepository
-    )
-    {
+    ) {
         $this->resourceFactory = $resourceFactory;
         $this->responseFactory = $responseFactory;
         $this->processedFileRepository = $processedFileRepository;
@@ -58,7 +57,8 @@ class BePublicUrlController extends AbstractApplication
 
         if (
             GeneralUtility::hmac(
-                implode('|', $parameters), 'BeResourceStorageDumpFile'
+                implode('|', $parameters),
+                'BeResourceStorageDumpFile'
             ) === GeneralUtility::_GP('fal_token')
         ) {
             if (isset($parameters['f'])) {

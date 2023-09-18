@@ -32,14 +32,12 @@ use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Core\Imaging\Icon;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Hook to add extra button to DocHeaderButtons in file list
  */
 class DocHeaderButtonsHook extends AbstractBeButtons
 {
-
     /**
      * Create button
      */
@@ -48,7 +46,7 @@ class DocHeaderButtonsHook extends AbstractBeButtons
         return [
             'title' => $title,
             'icon' => $icon,
-            'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : '')
+            'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : ''),
         ];
     }
 
@@ -64,7 +62,9 @@ class DocHeaderButtonsHook extends AbstractBeButtons
         $buttons = $params['buttons'];
 
         $identifier = $this->getRequest()->getQueryParams()['id'] ?? null;
-        if(is_null($identifier)) return $buttons;
+        if (is_null($identifier)) {
+            return $buttons;
+        }
 
         foreach ($this->generateButtons($identifier) as $buttonInfo) {
             $button = $buttonBar->makeLinkButton();

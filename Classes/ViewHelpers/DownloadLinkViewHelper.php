@@ -40,7 +40,6 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
  */
 class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
 {
-
     /**
      * @var string
      */

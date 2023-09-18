@@ -33,7 +33,6 @@ use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 class LeafStateService implements SingletonInterface
 {
-
     protected ResourceFactory $resourceFactory;
 
     public function __construct(ResourceFactory $resourceFactory)
@@ -46,7 +45,6 @@ class LeafStateService implements SingletonInterface
      */
     public function saveLeafStateForUser(FrontendUserAuthentication $user, string $folder, bool $open): void
     {
-
         // check if folder exists
         $folderObject = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($folder);
 

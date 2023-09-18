@@ -40,7 +40,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class PublicUrlAspect implements SingletonInterface
 {
-
     /**
      * Flag to en-/disable rendering of BE user link instead of FE link
      */
@@ -72,9 +71,7 @@ class PublicUrlAspect implements SingletonInterface
         ResourceInterface $resourceObject,
         $relativeToCurrentScript,
         array $urlData
-    ): void
-    {
-
+    ): void {
         // We only render special links for non-public files
         if ($this->enabled && $resourceObject instanceof FileInterface && !$storage->isPublic()) {
             $queryParameterArray = ['eID' => 'dumpFile', 't' => ''];

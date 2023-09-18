@@ -38,7 +38,6 @@ use TYPO3\CMS\Core\Http\Response;
 
 class FileTreeStateController
 {
-
     protected Context $context;
     protected LeafStateService $leafStateService;
 

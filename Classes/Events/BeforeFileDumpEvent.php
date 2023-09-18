@@ -64,5 +64,4 @@ final class BeforeFileDumpEvent
     {
         $this->caller = $caller;
     }
-
 }

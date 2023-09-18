@@ -20,7 +20,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ItemProvider extends AbstractProvider
 {
-
     protected ResourceFactory $resourceFactory;
     protected ?Folder $folder = null;
 
@@ -88,8 +87,8 @@ class ItemProvider extends AbstractProvider
                 'permissions' => [
                     'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:clickmenu.folderpermissions',
                     'iconIdentifier' => 'action-folder',
-                    'callbackAction' => 'folderPermissions'
-                ]
+                    'callbackAction' => 'folderPermissions',
+                ],
             ]);
         }
 

@@ -38,7 +38,6 @@ use TYPO3\CMS\Core\Resource\Service\UserFileMountService as TYPO3UserFileMountSe
  */
 class UserFileMountService extends TYPO3UserFileMountService
 {
-
     /**
      * User function for to render a dropdown for selecting a folder of a selected storage
      *

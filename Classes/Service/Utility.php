@@ -38,8 +38,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class Utility implements SingletonInterface
 {
-
-    static protected array $folderRecordCache = [];
+    protected static array $folderRecordCache = [];
     protected ConnectionPool $connectionPool;
 
     public function __construct()
@@ -96,8 +95,7 @@ class Utility implements SingletonInterface
         string $oldIdentifierHash,
         string $oldIdentifier,
         array $newRecord
-    ): void
-    {
+    ): void {
         $allowedFields = ['storage', 'folder', 'folder_hash'];
         $record = [];
 
@@ -146,7 +144,8 @@ class Utility implements SingletonInterface
             ->delete('tx_falsecuredownload_folder')
             ->where(
                 $queryBuilder->expr()->eq(
-                    'storage', $queryBuilder->createNamedParameter($storageUid, Connection::PARAM_INT)
+                    'storage',
+                    $queryBuilder->createNamedParameter($storageUid, Connection::PARAM_INT)
                 )
             )
             ->andWhere(
@@ -164,5 +163,4 @@ class Utility implements SingletonInterface
     {
         return $this->connectionPool->getQueryBuilderForTable('tx_falsecuredownload_folder');
     }
-
 }

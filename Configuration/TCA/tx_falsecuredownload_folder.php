@@ -16,7 +16,7 @@ $tca = [
             'ignoreWebMountRestriction' => true,
             'ignoreRootLevelRestriction' => true,
         ],
-        'iconfile' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.png'
+        'iconfile' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.png',
     ],
     'types' => [
         '0' => ['showitem' => 'fe_groups,--palette--;;filePalette'],
@@ -25,8 +25,8 @@ $tca = [
         // File palette, hidden but needs to be included all the time
         'filePalette' => [
             'showitem' => 'storage, folder, folder_hash',
-            'isHiddenPalette' => true
-        ]
+            'isHiddenPalette' => true,
+        ],
     ],
     'columns' => [
         'storage' => [
@@ -37,24 +37,24 @@ $tca = [
                 'size' => 1,
                 'maxitems' => 1,
                 'minitems' => 1,
-                'allowed' => 'sys_file_storage'
-            ]
+                'allowed' => 'sys_file_storage',
+            ],
         ],
         'folder' => [
             'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:folder',
             'config' => [
                 'type' => 'input',
-                'size' => 30
-            ]
+                'size' => 30,
+            ],
         ],
         'folder_hash' => [
             'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:folder',
             'config' => [
                 'type' => 'input',
-                'size' => 30
-            ]
+                'size' => 30,
+            ],
         ],
         'fe_groups' => [
             'exclude' => false,
@@ -67,19 +67,19 @@ $tca = [
                 'items' => [
                     [
                         'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
-                        'value' => -2
+                        'value' => -2,
                     ],
                     [
                         'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
-                        'value' => '--div--'
-                    ]
+                        'value' => '--div--',
+                    ],
                 ],
                 'exclusiveKeys' => '-1,-2',
                 'foreign_table' => 'fe_groups',
                 'foreign_table_where' => 'ORDER BY fe_groups.title',
-            ]
-        ]
-    ]
+            ],
+        ],
+    ],
 ];
 
 $typo3Version = new Typo3Version();

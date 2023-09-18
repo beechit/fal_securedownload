@@ -45,7 +45,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 abstract class AbstractBeButtons
 {
-
     protected ResourceFactory $resourceFactory;
 
     public function __construct(ResourceFactory $resourceFactory = null)
@@ -122,9 +121,9 @@ abstract class AbstractBeButtons
         return $this->buildUrl([
             'edit' => [
                 'tx_falsecuredownload_folder' => [
-                    $uid => 'edit'
-                ]
-            ]
+                    $uid => 'edit',
+                ],
+            ],
         ]);
     }
 
@@ -138,16 +137,16 @@ abstract class AbstractBeButtons
         return $this->buildUrl([
             'edit' => [
                 'tx_falsecuredownload_folder' => [
-                    0 => 'new'
-                ]
+                    0 => 'new',
+                ],
             ],
             'defVals' => [
                 'tx_falsecuredownload_folder' => [
                     'storage' => $folder->getStorage()->getUid(),
                     'folder' => $folder->getIdentifier(),
                     'folder_hash' => $folder->getHashedIdentifier(),
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -179,7 +178,6 @@ abstract class AbstractBeButtons
      * @return string|array
      */
     abstract protected function createLink(string $title, string $shortTitle, Icon $icon, UriInterface $url, bool $addReturnUrl = true);
-
 
     protected function getLangService(): LanguageService
     {

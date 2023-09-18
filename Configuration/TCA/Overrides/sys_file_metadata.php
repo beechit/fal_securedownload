@@ -17,18 +17,18 @@ $additionalColumns = [
             'items' => [
                 [
                     'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.any_login',
-                    'value' => -2
+                    'value' => -2,
                 ],
                 [
                     'label' => 'LLL:EXT:core/Resources/Private/Language/locallang_general.xlf:LGL.usergroups',
-                    'value' => '--div--'
-                ]
+                    'value' => '--div--',
+                ],
             ],
             'exclusiveKeys' => '-1,-2',
             'foreign_table' => 'fe_groups',
             'foreign_table_where' => 'ORDER BY fe_groups.title',
-        ]
-    ]
+        ],
+    ],
 ];
 
 $typo3Version = new Typo3Version();

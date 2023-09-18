@@ -143,7 +143,7 @@ class FolderChangedEventListener implements SingletonInterface
             [
                 'storage' => $newStorageUid,
                 'folder_hash' => $newFolder->getHashedIdentifier(),
-                'folder' => $newFolder->getIdentifier()
+                'folder' => $newFolder->getIdentifier(),
             ]
         );
 
@@ -157,7 +157,7 @@ class FolderChangedEventListener implements SingletonInterface
                     [
                         'storage' => $newStorageUid,
                         'folder_hash' => $newMapping[$key][0],
-                        'folder' => $newMapping[$key][1]
+                        'folder' => $newMapping[$key][1],
                     ]
                 );
             }

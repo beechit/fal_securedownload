@@ -90,5 +90,4 @@ final class BeforeRedirectsEvent
     {
         $this->caller = $caller;
     }
-
 }

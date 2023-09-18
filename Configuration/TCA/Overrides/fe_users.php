@@ -15,9 +15,9 @@ $additionalColumns = [
         'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:downloadStatistics.label',
         'config' => [
             'type' => 'input',
-            'renderType' => 'falSecureDownloadStats'
-        ]
-    ]
+            'renderType' => 'falSecureDownloadStats',
+        ],
+    ],
 ];
 
 ExtensionManagementUtility::addTCAcolumns('fe_users', $additionalColumns);

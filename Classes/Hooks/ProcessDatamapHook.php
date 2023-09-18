@@ -36,10 +36,8 @@ use TYPO3\CMS\Core\DataHandling\DataHandler;
  */
 class ProcessDatamapHook
 {
-
     /**
      * Trigger updateFolderTree after change in tx_falsecuredownload_folder
-     *
      */
     public function processDatamap_afterDatabaseOperations(
         string $status,
@@ -47,8 +45,7 @@ class ProcessDatamapHook
         string $id,
         array $fieldArray,
         DataHandler $dataHandler
-    ): void
-    {
+    ): void {
         if ($table === 'tx_falsecuredownload_folder') {
             BackendUtility::setUpdateSignal('updateFolderTree');
         }
@@ -73,8 +70,7 @@ class ProcessDatamapHook
         DataHandler $dataHandler,
         $pasteUpdate,
         array $pasteDatamap
-    ): void
-    {
+    ): void {
         if ($table === 'tx_falsecuredownload_folder') {
             BackendUtility::setUpdateSignal('updateFolderTree');
         }

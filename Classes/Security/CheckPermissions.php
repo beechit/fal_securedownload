@@ -44,7 +44,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CheckPermissions implements SingletonInterface
 {
-
     protected Utility $utilityService;
     protected array $checkFolderRootLineAccessCache = [];
     protected EventDispatcherInterface $eventDispatcher;
@@ -265,7 +264,6 @@ class CheckPermissions implements SingletonInterface
      */
     public function matchFeGroupsWithFeUser(string $groups, $userFeGroups): bool
     {
-
         // no groups specified everyone has access
         if ($groups === '') {
             return true;

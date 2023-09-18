@@ -37,7 +37,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class CmsLayout
 {
-
     protected ResourceFactory $resourceFactory;
 
     public function __construct(ResourceFactory $resourceFactory)
@@ -78,7 +77,7 @@ class CmsLayout
             if ($storageName) {
                 $tableData[] = [
                     $this->sL('flexform.storage'),
-                    $storageName
+                    $storageName,
                 ];
             }
 
@@ -86,7 +85,7 @@ class CmsLayout
             $folder = $this->getFieldFromFlexform('settings.folder');
             $tableData[] = [
                 $this->sL('flexform.folder'),
-                $folder
+                $folder,
             ];
 
             $result .= $this->renderSettingsAsTable($tableData);

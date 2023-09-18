@@ -35,7 +35,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class KeSearchFilesHook implements SingletonInterface
 {
-
     protected CheckPermissions $checkPermissionsService;
 
     public function __construct()
@@ -68,8 +67,7 @@ class KeSearchFilesHook implements SingletonInterface
         string $tags,
         string $abstract,
         array $additionalFields
-    ): void
-    {
+    ): void {
         if ($fileObject instanceof File && !$fileObject->getStorage()->isPublic()) {
             $resourcePermissions = $this->checkPermissionsService->getPermissions($fileObject);
             // If there are already permissions set, refine these with actual file permissions
@@ -99,8 +97,7 @@ class KeSearchFilesHook implements SingletonInterface
         array $additionalFields,
         array &$indexRecordValues,
         \tx_kesearch_indexer_types_file $indexer
-    ): void
-    {
+    ): void {
         if ($file instanceof File && !$file->getStorage()->isPublic()) {
             $indexRecordValues['fe_group'] = $this->checkPermissionsService->getPermissions($file);
         }
