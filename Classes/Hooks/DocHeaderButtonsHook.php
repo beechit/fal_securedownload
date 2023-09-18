@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace BeechIt\FalSecuredownload\Hooks;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
@@ -62,7 +63,10 @@ class DocHeaderButtonsHook extends AbstractBeButtons
     {
         $buttons = $params['buttons'];
 
-        foreach ($this->generateButtons(GeneralUtility::_GP('id')) as $buttonInfo) {
+        $identifier = $this->getRequest()->getQueryParams()['id'] ?? null;
+        if(is_null($identifier)) return $buttons;
+
+        foreach ($this->generateButtons($identifier) as $buttonInfo) {
             $button = $buttonBar->makeLinkButton();
             $button->setIcon($buttonInfo['icon']);
             $button->setTitle($buttonInfo['title']);
@@ -71,5 +75,13 @@ class DocHeaderButtonsHook extends AbstractBeButtons
         }
 
         return $buttons;
+    }
+
+    /**
+     * Get Request
+     */
+    private function getRequest(): ServerRequestInterface
+    {
+        return $GLOBALS['TYPO3_REQUEST'];
     }
 }
