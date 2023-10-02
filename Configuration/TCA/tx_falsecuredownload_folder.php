@@ -8,6 +8,7 @@ $tca = [
     'ctrl' => [
         'title' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:tx_falsecuredownload_folder',
         'label' => 'folder',
+        'crdate' => 'crdate',
         'tstamp' => 'tstamp',
         'hideTable' => true,
         'rootLevel' => true,
