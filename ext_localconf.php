@@ -1,7 +1,5 @@
 <?php
 
-use ApacheSolrForTypo3\Solrfal\Indexing\DocumentFactory;
-use BeechIt\FalSecuredownload\Aspects\SolrFalAspect;
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\ContextMenu\ItemProvider;
 use BeechIt\FalSecuredownload\Controller\FileTreeController;
@@ -13,9 +11,7 @@ use BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook;
 use BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 defined('TYPO3') or die();
@@ -56,23 +52,6 @@ $GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['pro
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = KeSearchFilesHook::class;
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntry'][] = KeSearchFilesHook::class;
 
-if (ExtensionManagementUtility::isLoaded('solrfal')) {
-    // TODO Must be made compatible to TYPO3 v12 as there is no TYPO3\CMS\Extbase\SignalSlot\Dispatcher anymore
-    // https://docs.typo3.org/c/typo3/cms-core/main/en-us/Changelog/10.4/Deprecation-90625-ExtbaseSignalSlotDispatcher.html
-    // TODO to do this the EventDispatcher implementation of EXT:solrfal must be known
-    // https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/ApiOverview/Events/EventDispatcher/Index.html#eventdispatcher
-    /** @var Dispatcher $signalSlotDispatcher */
-    $signalSlotDispatcher = GeneralUtility::makeInstance(Dispatcher::class);
-
-    // @Todo convert this to event listener
-    // ext:solrfal enrich metadata and generate correct public url slot
-    $signalSlotDispatcher->connect(
-        DocumentFactory::class,
-        'fileMetaDataRetrieved',
-        SolrFalAspect::class,
-        'fileMetaDataRetrieved'
-    );
-}
 
 if (ExtensionConfiguration::trackDownloads()) {
     // register FormEngine node for rendering download statistics in fe_users

@@ -3,69 +3,70 @@ services:
     autowire: true
     autoconfigure: true
     public: false
-
   BeechIt\FalSecuredownload\:
     resource: '../Classes/*'
-
   BeechIt\FalSecuredownload\ContextMenu\ItemProvider:
     public: true
     arguments:
       $table: ''
       $identifier: ''
       $context: ''
-
   BeechIt\FalSecuredownload\Controller\BePublicUrlController:
     public: true
-
   BeechIt\FalSecuredownload\Controller\FileTreeController:
     public: true
-
   BeechIt\FalSecuredownload\Controller\FileTreeStateController:
     public: true
-
   BeechIt\FalSecuredownload\Hooks\CmsLayout:
     public: true
-
   BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook:
     public: true
-
   BeechIt\FalSecuredownload\Service\LeafStateService:
     public: true
-
-  # EventListener
-
   BeechIt\FalSecuredownload\EventListener\FolderChangedEventListener:
     tags:
-      - name: event.listener
-        method: 'preFolderMove'
+      -
+        name: event.listener
+        method: preFolderMove
         event: TYPO3\CMS\Core\Resource\Event\BeforeFolderMovedEvent
-      - name: event.listener
-        method: 'postFolderMove'
+      -
+        name: event.listener
+        method: postFolderMove
         event: TYPO3\CMS\Core\Resource\Event\AfterFolderMovedEvent
-      - name: event.listener
-        method: 'preFolderDelete'
+      -
+        name: event.listener
+        method: preFolderDelete
         event: TYPO3\CMS\Core\Resource\Event\BeforeFolderDeletedEvent
-      - name: event.listener
-        method: 'postFolderDelete'
+      -
+        name: event.listener
+        method: postFolderDelete
         event: TYPO3\CMS\Core\Resource\Event\AfterFolderDeletedEvent
-      - name: event.listener
-        method: 'preFolderRename'
+      -
+        name: event.listener
+        method: preFolderRename
         event: TYPO3\CMS\Core\Resource\Event\BeforeFolderRenamedEvent
-      - name: event.listener
-        method: 'postFolderRename'
+      -
+        name: event.listener
+        method: postFolderRename
         event: TYPO3\CMS\Core\Resource\Event\AfterFolderRenamedEvent
-
   BeechIt\FalSecuredownload\EventListener\ModifyFileDumpEventListener:
     tags:
-      - name: event.listener
+      -
+        name: event.listener
         event: TYPO3\CMS\Core\Resource\Event\ModifyFileDumpEvent
-
   BeechIt\FalSecuredownload\EventListener\ModifyIconForResourcePropertiesEventListener:
     tags:
-      - name: event.listener
+      -
+        name: event.listener
         event: TYPO3\CMS\Core\Imaging\Event\ModifyIconForResourcePropertiesEvent
-
   BeechIt\FalSecuredownload\EventListener\GeneratePublicUrlForResourceEventListener:
     tags:
-      - name: event.listener
+      -
+        name: event.listener
         event: TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent
+  BeechIt\FalSecuredownload\EventListener\AfterFileMetaDataHasBeenRetrievedEventListener:
+    tags:
+      -
+        name: event.listener
+        identifier: beech-it/fal-securedownload/after-file-meta-data-has-been-retrieved-event-listener
+        event: ApacheSolrForTypo3\Solrfal\Event\Indexing\AfterFileMetaDataHasBeenRetrievedEvent
