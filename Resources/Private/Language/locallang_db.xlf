@@ -15,6 +15,17 @@
 				<source>Folder</source>
 			</trans-unit>
 
+
+			<trans-unit id="tx_falsecuredownload_download">
+				<source>Download</source>
+			</trans-unit>
+			<trans-unit id="fe_user">
+				<source>User</source>
+			</trans-unit>
+			<trans-unit id="file">
+				<source>File</source>
+			</trans-unit>
+
 		</body>
 	</file>
 </xliff>
