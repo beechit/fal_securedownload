@@ -87,8 +87,9 @@ class DownloadStatistics extends AbstractNode
             $markup[] = '<table class="table table-bordered">';
             $markup[] = '<thead><tr><th>' . htmlspecialchars($titleFileName) . '</th><th>' . htmlspecialchars($titleDownloads) . '</th></tr></thead>';
             $markup[] = '<tbody>';
+
             foreach ($statistics as $file) {
-                $markup[] = '<tr><td>' . htmlspecialchars($file['name']) . '</td><td>' . htmlspecialchars($file['cnt']) . '</td></tr>';
+                $markup[] = '<tr><td>' . htmlspecialchars($file['name']) . '</td><td>' . $file['cnt'] . '</td></tr>';
             }
             $markup[] = '</tbody>';
             $markup[] = '</table>';
