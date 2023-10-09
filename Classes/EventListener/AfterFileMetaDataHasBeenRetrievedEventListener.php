@@ -8,17 +8,17 @@ declare(strict_types=1);
  * All code (c) Beech Applications B.V. all rights reserved
  */
 
-namespace BeechIt\FalSecuredownload\Aspects;
+namespace BeechIt\FalSecuredownload\EventListener;
 
-use ApacheSolrForTypo3\Solrfal\Queue\Item;
-use ArrayObject;
+use ApacheSolrForTypo3\Solrfal\Event\Indexing\AfterFileMetaDataHasBeenRetrievedEvent;
+use BeechIt\FalSecuredownload\Aspects\PublicUrlAspect;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class SolrFalAspect implements SingletonInterface
+class AfterFileMetaDataHasBeenRetrievedEventListener implements SingletonInterface
 {
     protected CheckPermissions $checkPermissionsService;
     protected PublicUrlAspect $publicUrlAspect;
@@ -31,12 +31,12 @@ class SolrFalAspect implements SingletonInterface
 
     /**
      * Add correct fe_group info and public_url
-     *
-     * @param Item $item
-     * @param ArrayObject $metadata
      */
-    public function fileMetaDataRetrieved(Item $item, ArrayObject $metadata): void
+    public function __invoke(AfterFileMetaDataHasBeenRetrievedEvent $event)
     {
+        $item = $event->getFileIndexQueueItem();
+        $metadata = $event->getMetaData();
+
         if ($item->getFile() instanceof File && !$item->getFile()->getStorage()->isPublic()) {
             $resourcePermissions = $this->checkPermissionsService->getPermissions($item->getFile());
             // If there are already permissions set, refine these with actual file permissions
@@ -54,5 +54,7 @@ class SolrFalAspect implements SingletonInterface
         $this->publicUrlAspect->setEnabled(false);
         $metadata['public_url'] = $item->getFile()->getPublicUrl();
         $this->publicUrlAspect->setEnabled(true);
+
+        $event->overrideMetaData($metadata);
     }
 }

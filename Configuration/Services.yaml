@@ -69,3 +69,8 @@ services:
     tags:
       - name: event.listener
         event: TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent
+
+  BeechIt\FalSecuredownload\EventListener\AfterFileMetaDataHasBeenRetrievedEventListener:
+    tags:
+      - name: event.listener
+        event: ApacheSolrForTypo3\Solrfal\Event\Indexing\AfterFileMetaDataHasBeenRetrievedEvent
