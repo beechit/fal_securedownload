@@ -25,7 +25,7 @@ $tca = [
     'palettes' => [
         // File palette, hidden but needs to be included all the time
         'filePalette' => [
-            'showitem' => 'fe_user,file',
+            'showitem' => 'feuser,file',
             'isHiddenPalette' => true,
         ],
     ],
@@ -41,7 +41,7 @@ $tca = [
                 'allowed' => 'sys_file',
             ],
         ],
-        'fe_user' => [
+        'feuser' => [
             'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:fe_user',
             'config' => [
