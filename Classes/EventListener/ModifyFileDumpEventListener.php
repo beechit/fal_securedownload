@@ -421,6 +421,6 @@ class ModifyFileDumpEventListener
         if ($start < 0 || $start > $end) {
             return [];
         }
-        return [$start, $end];
+        return [(int)$start, (int)$end];
     }
 }
