@@ -47,7 +47,7 @@ class KeSearchFilesHook implements SingletonInterface
      *
      * @param $fileObject
      * @param string $content
-     * @param \tx_kesearch_indexer_types_file $fileIndexerObject
+     * @param \Tpwd\KeSearch\Indexer\Types\File $fileIndexerObject
      * @param string $feGroups
      * @param array $ttContentRow
      * @param int $storagePid
@@ -59,7 +59,7 @@ class KeSearchFilesHook implements SingletonInterface
     public function modifyFileIndexEntryFromContentIndexer(
         $fileObject,
         string $content,
-        \tx_kesearch_indexer_types_file $fileIndexerObject,
+        \Tpwd\KeSearch\Indexer\Types\File $fileIndexerObject,
         string &$feGroups,
         array $ttContentRow,
         int $storagePid,
@@ -89,14 +89,14 @@ class KeSearchFilesHook implements SingletonInterface
      * @param string $content
      * @param array $additionalFields
      * @param array $indexRecordValues
-     * @param \tx_kesearch_indexer_types_file $indexer
+     * @param \Tpwd\KeSearch\Indexer\Types\File $indexer
      */
     public function modifyFileIndexEntry(
         $file,
         string $content,
         array $additionalFields,
         array &$indexRecordValues,
-        \tx_kesearch_indexer_types_file $indexer
+        \Tpwd\KeSearch\Indexer\Types\File $indexer
     ): void {
         if ($file instanceof File && !$file->getStorage()->isPublic()) {
             $indexRecordValues['fe_group'] = $this->checkPermissionsService->getPermissions($file);
