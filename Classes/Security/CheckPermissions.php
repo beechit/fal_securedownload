@@ -38,6 +38,7 @@ use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Utility functions to check permissions
@@ -86,9 +87,10 @@ class CheckPermissions implements SingletonInterface
         $resourceStorage = $file->getStorage();
         $resourceStorage->setUserPermissions($GLOBALS['BE_USER']->getFilePermissionsForStorage($resourceStorage));
         foreach ($GLOBALS['BE_USER']->getFileMountRecords() as $fileMountRow) {
-            if ((int)$fileMountRow['base'] === $resourceStorage->getUid()) {
+            list($base, $path) = GeneralUtility::trimExplode(':', $fileMountRow['identifier']);
+            if ((int)$base === $resourceStorage->getUid()) {
                 try {
-                    $resourceStorage->addFileMount($fileMountRow['path'], $fileMountRow);
+                    $resourceStorage->addFileMount($path, $fileMountRow);
                 } catch (FolderDoesNotExistException $e) {
                     // That file mount does not seem to be valid, fail silently
                 }
@@ -198,7 +200,7 @@ class CheckPermissions implements SingletonInterface
 
     /**
      * Get FeGroups that are allowed to view a file/folder (checks NOT full rootline)
-     * Check from the given folder up to root, i. e. the reverse! rootline. 
+     * Check from the given folder up to root, i. e. the reverse! rootline.
      * First restriction matches.
      */
     public function getPermissions(ResourceInterface $resource): string
