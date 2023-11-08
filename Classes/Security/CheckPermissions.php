@@ -31,6 +31,7 @@ use BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent;
 use BeechIt\FalSecuredownload\Service\Utility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FolderInterface;
@@ -85,10 +86,18 @@ class CheckPermissions implements SingletonInterface
         }
         $resourceStorage = $file->getStorage();
         $resourceStorage->setUserPermissions($GLOBALS['BE_USER']->getFilePermissionsForStorage($resourceStorage));
+        $majorVersion = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
         foreach ($GLOBALS['BE_USER']->getFileMountRecords() as $fileMountRow) {
-            if ((int)$fileMountRow['base'] === $resourceStorage->getUid()) {
+            if ($majorVersion === 11) {
+                $base = $fileMountRow['base'];
+                $path = $fileMountRow['path'];
+            } else {
+                [$base, $path] = GeneralUtility::trimExplode(':', $fileMountRow['identifier']);
+            }
+
+            if ((int)$base === $resourceStorage->getUid()) {
                 try {
-                    $resourceStorage->addFileMount($fileMountRow['path'], $fileMountRow);
+                    $resourceStorage->addFileMount($path, $fileMountRow);
                 } catch (FolderDoesNotExistException $e) {
                     // That file mount does not seem to be valid, fail silently
                 }
@@ -198,7 +207,7 @@ class CheckPermissions implements SingletonInterface
 
     /**
      * Get FeGroups that are allowed to view a file/folder (checks NOT full rootline)
-     * Check from the given folder up to root, i. e. the reverse! rootline. 
+     * Check from the given folder up to root, i. e. the reverse! rootline.
      * First restriction matches.
      */
     public function getPermissions(ResourceInterface $resource): string
