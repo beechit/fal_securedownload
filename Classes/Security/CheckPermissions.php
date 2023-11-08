@@ -89,7 +89,7 @@ class CheckPermissions implements SingletonInterface
         $majorVersion = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
         foreach ($GLOBALS['BE_USER']->getFileMountRecords() as $fileMountRow) {
             if ($majorVersion === 11) {
-                $base =$fileMountRow['base'];
+                $base = $fileMountRow['base'];
                 $path = $fileMountRow['path'];
             } else {
                 [$base, $path] = GeneralUtility::trimExplode(':', $fileMountRow['identifier']);
