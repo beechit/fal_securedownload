@@ -49,7 +49,7 @@ $tca = [
                 'size' => 1,
                 'maxitems' => 1,
                 'minitems' => 1,
-                'allowed' => 'fe_user',
+                'allowed' => 'fe_users',
             ],
         ],
     ],
