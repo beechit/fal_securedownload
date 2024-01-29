@@ -18,6 +18,7 @@ $tca = [
             'ignoreRootLevelRestriction' => true,
         ],
         'iconfile' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.png',
+        'versioningWS_alwaysAllowLiveEdit' => true,
     ],
     'types' => [
         '0' => ['showitem' => 'fe_groups,--palette--;;filePalette'],
