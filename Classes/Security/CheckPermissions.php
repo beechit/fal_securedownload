@@ -162,6 +162,7 @@ class CheckPermissions implements SingletonInterface
     {
         $cacheIdentifier = sha1(
             $folder->getHashedIdentifier() .
+            $folder->getStorage()->getUid() .
             serialize($userFeGroups)
         );
 
