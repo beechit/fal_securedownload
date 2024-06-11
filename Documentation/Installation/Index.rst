@@ -27,6 +27,12 @@ Installation
 
    Best is to have the physical folder outside of your document root. If not, add an .htaccess with "Deny from all" (Apache < 2.3) or "Require all denied" (Apache >= 2.3) in your file storage root folder.
 
+
+#. **Configure lockRootPath !!! Required >11.5.35 & >12.4.11**
+
+   Refer to the TYPO3 Backend Configuration to ensure paths outside the project path are restricted for added security.
+   https://docs.typo3.org/m/typo3/reference-coreapi/main/en-us/Configuration/Typo3ConfVars/BE.html#confval-globals-typo3-conf-vars-be-lockrootpath
+
 #. **Set permissions**
 
    Set fe_group permissions to a file or folder of the non-public file storage
