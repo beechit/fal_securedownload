@@ -146,7 +146,6 @@ class CheckPermissions implements SingletonInterface
             if ((string)$feGroups !== '') {
                 return $this->matchFeGroupsWithFeUser($feGroups, $userFeGroups);
             }
-            return true;
         }
         return false;
     }
