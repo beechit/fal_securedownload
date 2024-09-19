@@ -238,7 +238,11 @@ class CheckPermissions implements SingletonInterface
         } catch (FolderDoesNotExistException $e) {
         }
         if ($resource instanceof FileInterface && $resource->getProperty('fe_groups')) {
-            $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
+            if (count($feGroups)) {
+                $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
+            } else {
+                $feGroups = GeneralUtility::trimExplode(',', $resource->getProperty('fe_groups'));
+            }
         }
         $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
         return implode(',', $feGroups);
