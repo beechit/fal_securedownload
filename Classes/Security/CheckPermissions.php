@@ -230,7 +230,9 @@ class CheckPermissions implements SingletonInterface
                     if ($folderRecord['fe_groups']) {
                         $feGroups = ArrayUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
                     }
-                    break;
+                    if (count($feGroups)) {
+                        break;
+                    }
                 }
             }
         } catch (FolderDoesNotExistException $e) {
