@@ -34,25 +34,34 @@ $tca = [
             'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:file',
             'config' => [
-                'type' => 'group',
-                'size' => 1,
-                'maxitems' => 1,
-                'minitems' => 1,
-                'allowed' => 'sys_file',
+                'type' => 'passthrough',
             ],
         ],
         'feuser' => [
             'exclude' => false,
             'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_db.xlf:fe_user',
             'config' => [
-                'type' => 'group',
-                'size' => 1,
-                'maxitems' => 1,
-                'minitems' => 1,
-                'allowed' => 'fe_users',
+                'type' => 'passthrough',
             ],
-        ],
+        ]
     ],
 ];
+
+if (\BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration::linkDownloads()) {
+    $tca['columns']['file']['config'] = [
+        'type' => 'group',
+        'size' => 1,
+        'maxitems' => 1,
+        'minitems' => 1,
+        'allowed' => 'sys_file',
+    ];
+    $tca['columns']['feuser']['config'] = [
+        'type' => 'group',
+        'size' => 1,
+        'maxitems' => 1,
+        'minitems' => 1,
+        'allowed' => 'fe_users',
+    ];
+}
 
 return $tca;

@@ -15,3 +15,6 @@ resumable_download = 1
 
 # cat=basic/enable/6; type=boolean; label=LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:extmng.track_downloads
 track_downloads = 0
+
+# cat=basic/enable/7; type=boolean; label=LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:extmng.link_downloads
+link_downloads = 0
