@@ -43,6 +43,9 @@
 			<trans-unit id="extmng.track_downloads">
 				<source>Count downloads per user and create statistics</source>
 			</trans-unit>
+			<trans-unit id="extmng.link_downloads">
+				<source>Link downloads to files and users in TCA (This will create reference index records for each download)</source>
+			</trans-unit>
 			<trans-unit id="extmng.resumable_download">
 				<source>Enable resumable downloads</source>
 			</trans-unit>
