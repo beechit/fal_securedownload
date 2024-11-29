@@ -39,6 +39,7 @@ use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Database\ReferenceIndex;
 use TYPO3\CMS\Core\LinkHandling\Exception\UnknownLinkHandlerException;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\Event\ModifyFileDumpEvent;
@@ -146,13 +147,19 @@ class ModifyFileDumpEventListener
                 'file' => (int)$this->originalFile->getUid(),
             ];
 
-            GeneralUtility::makeInstance(ConnectionPool::class)
-                ->getConnectionForTable('tx_falsecuredownload_download')
-                ->insert(
-                    'tx_falsecuredownload_download',
-                    $columns,
-                    [Connection::PARAM_INT, Connection::PARAM_INT, Connection::PARAM_INT, Connection::PARAM_INT]
-                );
+            $downloadConnection = GeneralUtility::makeInstance(ConnectionPool::class)
+                ->getConnectionForTable('tx_falsecuredownload_download');
+            $downloadConnection->insert(
+                'tx_falsecuredownload_download',
+                $columns,
+                [Connection::PARAM_INT, Connection::PARAM_INT, Connection::PARAM_INT, Connection::PARAM_INT]
+            );
+
+            if (ExtensionConfiguration::linkDownloads()) {
+                $downloadUid = $downloadConnection->lastInsertId();
+                $referenceIndex = GeneralUtility::makeInstance(ReferenceIndex::class);
+                $referenceIndex->updateRefIndexTable('tx_falsecuredownload_download', $downloadUid);
+            }
         }
 
         // Dump the precise requested file for File and ProcessedFile, but dump the referenced file for FileReference

@@ -41,6 +41,7 @@ class ExtensionConfiguration
     private static bool $forceDownload = false;
     private static string $forceDownloadForExt = '';
     private static bool $trackDownloads = false;
+    private static bool $linkDownloads = false;
     private static bool $resumableDownload = true;
 
     private static function init(): void
@@ -53,6 +54,7 @@ class ExtensionConfiguration
             self::$forceDownload = (bool)$extensionConfig['force_download'];
             self::$forceDownloadForExt = $extensionConfig['force_download_for_ext'];
             self::$trackDownloads = (bool)$extensionConfig['track_downloads'];
+            self::$linkDownloads = isset($extensionConfig['link_downloads']) && $extensionConfig['link_downloads'];
             self::$resumableDownload = isset($extensionConfig['resumable_download']) && $extensionConfig['resumable_download'];
         }
     }
@@ -88,6 +90,17 @@ class ExtensionConfiguration
     {
         self::init();
         return self::$trackDownloads;
+    }
+
+    /**
+     * Link downloads in TCA
+     *
+     * @return bool
+     */
+    public static function linkDownloads(): bool
+    {
+        self::init();
+        return self::$linkDownloads;
     }
 
     public static function resumableDownload(): bool
