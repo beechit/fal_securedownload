@@ -6,55 +6,47 @@
         <sDEF>
             <ROOT>
 
-                <TCEforms>
-                    <sheetTitle>
-                        LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.sheetTitle
-                    </sheetTitle>
-                </TCEforms>
+                <sheetTitle>
+                    LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.sheetTitle
+                </sheetTitle>
                 <type>array</type>
                 <el>
 
                     <settings.storage>
-                        <TCEforms>
-                            <label>
-                                LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage
-                            </label>
-                            <onChange>reload</onChange>
-                            <config>
-                                <type>select</type>
-                                <renderType>selectSingle</renderType>
-                                <internal_type>db</internal_type>
-                                <size>1</size>
-                                <maxitems>1</maxitems>
-                                <minitems>1</minitems>
-                                <items type="array">
+                        <label>
+                            LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage
+                        </label>
+                        <onChange>reload</onChange>
+                        <config>
+                            <type>select</type>
+                            <renderType>selectSingle</renderType>
+                            <internal_type>db</internal_type>
+                            <size>1</size>
+                            <maxitems>1</maxitems>
+                            <minitems>1</minitems>
+                            <items type="array">
+                                <numIndex index="0">
                                     <numIndex index="0">
-                                        <numIndex index="0">
-                                            LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage.empty
-                                        </numIndex>
-                                        <numIndex index="1"></numIndex>
+                                        LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage.empty
                                     </numIndex>
-                                </items>
-                                <foreign_table>sys_file_storage</foreign_table>
-                                <foreign_table_where>ORDER BY sys_file_storage.name</foreign_table_where>
-                            </config>
-                        </TCEforms>
+                                    <numIndex index="1"></numIndex>
+                                </numIndex>
+                            </items>
+                            <foreign_table>sys_file_storage</foreign_table>
+                            <foreign_table_where>ORDER BY sys_file_storage.name</foreign_table_where>
+                        </config>
                     </settings.storage>
 
                     <settings.folder>
-                        <TCEforms>
-                            <label>
-                                LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.folder
-                            </label>
-                            <displayCond>FIELD:settings.storage:REQ:true</displayCond>
-                            <config>
-                                <type>select</type>
-                                <renderType>selectSingle</renderType>
-                                <itemsProcFunc>
-                                    BeechIt\FalSecuredownload\Service\UserFileMountService->renderFlexFormSelectDropdown
-                                </itemsProcFunc>
-                            </config>
-                        </TCEforms>
+                        <label>
+                            LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.folder
+                        </label>
+                        <displayCond>FIELD:settings.storage:REQ:true</displayCond>
+                        <config>
+                            <type>folder</type>
+                            <maxitems>1</maxitems>
+                            <size>1</size>
+                        </config>
                     </settings.folder>
 
                 </el>
