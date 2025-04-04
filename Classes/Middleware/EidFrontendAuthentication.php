@@ -9,11 +9,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Backend\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaRequiredException;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 class EidFrontendAuthentication implements MiddlewareInterface
@@ -48,14 +48,26 @@ class EidFrontendAuthentication implements MiddlewareInterface
 
         // Authenticate now
         $frontendUser->start($request);
-        $frontendUser->unpack_uc();
+        // unpack uc manually
+        if (isset($frontendUser->user['uc'])) {
+            $theUC = unserialize($frontendUser->user['uc'], ['allowed_classes' => false]);
+            if (is_array($theUC)) {
+                $frontendUser->uc = $theUC;
+            }
+        }
 
         // Register the frontend user as aspect and within the session
         $this->setFrontendUserAspect($frontendUser);
 
         $backendUserObject = GeneralUtility::makeInstance(FrontendBackendUserAuthentication::class);
         $backendUserObject->start($request);
-        $backendUserObject->unpack_uc();
+        // unpack uc manually
+        if (isset($backendUserObject->user['uc'])) {
+            $theUC = unserialize($backendUserObject->user['uc'], ['allowed_classes' => false]);
+            if (is_array($theUC)) {
+                $backendUserObject->uc = $theUC;
+            }
+        }
         if (!empty($backendUserObject->user['uid'])) {
             $backendUserObject->fetchGroupData();
         }
