@@ -187,7 +187,7 @@ class ModifyFileDumpEventListener
         if (!$resumableDownload) {
             $response = $file->getStorage()->streamFile($file, $asDownload, $downloadName);
             $this->event->setResponse($response);
-            exit;
+            return;
         }
 
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
