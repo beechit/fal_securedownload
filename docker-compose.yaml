@@ -1,0 +1,16 @@
+services:
+  tools:
+    image: <define in your docker-compose.override.yaml>
+    volumes:
+      - composer-cache:/tmp/composer
+      - ./:/var/www/
+    working_dir: /var/www/
+    security_opt:
+      - label=disable
+    environment:
+      PHP_CS_FIXER_FUTURE_MODE: 1
+      COMPOSER_HOME: /tmp/composer
+      COMPOSER_ALLOW_SUPERUSER: 1
+
+volumes:
+  composer-cache:
