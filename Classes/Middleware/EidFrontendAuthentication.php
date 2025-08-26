@@ -48,26 +48,14 @@ class EidFrontendAuthentication implements MiddlewareInterface
 
         // Authenticate now
         $frontendUser->start($request);
-        // unpack uc manually
-        if (isset($frontendUser->user['uc'])) {
-            $theUC = unserialize($frontendUser->user['uc'], ['allowed_classes' => false]);
-            if (is_array($theUC)) {
-                $frontendUser->uc = $theUC;
-            }
-        }
+        $this->unpackUc($frontendUser);
 
         // Register the frontend user as aspect and within the session
         $this->setFrontendUserAspect($frontendUser);
 
         $backendUserObject = GeneralUtility::makeInstance(FrontendBackendUserAuthentication::class);
         $backendUserObject->start($request);
-        // unpack uc manually
-        if (isset($backendUserObject->user['uc'])) {
-            $theUC = unserialize($backendUserObject->user['uc'], ['allowed_classes' => false]);
-            if (is_array($theUC)) {
-                $backendUserObject->uc = $theUC;
-            }
-        }
+        $this->unpackUc($backendUserObject);
         if (!empty($backendUserObject->user['uid'])) {
             $backendUserObject->fetchGroupData();
         }
@@ -91,5 +79,15 @@ class EidFrontendAuthentication implements MiddlewareInterface
     {
         $this->context->setAspect('beechit.beuser', GeneralUtility::makeInstance(UserAspect::class, $user));
         $GLOBALS['BE_USER'] = $user;
+    }
+
+    protected function unpackUc(AbstractUserAuthentication $user): void
+    {
+        if (isset($user->user['uc'])) {
+            $theUC = unserialize($user->user['uc'], ['allowed_classes' => false]);
+            if (is_array($theUC)) {
+                $user->uc = $theUC;
+            }
+        }
     }
 }
