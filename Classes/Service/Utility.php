@@ -76,7 +76,7 @@ class Utility implements SingletonInterface
                     )
                     ->executeQuery()
                     ->fetchAssociative();
-            } catch (Exception $e) {
+            } catch (Exception) {
                 $record = false;
             }
 

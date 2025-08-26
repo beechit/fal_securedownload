@@ -46,7 +46,7 @@ class DocHeaderButtonsHook extends AbstractBeButtons
         return [
             'title' => $title,
             'icon' => $icon,
-            'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode($_SERVER['REQUEST_URI']) : ''),
+            'url' => $url . ($addReturnUrl ? '&returnUrl=' . rawurlencode((string)$_SERVER['REQUEST_URI']) : ''),
         ];
     }
 

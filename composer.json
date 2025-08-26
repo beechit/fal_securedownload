@@ -24,10 +24,12 @@
         "source": "https://github.com/beechit/fal_securedownload"
     },
     "require": {
-        "typo3/cms-core": "^12.4 || ^13.4"
-    },
-    "replace": {
-        "typo3-ter/fal-securedownload": "self.version"
+        "php": "^8.2",
+        "typo3/cms-core": "^12.4 || ^13.4",
+        "typo3/cms-extbase": "^12.4 || ^13.4",
+        "typo3/cms-backend": "^12.4 || ^13.4",
+        "typo3/cms-frontend": "^12.4 || ^13.4",
+        "typo3/cms-install": "^12.4 || ^13.4"
     },
     "autoload": {
         "psr-4": {
@@ -39,7 +41,15 @@
             "dev-master": "2.x-dev"
         },
         "typo3/cms": {
+            "web-dir": ".Build/public",
             "extension-key": "fal_securedownload"
+        }
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "allow-plugins": {
+            "typo3/class-alias-loader": true,
+            "typo3/cms-composer-installers": true
         }
     }
 }

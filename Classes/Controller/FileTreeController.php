@@ -54,16 +54,16 @@ class FileTreeController extends ActionController
             $combinedIdentifier = '';
             if (empty($this->settings['folder'])) {
                 $combinedIdentifier = $this->settings['storage'] . ':';
-            } else if (str_starts_with($this->settings['folder'], '/')) {
+            } elseif (str_starts_with((string)$this->settings['folder'], '/')) {
                 $combinedIdentifier = $this->settings['storage'] . ':' . $this->settings['folder'];
             } else {
-                if (!str_starts_with($this->settings['folder'], $this->settings['storage'])) {
+                if (!str_starts_with((string)$this->settings['folder'], (string)$this->settings['storage'])) {
                     return $this->htmlResponse('Folder does not exist in storage');
                 }
                 $combinedIdentifier = $this->settings['folder'];
             }
             $folder = $this->resourceFactory->getFolderObjectFromCombinedIdentifier($combinedIdentifier);
-        } catch (FolderDoesNotExistException $exception) {
+        } catch (FolderDoesNotExistException) {
             // folder not found
             $folder = null;
         }

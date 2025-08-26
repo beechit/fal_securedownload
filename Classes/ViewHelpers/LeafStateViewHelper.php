@@ -39,7 +39,7 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
  */
 class LeafStateViewHelper extends AbstractConditionViewHelper
 {
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('folder', 'object', '', true);

@@ -63,6 +63,6 @@ class UserAspect implements AspectInterface
         if ($name === 'user') {
             return $this->user;
         }
-        throw new AspectPropertyNotFoundException('Property "' . $name . '" not found in Aspect "' . __CLASS__ . '".', 1597220199);
+        throw new AspectPropertyNotFoundException('Property "' . $name . '" not found in Aspect "' . self::class . '".', 1597220199);
     }
 }

@@ -34,6 +34,7 @@ use BeechIt\FalSecuredownload\Events\BeforeRedirectsEvent;
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
 use InvalidArgumentException;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use RuntimeException;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Context\Exception\AspectPropertyNotFoundException;
@@ -60,10 +61,10 @@ class ModifyFileDumpEventListener
     protected string $forceDownloadForExt = '';
     protected bool $resumableDownload = false;
     protected Context $context;
-    private EventDispatcherInterface $eventDispatcher;
+    private readonly EventDispatcherInterface $eventDispatcher;
     private ModifyFileDumpEvent $event;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, private readonly ConnectionPool $connectionPool)
     {
         $this->context = GeneralUtility::makeInstance(Context::class);
 
@@ -103,10 +104,10 @@ class ModifyFileDumpEventListener
      *
      * @param ResourceInterface $file
      */
-    private function checkFileAccess(ResourceInterface $file)
+    private function checkFileAccess(ResourceInterface $file): void
     {
         if (!$file instanceof FileInterface) {
-            throw new \RuntimeException('Given $file is not a file.', 1469019515);
+            throw new RuntimeException('Given $file is not a file.', 1469019515);
         }
         if (method_exists($file, 'getOriginalFile')) {
             $this->originalFile = $file->getOriginalFile();
@@ -128,12 +129,10 @@ class ModifyFileDumpEventListener
                 } else {
                     $this->exitScript('Authentication required!');
                 }
+            } elseif (!empty($noAccessRedirectUrl)) {
+                $this->redirectToUrl($noAccessRedirectUrl);
             } else {
-                if (!empty($noAccessRedirectUrl)) {
-                    $this->redirectToUrl($noAccessRedirectUrl);
-                } else {
-                    $this->exitScript('No access!');
-                }
+                $this->exitScript('No access!');
             }
         }
         $this->eventDispatcher->dispatch(new BeforeFileDumpEvent($file, $this));
@@ -146,7 +145,7 @@ class ModifyFileDumpEventListener
                 'file' => (int)$this->originalFile->getUid(),
             ];
 
-            GeneralUtility::makeInstance(ConnectionPool::class)
+            $this->connectionPool
                 ->getConnectionForTable('tx_falsecuredownload_download')
                 ->insert(
                     'tx_falsecuredownload_download',
@@ -273,7 +272,7 @@ class ModifyFileDumpEventListener
         try {
             $this->initializeUserAuthentication();
             return is_array($this->feUser->user) && $this->feUser->user['uid'];
-        } catch (AspectNotFoundException|AspectPropertyNotFoundException $e) {
+        } catch (AspectNotFoundException|AspectPropertyNotFoundException) {
             return false;
         }
     }
@@ -285,7 +284,7 @@ class ModifyFileDumpEventListener
     {
         try {
             $this->initializeUserAuthentication();
-        } catch (AspectNotFoundException|AspectPropertyNotFoundException $e) {
+        } catch (AspectNotFoundException|AspectPropertyNotFoundException) {
             return false;
         }
 
@@ -300,7 +299,7 @@ class ModifyFileDumpEventListener
 
         try {
             return $checkPermissionsService->checkFileAccess($this->originalFile, $userFeGroups);
-        } catch (FolderDoesNotExistException $e) {
+        } catch (FolderDoesNotExistException) {
             return false;
         }
     }
@@ -323,7 +322,7 @@ class ModifyFileDumpEventListener
     /**
      * Exit with an error message
      */
-    protected function exitScript(string $message, int $httpCode = 403)
+    protected function exitScript(string $message, int $httpCode = 403): never
     {
         header('HTTP/1.1 ' . $httpCode . ' Forbidden');
         exit($message);
@@ -355,7 +354,7 @@ class ModifyFileDumpEventListener
     {
         try {
             $urlParameters = GeneralUtility::makeInstance(LinkService::class)->resolve($url);
-        } catch (UnknownLinkHandlerException $e) {
+        } catch (UnknownLinkHandlerException) {
             throw new InvalidArgumentException(
                 'Redirects URL can only handle TYPO3 urls of types "page" or "url".',
                 1686123053

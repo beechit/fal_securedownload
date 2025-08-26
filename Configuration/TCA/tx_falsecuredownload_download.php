@@ -1,7 +1,5 @@
 <?php
 
-use TYPO3\CMS\Core\Information\Typo3Version;
-
 defined('TYPO3') or die();
 
 $tca = [

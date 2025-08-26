@@ -32,15 +32,11 @@ use TYPO3\CMS\Core\Resource\ResourceInterface;
 
 final class BeforeRedirectsEvent
 {
-    private ?string $loginRedirectUrl;
-    private ?string $noAccessRedirectUrl;
     private ResourceInterface $file;
     private ModifyFileDumpEventListener $caller;
 
-    public function __construct(?string $loginRedirectUrl, ?string $noAccessRedirectUrl, ResourceInterface $file, ModifyFileDumpEventListener $caller)
+    public function __construct(private ?string $loginRedirectUrl, private ?string $noAccessRedirectUrl, ResourceInterface $file, ModifyFileDumpEventListener $caller)
     {
-        $this->loginRedirectUrl = $loginRedirectUrl;
-        $this->noAccessRedirectUrl = $noAccessRedirectUrl;
         $this->file = $file;
         $this->caller = $caller;
     }

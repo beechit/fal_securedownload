@@ -10,10 +10,9 @@ ExtensionUtility::registerPlugin(
     'Filetree',
     'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:plugin.title'
 );
-
-$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist']['falsecuredownload_filetree'] = 'layout,recursive,select_key,pages';
-$GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['falsecuredownload_filetree'] = 'pi_flexform';
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addToAllTCAtypes('tt_content', '--div--;Configuration,pi_flexform,', 'falsecuredownload_filetree', 'after:subheader');
 ExtensionManagementUtility::addPiFlexFormValue(
-    'falsecuredownload_filetree',
-    'FILE:EXT:fal_securedownload/Configuration/FlexForms/FileTree.xml'
+    '*',
+    'FILE:EXT:fal_securedownload/Configuration/FlexForms/FileTree.xml',
+    'falsecuredownload_filetree'
 );

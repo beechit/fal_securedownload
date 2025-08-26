@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <T3DataStructure>
     <meta>
         <langDisable>1</langDisable>
@@ -5,13 +6,11 @@
     <sheets>
         <sDEF>
             <ROOT>
-
                 <sheetTitle>
                     LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.sheetTitle
                 </sheetTitle>
                 <type>array</type>
                 <el>
-
                     <settings.storage>
                         <label>
                             LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage
@@ -26,17 +25,16 @@
                             <minitems>1</minitems>
                             <items type="array">
                                 <numIndex index="0">
-                                    <numIndex index="0">
+                                    <label>
                                         LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.storage.empty
-                                    </numIndex>
-                                    <numIndex index="1"></numIndex>
+                                    </label>
+                                    <value/>
                                 </numIndex>
                             </items>
                             <foreign_table>sys_file_storage</foreign_table>
                             <foreign_table_where>ORDER BY sys_file_storage.name</foreign_table_where>
                         </config>
                     </settings.storage>
-
                     <settings.folder>
                         <label>
                             LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:flexform.folder
@@ -48,9 +46,7 @@
                             <size>1</size>
                         </config>
                     </settings.folder>
-
                 </el>
-
             </ROOT>
         </sDEF>
     </sheets>
