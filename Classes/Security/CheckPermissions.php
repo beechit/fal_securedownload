@@ -84,6 +84,7 @@ class CheckPermissions implements SingletonInterface
         if ($backendUser->isAdmin()) {
             return true;
         }
+        $resourceStorage = $file->getStorage();
         $storageFilePermissions = $backendUser->getTSConfig()['permissions.']['file.']['storage.'][$resourceStorage->getUid() . '.'] ?? [];
         $resourceStorage->setUserPermissions($storageFilePermissions);
         $majorVersion = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
