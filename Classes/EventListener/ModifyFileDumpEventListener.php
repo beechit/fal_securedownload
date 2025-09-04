@@ -295,7 +295,18 @@ class ModifyFileDumpEventListener
             return true;
         }
 
-        $userFeGroups = !$this->feUser->user ? false : $this->feUser->groupData['uid'];
+        // The CheckPermissions service receives the current user's groups as input to
+        // ultimately compare them against the file's permissions. If the user isn't
+        // logged in at all, "false" is passed instead. There are two possible ways to
+        // interpret the user data:
+        // 1. If a user isn't logged in, the groups don't matter at all. This would
+        //    ignore groups being added with the ModifyResolvedFrontendGroupsEvent.
+        // 2. If a user has any groups, regardless of login status, those groups will
+        //    be used for the permission check.
+        // Variant 2 is implemented here.
+        $userFeGroups = !$this->isLoggedIn() && $this->feUser->groupData['uid'] === []
+            ? false
+            : $this->feUser->groupData['uid'];
 
         try {
             return $checkPermissionsService->checkFileAccess($this->originalFile, $userFeGroups);
