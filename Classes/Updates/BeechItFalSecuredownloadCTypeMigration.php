@@ -35,7 +35,7 @@ final class BeechItFalSecuredownloadCTypeMigration extends AbstractListTypeToCTy
     protected function getListTypeToCTypeMapping(): array
     {
         return [
-            'falsecuredownload_filetree' => 'falsecuredownload_filetree'
+            'falsecuredownload_filetree' => 'falsecuredownload_filetree',
         ];
     }
 }

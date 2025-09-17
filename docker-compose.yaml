@@ -1,6 +1,6 @@
 services:
   tools:
-    image: <define in your docker-compose.override.yaml>
+    image: docker.io/thecodingmachine/php:8.4-v5-cli
     volumes:
       - composer-cache:/tmp/composer
       - ./:/var/www/
@@ -8,6 +8,7 @@ services:
     security_opt:
       - label=disable
     environment:
+      PHP_EXTENSION_INTL: 1
       PHP_CS_FIXER_FUTURE_MODE: 1
       COMPOSER_HOME: /tmp/composer
       COMPOSER_ALLOW_SUPERUSER: 1
