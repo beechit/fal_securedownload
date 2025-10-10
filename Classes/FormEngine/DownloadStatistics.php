@@ -51,9 +51,9 @@ class DownloadStatistics extends AbstractNode
         try {
             $statistics = $queryBuilder
                 ->selectLiteral(
-                    $queryBuilder->getConnection()->getDatabasePlatform()->getCountExpression(
-                        $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file')
-                    ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt')
+                    'COUNT(' .
+                        $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file') .
+                    ') AS ' . $queryBuilder->quoteIdentifier('cnt')
                 )
                 ->addSelect('sys_file.name')
                 ->from('sys_file')
