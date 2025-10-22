@@ -160,7 +160,7 @@ class CheckPermissions implements SingletonInterface
      */
     public function checkFolderRootLineAccess(FolderInterface $folder, $userFeGroups): bool
     {
-        $cacheIdentifier = sha1(
+        $cacheIdentifier = hash('sha1',
             $folder->getHashedIdentifier() .
             serialize($userFeGroups)
         );
