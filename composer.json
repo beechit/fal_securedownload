@@ -37,7 +37,11 @@
     },
     "require": {
         "php": "^8.2",
-        "typo3/cms-core": "^13.4"
+        "typo3/cms-core": "^13.4",
+        "typo3/cms-extbase": "^13.4",
+        "typo3/cms-backend": "^13.4",
+        "typo3/cms-frontend": "^13.4",
+        "typo3/cms-install": "^13.4"
     },
     "autoload": {
         "psr-4": {
@@ -51,5 +55,8 @@
         "typo3/cms": {
             "extension-key": "fal_securedownload"
         }
+    },
+    "config": {
+        "lock": false
     }
 }
