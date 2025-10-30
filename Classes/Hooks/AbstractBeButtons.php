@@ -47,7 +47,7 @@ abstract class AbstractBeButtons
 {
     protected ResourceFactory $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    public function __construct(?ResourceFactory $resourceFactory = null)
     {
         $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
     }
