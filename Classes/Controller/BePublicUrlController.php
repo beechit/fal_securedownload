@@ -13,6 +13,7 @@ namespace BeechIt\FalSecuredownload\Controller;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
+use TYPO3\CMS\Core\Crypto\HashService;
 use TYPO3\CMS\Core\Http\AbstractApplication;
 use TYPO3\CMS\Core\Resource\Exception\FileDoesNotExistException;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
@@ -27,7 +28,7 @@ class BePublicUrlController extends AbstractApplication
 {
     protected ResourceFactory $resourceFactory;
     protected ResponseFactoryInterface $responseFactory;
-    private ProcessedFileRepository $processedFileRepository;
+    private readonly ProcessedFileRepository $processedFileRepository;
 
     public function __construct(
         ResourceFactory $resourceFactory,
@@ -45,26 +46,23 @@ class BePublicUrlController extends AbstractApplication
     public function dumpFile(): ResponseInterface
     {
         $parameters = ['eID' => 'dumpFile'];
-        if (GeneralUtility::_GP('t')) {
-            $parameters['t'] = GeneralUtility::_GP('t');
+        if ($GLOBALS['TYPO3_REQUEST']->getParsedBody()['t'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['t'] ?? null) {
+            $parameters['t'] = $GLOBALS['TYPO3_REQUEST']->getParsedBody()['t'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['t'] ?? null;
         }
-        if (GeneralUtility::_GP('f')) {
-            $parameters['f'] = (int)GeneralUtility::_GP('f');
+        if ($GLOBALS['TYPO3_REQUEST']->getParsedBody()['f'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['f'] ?? null) {
+            $parameters['f'] = (int)($GLOBALS['TYPO3_REQUEST']->getParsedBody()['f'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['f'] ?? null);
         }
-        if (GeneralUtility::_GP('p')) {
-            $parameters['p'] = (int)GeneralUtility::_GP('p');
+        if ($GLOBALS['TYPO3_REQUEST']->getParsedBody()['p'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['p'] ?? null) {
+            $parameters['p'] = (int)($GLOBALS['TYPO3_REQUEST']->getParsedBody()['p'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['p'] ?? null);
         }
 
         if (
-            GeneralUtility::hmac(
-                implode('|', $parameters),
-                'BeResourceStorageDumpFile'
-            ) === GeneralUtility::_GP('fal_token')
+            GeneralUtility::makeInstance(HashService::class)->hmac(implode('|', $parameters), 'BeResourceStorageDumpFile') === ($GLOBALS['TYPO3_REQUEST']->getParsedBody()['fal_token'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['fal_token'] ?? null)
         ) {
             if (isset($parameters['f'])) {
                 try {
                     $file = $this->resourceFactory->getFileObject($parameters['f']);
-                } catch (FileDoesNotExistException $e) {
+                } catch (FileDoesNotExistException) {
                     return $this->responseFactory->createResponse(404);
                 }
                 if ($file->isDeleted() || $file->isMissing()) {
@@ -75,7 +73,7 @@ class BePublicUrlController extends AbstractApplication
                 try {
                     /** @var ProcessedFile $file */
                     $file = $this->processedFileRepository->findByUid($parameters['p']);
-                } catch (RuntimeException $e) {
+                } catch (RuntimeException) {
                     return $this->responseFactory->createResponse(404);
                 }
                 if ($file->isDeleted()) {

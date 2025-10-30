@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace BeechIt\FalSecuredownload\ViewHelpers;
 
+use TYPO3\CMS\Core\Crypto\HashService;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
@@ -81,10 +82,7 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
             $queryParameterArray['t'] = 'p';
         }
 
-        $queryParameterArray['token'] = GeneralUtility::hmac(
-            implode('|', $queryParameterArray),
-            'resourceStorageDumpFile'
-        );
+        $queryParameterArray['token'] = GeneralUtility::makeInstance(HashService::class)->hmac(implode('|', $queryParameterArray), 'resourceStorageDumpFile');
         $queryParameterArray['download'] = '';
         $uri = 'index.php?' . str_replace('+', '%20', http_build_query($queryParameterArray));
 

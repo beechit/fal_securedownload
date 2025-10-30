@@ -33,6 +33,7 @@ use TYPO3\CMS\Core\Context\Exception\AspectNotFoundException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
@@ -50,25 +51,9 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
     }
 
     /**
-     * renders <f:then> child if the current logged in FE user has access to the given asset
-     * otherwise renders <f:else> child.
-     *
-     * @return string
-     * @throws AspectNotFoundException
-     */
-    public function render(): string
-    {
-        return self::evaluateCondition($this->arguments) ? $this->renderThenChild() : $this->renderElseChild();
-    }
-
-    /**
      * Evaluate access
-     *
-     * @param array $arguments
-     * @return bool
-     * @throws AspectNotFoundException
      */
-    protected static function evaluateCondition($arguments = null): bool
+    public static function verdict(array $arguments, RenderingContextInterface $renderingContext): bool
     {
         /** @var Folder $folder */
         $folder = $arguments['folder'];
@@ -103,7 +88,7 @@ class AssetAccessViewHelper extends AbstractConditionViewHelper
      * @return bool|array FALSE when not logged in or else frontend.user.groupIds
      * @throws AspectNotFoundException
      */
-    protected static function getFeUserGroups()
+    protected static function getFeUserGroups(): bool|array
     {
         /** @var Context $context */
         $context = GeneralUtility::makeInstance(Context::class);

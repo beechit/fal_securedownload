@@ -71,7 +71,7 @@ class CmsLayout
             try {
                 $storageUid = $this->getFieldFromFlexform('settings.storage');
                 $storageName = $this->resourceFactory->getStorageObject($storageUid)->getName();
-            } catch (Exception $exception) {
+            } catch (Exception) {
             }
 
             if ($storageName) {

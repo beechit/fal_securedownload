@@ -32,7 +32,7 @@ class AfterFileMetaDataHasBeenRetrievedEventListener implements SingletonInterfa
     /**
      * Add correct fe_group info and public_url
      */
-    public function __invoke(AfterFileMetaDataHasBeenRetrievedEvent $event)
+    public function __invoke(AfterFileMetaDataHasBeenRetrievedEvent $event): void
     {
         $item = $event->getFileIndexQueueItem();
         $metadata = $event->getMetaData();

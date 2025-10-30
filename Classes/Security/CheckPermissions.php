@@ -64,10 +64,10 @@ class CheckPermissions implements SingletonInterface
      */
     public function checkFileAccessForCurrentFeUser(FileInterface $file): bool
     {
-        $userFeGroups = !isset($GLOBALS['TSFE']->fe_user->user) ? false : $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        $userFeGroups = !isset($GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user')->user) ? false : $GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user')->groupData['uid'];
         try {
             return $this->checkFileAccess($file, $userFeGroups);
-        } catch (FolderDoesNotExistException $e) {
+        } catch (FolderDoesNotExistException) {
             return false;
         }
     }
@@ -85,7 +85,8 @@ class CheckPermissions implements SingletonInterface
             return true;
         }
         $resourceStorage = $file->getStorage();
-        $resourceStorage->setUserPermissions($GLOBALS['BE_USER']->getFilePermissionsForStorage($resourceStorage));
+        $storageFilePermissions = $backendUser->getTSConfig()['permissions.']['file.']['storage.'][$resourceStorage->getUid() . '.'] ?? [];
+        $resourceStorage->setUserPermissions($storageFilePermissions);
         $majorVersion = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
         foreach ($GLOBALS['BE_USER']->getFileMountRecords() as $fileMountRow) {
             if ($majorVersion === 11) {
@@ -98,7 +99,7 @@ class CheckPermissions implements SingletonInterface
             if ((int)$base === $resourceStorage->getUid()) {
                 try {
                     $resourceStorage->addFileMount($path, $fileMountRow);
-                } catch (FolderDoesNotExistException $e) {
+                } catch (FolderDoesNotExistException) {
                     // That file mount does not seem to be valid, fail silently
                 }
             }
@@ -161,8 +162,8 @@ class CheckPermissions implements SingletonInterface
     public function checkFolderRootLineAccess(FolderInterface $folder, $userFeGroups): bool
     {
         $cacheIdentifier = sha1(
-            $folder->getHashedIdentifier() .
-            serialize($userFeGroups)
+            $folder->getHashedIdentifier()
+            . serialize($userFeGroups)
         );
 
         if (!isset($this->checkFolderRootLineAccessCache[$cacheIdentifier])) {
@@ -182,7 +183,7 @@ class CheckPermissions implements SingletonInterface
                         }
                     }
                 }
-            } catch (FolderDoesNotExistException $e) {
+            } catch (FolderDoesNotExistException) {
                 return false;
             }
         }
@@ -233,7 +234,7 @@ class CheckPermissions implements SingletonInterface
                     break;
                 }
             }
-        } catch (FolderDoesNotExistException $e) {
+        } catch (FolderDoesNotExistException) {
         }
         if ($resource instanceof FileInterface && $resource->getProperty('fe_groups')) {
             $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));

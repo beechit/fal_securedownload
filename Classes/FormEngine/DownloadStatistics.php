@@ -30,14 +30,13 @@ namespace BeechIt\FalSecuredownload\FormEngine;
 use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Backend\Form\AbstractNode;
 use TYPO3\CMS\Core\Database\Connection;
-use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\MathUtility;
 
 class DownloadStatistics extends AbstractNode
 {
     protected array $resultArray = [];
+    public function __construct(private readonly \TYPO3\CMS\Core\Database\ConnectionPool $connectionPool) {}
 
     public function render(): array
     {
@@ -48,13 +47,13 @@ class DownloadStatistics extends AbstractNode
             return $this->resultArray;
         }
 
-        $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('sys_file');
+        $queryBuilder = $this->connectionPool->getQueryBuilderForTable('sys_file');
         try {
             $statistics = $queryBuilder
                 ->selectLiteral(
-                    $queryBuilder->getConnection()->getDatabasePlatform()->getCountExpression(
-                        $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file')
-                    ) . ' AS ' . $queryBuilder->quoteIdentifier('cnt')
+                    'COUNT(' .
+                        $queryBuilder->quoteIdentifier('tx_falsecuredownload_download.file') .
+                    ') AS ' . $queryBuilder->quoteIdentifier('cnt')
                 )
                 ->addSelect('sys_file.name')
                 ->from('sys_file')
@@ -74,7 +73,7 @@ class DownloadStatistics extends AbstractNode
                 ->orderBy('sys_file.name')
                 ->executeQuery()
                 ->fetchAllAssociative();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $statistics = null;
         }
 
@@ -89,7 +88,7 @@ class DownloadStatistics extends AbstractNode
             $markup[] = '<tbody>';
 
             foreach ($statistics as $file) {
-                $markup[] = '<tr><td>' . htmlspecialchars($file['name']) . '</td><td>' . $file['cnt'] . '</td></tr>';
+                $markup[] = '<tr><td>' . htmlspecialchars((string)$file['name']) . '</td><td>' . $file['cnt'] . '</td></tr>';
             }
             $markup[] = '</tbody>';
             $markup[] = '</table>';

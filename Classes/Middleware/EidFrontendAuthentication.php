@@ -9,11 +9,11 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use TYPO3\CMS\Backend\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Core\Authentication\AbstractUserAuthentication;
 use TYPO3\CMS\Core\Authentication\Mfa\MfaRequiredException;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendBackendUserAuthentication;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 class EidFrontendAuthentication implements MiddlewareInterface
@@ -48,14 +48,14 @@ class EidFrontendAuthentication implements MiddlewareInterface
 
         // Authenticate now
         $frontendUser->start($request);
-        $frontendUser->unpack_uc();
+        $this->unpackUc($frontendUser);
 
         // Register the frontend user as aspect and within the session
         $this->setFrontendUserAspect($frontendUser);
 
         $backendUserObject = GeneralUtility::makeInstance(FrontendBackendUserAuthentication::class);
         $backendUserObject->start($request);
-        $backendUserObject->unpack_uc();
+        $this->unpackUc($backendUserObject);
         if (!empty($backendUserObject->user['uid'])) {
             $backendUserObject->fetchGroupData();
         }
@@ -79,5 +79,15 @@ class EidFrontendAuthentication implements MiddlewareInterface
     {
         $this->context->setAspect('beechit.beuser', GeneralUtility::makeInstance(UserAspect::class, $user));
         $GLOBALS['BE_USER'] = $user;
+    }
+
+    protected function unpackUc(AbstractUserAuthentication $user): void
+    {
+        if (isset($user->user['uc'])) {
+            $theUC = unserialize($user->user['uc'], ['allowed_classes' => false]);
+            if (is_array($theUC)) {
+                $user->uc = $theUC;
+            }
+        }
     }
 }
