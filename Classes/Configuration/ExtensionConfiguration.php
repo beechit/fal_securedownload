@@ -47,13 +47,18 @@ class ExtensionConfiguration
     {
         if (!self::$isInitialized) {
             self::$isInitialized = true;
-            $extensionConfig = GeneralUtility::makeInstance(ExtensionConfigurationCore::class)->get('fal_securedownload');
-            self::$loginRedirectUrl = $extensionConfig['login_redirect_url'];
-            self::$noAccessRedirectUrl = $extensionConfig['no_access_redirect_url'];
-            self::$forceDownload = (bool)$extensionConfig['force_download'];
-            self::$forceDownloadForExt = $extensionConfig['force_download_for_ext'];
-            self::$trackDownloads = (bool)$extensionConfig['track_downloads'];
-            self::$resumableDownload = isset($extensionConfig['resumable_download']) && $extensionConfig['resumable_download'];
+            $extensionConfig = [];
+            try {
+                $extensionConfig = GeneralUtility::makeInstance(ExtensionConfigurationCore::class)->get('fal_securedownload');
+            } catch (\Throwable) {
+                // Ignore
+            }
+            self::$loginRedirectUrl = $extensionConfig['login_redirect_url'] ?? '';
+            self::$noAccessRedirectUrl = $extensionConfig['no_access_redirect_url'] ?? '';
+            self::$forceDownload = (bool)($extensionConfig['force_download'] ?? false);
+            self::$forceDownloadForExt = $extensionConfig['force_download_for_ext'] ?? '';
+            self::$trackDownloads = (bool)($extensionConfig['track_downloads'] ?? false);
+            self::$resumableDownload = (bool)($extensionConfig['resumable_download'] ?? false);
         }
     }
 
