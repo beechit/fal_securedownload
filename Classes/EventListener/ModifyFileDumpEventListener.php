@@ -192,8 +192,9 @@ class ModifyFileDumpEventListener
         $contentDisposition = $asDownload ? 'attachment' : 'inline';
         header('Content-Disposition: ' . $contentDisposition . '; filename="' . $downloadName . '"');
         header('Content-Type: ' . $file->getMimeType());
-        header('Expires: -1');
-        header('Cache-Control: public, must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
 
         $fileSize = $file->getSize();
         $range = $this->getHttpRange($fileSize);
