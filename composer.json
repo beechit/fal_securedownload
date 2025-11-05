@@ -14,7 +14,19 @@
             "name": "Frans Saris",
             "email": "t3ext@beech.it",
             "homepage": "https://www.beech.it/",
-            "role": "Lead Developer"
+            "role": "Creator"
+        },
+        {
+            "name": "Rudy Gnodde",
+            "email": "t3ext@beech.it",
+            "homepage": "https://www.beech.it/",
+            "role": "Developer"
+        },
+        {
+            "name": "Markus Klein",
+            "email": "support@reelworx.at",
+            "homepage": "https://reelworx.at/",
+            "role": "Developer"
         }
     ],
     "homepage": "https://github.com/beechit/fal_securedownload/",
@@ -24,10 +36,12 @@
         "source": "https://github.com/beechit/fal_securedownload"
     },
     "require": {
-        "typo3/cms-core": "^11.5 || ^12.4"
-    },
-    "replace": {
-        "typo3-ter/fal-securedownload": "self.version"
+        "php": "^8.2",
+        "typo3/cms-core": "^13.4",
+        "typo3/cms-extbase": "^13.4",
+        "typo3/cms-backend": "^13.4",
+        "typo3/cms-frontend": "^13.4",
+        "typo3/cms-install": "^13.4"
     },
     "autoload": {
         "psr-4": {
@@ -36,10 +50,13 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "2.x-dev"
+            "dev-master": "6.x-dev"
         },
         "typo3/cms": {
             "extension-key": "fal_securedownload"
         }
+    },
+    "config": {
+        "lock": false
     }
 }

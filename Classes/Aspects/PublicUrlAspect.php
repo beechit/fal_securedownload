@@ -29,6 +29,7 @@ namespace BeechIt\FalSecuredownload\Aspects;
 
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Crypto\HashService;
 use TYPO3\CMS\Core\Resource\Driver\DriverInterface;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
@@ -82,10 +83,7 @@ class PublicUrlAspect implements SingletonInterface
                 $queryParameterArray['p'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'p';
             }
-            $queryParameterArray['fal_token'] = GeneralUtility::hmac(
-                implode('|', $queryParameterArray),
-                'BeResourceStorageDumpFile'
-            );
+            $queryParameterArray['fal_token'] = GeneralUtility::makeInstance(HashService::class)->hmac(implode('|', $queryParameterArray), 'BeResourceStorageDumpFile');
 
             /** @var UriBuilder $uriBuilder */
             $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);

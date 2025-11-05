@@ -30,6 +30,7 @@ namespace BeechIt\FalSecuredownload\ViewHelpers;
 use BeechIt\FalSecuredownload\Service\LeafStateService;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3Fluid\Fluid\Core\Rendering\RenderingContextInterface;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
 
 /**
@@ -39,17 +40,13 @@ use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractConditionViewHelper;
  */
 class LeafStateViewHelper extends AbstractConditionViewHelper
 {
-    public function initializeArguments()
+    public function initializeArguments(): void
     {
         parent::initializeArguments();
         $this->registerArgument('folder', 'object', '', true);
     }
 
-    /**
-     * @param array $arguments
-     * @return bool
-     */
-    protected static function evaluateCondition($arguments = null): bool
+    public static function verdict(array $arguments, RenderingContextInterface $renderingContext): bool
     {
         /** @var Folder $folder */
         $folder = $arguments['folder'];
@@ -59,18 +56,5 @@ class LeafStateViewHelper extends AbstractConditionViewHelper
         $feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : false;
 
         return $feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier());
-    }
-
-    /**
-     * Renders <f:then> child if $condition is true, otherwise renders <f:else> child.
-     *
-     * @return string the rendered string
-     */
-    public function render(): string
-    {
-        if (static::evaluateCondition($this->arguments)) {
-            return $this->renderThenChild();
-        }
-        return $this->renderElseChild();
     }
 }

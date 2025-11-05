@@ -33,6 +33,7 @@ use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
 use TYPO3\CMS\Core\Imaging\Icon;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Localization\LanguageService;
 use TYPO3\CMS\Core\Resource\Exception\InsufficientFolderAccessPermissionsException;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
@@ -47,7 +48,7 @@ abstract class AbstractBeButtons
 {
     protected ResourceFactory $resourceFactory;
 
-    public function __construct(ResourceFactory $resourceFactory = null)
+    public function __construct(?ResourceFactory $resourceFactory = null)
     {
         $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
     }
@@ -68,7 +69,7 @@ abstract class AbstractBeButtons
         // In some folder copy/move actions in file list an invalid id is passed
         try {
             $folder = $this->resourceFactory->retrieveFileOrFolderObject($combinedIdentifier);
-        } catch (ResourceDoesNotExistException|InsufficientFolderAccessPermissionsException $exception) {
+        } catch (ResourceDoesNotExistException|InsufficientFolderAccessPermissionsException) {
             $folder = null;
         }
 
@@ -106,7 +107,7 @@ abstract class AbstractBeButtons
     protected function getIcon(string $name): Icon
     {
         $iconFactory = GeneralUtility::makeInstance(IconFactory::class);
-        return $iconFactory->getIcon('action-' . $name, Icon::SIZE_SMALL);
+        return $iconFactory->getIcon('action-' . $name, IconSize::SMALL);
     }
 
     /**

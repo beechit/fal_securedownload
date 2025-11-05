@@ -1,7 +1,5 @@
 <?php
 
-use ApacheSolrForTypo3\Solrfal\Indexing\DocumentFactory;
-use BeechIt\FalSecuredownload\Aspects\SolrFalAspect;
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
 use BeechIt\FalSecuredownload\ContextMenu\ItemProvider;
 use BeechIt\FalSecuredownload\Controller\FileTreeController;
@@ -13,7 +11,6 @@ use BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook;
 use BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook;
 use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
@@ -29,19 +26,20 @@ ExtensionUtility::configurePlugin(
     // non-cacheable actions
     [
         FileTreeController::class => 'tree',
-    ]
+    ],
+    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
 );
 
 // FE FileTree leaf open/close state dispatcher
 $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] = FileTreeStateController::class . '::saveLeafState';
 
 // Page module hook
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree']['fal_securedownload'] =
-    CmsLayout::class . '->getExtensionSummary';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree']['fal_securedownload']
+    = CmsLayout::class . '->getExtensionSummary';
 
 // Add FolderPermission button to docheader of filelist
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload'] =
-    DocHeaderButtonsHook::class . '->getButtons';
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload']
+    = DocHeaderButtonsHook::class . '->getButtons';
 
 // Context menu
 // Only needed for TYPO3 v11

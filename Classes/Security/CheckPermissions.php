@@ -31,10 +31,10 @@ use BeechIt\FalSecuredownload\Events\AddCustomGroupsEvent;
 use BeechIt\FalSecuredownload\Service\Utility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
@@ -64,10 +64,10 @@ class CheckPermissions implements SingletonInterface
      */
     public function checkFileAccessForCurrentFeUser(FileInterface $file): bool
     {
-        $userFeGroups = !isset($GLOBALS['TSFE']->fe_user->user) ? false : $GLOBALS['TSFE']->fe_user->groupData['uid'];
+        $userFeGroups = !isset($GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user')->user) ? false : $GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user')->groupData['uid'];
         try {
             return $this->checkFileAccess($file, $userFeGroups);
-        } catch (FolderDoesNotExistException $e) {
+        } catch (FolderDoesNotExistException) {
             return false;
         }
     }
@@ -84,25 +84,26 @@ class CheckPermissions implements SingletonInterface
         if ($backendUser->isAdmin()) {
             return true;
         }
-        $resourceStorage = $file->getStorage();
-        $resourceStorage->setUserPermissions($GLOBALS['BE_USER']->getFilePermissionsForStorage($resourceStorage));
-        $majorVersion = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
-        foreach ($GLOBALS['BE_USER']->getFileMountRecords() as $fileMountRow) {
-            if ($majorVersion === 11) {
-                $base = $fileMountRow['base'];
-                $path = $fileMountRow['path'];
-            } else {
-                [$base, $path] = GeneralUtility::trimExplode(':', $fileMountRow['identifier']);
-            }
 
-            if ((int)$base === $resourceStorage->getUid()) {
-                try {
-                    $resourceStorage->addFileMount($path, $fileMountRow);
-                } catch (FolderDoesNotExistException $e) {
-                    // That file mount does not seem to be valid, fail silently
+        $resourceStorage = $file->getStorage();
+
+        $finalUserPermissions = $backendUser->getFilePermissions();
+        $storageFilePermissions = $backendUser->getTSConfig()['permissions.']['file.']['storage.'][$resourceStorage->getUid() . '.'] ?? [];
+        if (!empty($storageFilePermissions)) {
+            array_walk(
+                $storageFilePermissions,
+                static function (string $value, string $permission) use (&$finalUserPermissions): void {
+                    $finalUserPermissions[$permission] = (bool)$value;
                 }
-            }
+            );
         }
+
+        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
+        foreach ($backendUser->getFileMountRecords() as $fileMountRecord) {
+            $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($fileMountRecord['identifier']);
+            $resourceStorage->addFileMount($folder->getIdentifier());
+        }
+        $resourceStorage->setUserPermissions($finalUserPermissions);
         $originalEvaluatePermissions = $resourceStorage->getEvaluatePermissions();
         $resourceStorage->setEvaluatePermissions(true);
         $access = $resourceStorage->checkFileActionPermission('read', $file);
@@ -183,7 +184,7 @@ class CheckPermissions implements SingletonInterface
                         }
                     }
                 }
-            } catch (FolderDoesNotExistException $e) {
+            } catch (FolderDoesNotExistException) {
                 return false;
             }
         }
@@ -234,7 +235,7 @@ class CheckPermissions implements SingletonInterface
                     break;
                 }
             }
-        } catch (FolderDoesNotExistException $e) {
+        } catch (FolderDoesNotExistException) {
         }
         if ($resource instanceof FileInterface && $resource->getProperty('fe_groups')) {
             $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
