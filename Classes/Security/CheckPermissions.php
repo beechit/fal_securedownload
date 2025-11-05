@@ -35,10 +35,12 @@ use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FolderInterface;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Utility functions to check permissions
@@ -84,26 +86,26 @@ class CheckPermissions implements SingletonInterface
         if ($backendUser->isAdmin()) {
             return true;
         }
-        $resourceStorage = $file->getStorage();
-        $storageFilePermissions = $backendUser->getTSConfig()['permissions.']['file.']['storage.'][$resourceStorage->getUid() . '.'] ?? [];
-        $resourceStorage->setUserPermissions($storageFilePermissions);
-        $majorVersion = GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion();
-        foreach ($GLOBALS['BE_USER']->getFileMountRecords() as $fileMountRow) {
-            if ($majorVersion === 11) {
-                $base = $fileMountRow['base'];
-                $path = $fileMountRow['path'];
-            } else {
-                [$base, $path] = GeneralUtility::trimExplode(':', $fileMountRow['identifier']);
-            }
 
-            if ((int)$base === $resourceStorage->getUid()) {
-                try {
-                    $resourceStorage->addFileMount($path, $fileMountRow);
-                } catch (FolderDoesNotExistException) {
-                    // That file mount does not seem to be valid, fail silently
+        $resourceStorage = $file->getStorage();
+
+        $finalUserPermissions = $backendUser->getFilePermissions();
+        $storageFilePermissions = $backendUser->getTSConfig()['permissions.']['file.']['storage.'][$resourceStorage->getUid() . '.'] ?? [];
+        if (!empty($storageFilePermissions)) {
+            array_walk(
+                $storageFilePermissions,
+                static function (string $value, string $permission) use (&$finalUserPermissions): void {
+                    $finalUserPermissions[$permission] = (bool)$value;
                 }
-            }
+            );
         }
+
+        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
+        foreach ($backendUser->getFileMountRecords() as $fileMountRecord) {
+            $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($fileMountRecord['identifier']);
+            $resourceStorage->addFileMount($folder->getIdentifier());
+        }
+        $resourceStorage->setUserPermissions($finalUserPermissions);
         $originalEvaluatePermissions = $resourceStorage->getEvaluatePermissions();
         $resourceStorage->setEvaluatePermissions(true);
         $access = $resourceStorage->checkFileActionPermission('read', $file);
