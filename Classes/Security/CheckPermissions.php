@@ -100,8 +100,16 @@ class CheckPermissions implements SingletonInterface
 
         $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         foreach ($backendUser->getFileMountRecords() as $fileMountRecord) {
-            $folder = $resourceFactory->getFolderObjectFromCombinedIdentifier($fileMountRecord['identifier']);
-            $resourceStorage->addFileMount($folder->getIdentifier());
+            [$base, $path] = GeneralUtility::trimExplode(':', $fileMountRecord['identifier']);
+            if ((int)$base !== $resourceStorage->getUid()) {
+                continue;
+            }
+
+            try {
+                $resourceStorage->addFileMount($path, $fileMountRecord);
+            } catch (FolderDoesNotExistException) {
+                // That file mount does not seem to be valid, fail silently
+            }
         }
         $resourceStorage->setUserPermissions($finalUserPermissions);
         $originalEvaluatePermissions = $resourceStorage->getEvaluatePermissions();
