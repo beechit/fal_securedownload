@@ -80,16 +80,18 @@ class ItemProvider extends AbstractProvider
     {
         $this->initialize();
         if ($this->folder instanceof Folder) {
-            $items += $this->prepareItems([
-                'permissions_divider' => [
-                    'type' => 'divider',
-                ],
-                'permissions' => [
-                    'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:clickmenu.folderpermissions',
-                    'iconIdentifier' => 'action-folder',
-                    'callbackAction' => 'folderPermissions',
-                ],
-            ]);
+            if ($this->backendUser->check('tables_modify', 'tx_falsecuredownload_folder')) {
+                $items += $this->prepareItems([
+                    'permissions_divider' => [
+                        'type' => 'divider',
+                    ],
+                    'permissions' => [
+                        'label' => 'LLL:EXT:fal_securedownload/Resources/Private/Language/locallang_be.xlf:clickmenu.folderpermissions',
+                        'iconIdentifier' => 'action-folder',
+                        'callbackAction' => 'folderPermissions',
+                    ],
+                ]);
+            }
         }
 
         return $items;

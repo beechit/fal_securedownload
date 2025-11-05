@@ -80,24 +80,26 @@ abstract class AbstractBeButtons
                 [Folder::ROLE_DEFAULT, Folder::ROLE_USERUPLOAD]
             )
         ) {
-            /** @var Utility $utility */
-            $utility = GeneralUtility::makeInstance(Utility::class);
-            $folderRecord = $utility->getFolderRecord($folder);
+            if ($GLOBALS['BE_USER']->check('tables_modify', 'tx_falsecuredownload_folder')) {
+                /** @var Utility $utility */
+                $utility = GeneralUtility::makeInstance(Utility::class);
+                $folderRecord = $utility->getFolderRecord($folder);
 
-            if ($folderRecord) {
-                $buttons[] = $this->createLink(
-                    $this->sL('clickmenu.folderpermissions'),
-                    $this->sL('clickmenu.folderpermissions'),
-                    $this->getIcon('folder'),
-                    $this->buildEditUrl($folderRecord['uid'])
-                );
-            } else {
-                $buttons[] = $this->createLink(
-                    $this->sL('clickmenu.folderpermissions'),
-                    $this->sL('clickmenu.folderpermissions'),
-                    $this->getIcon('folder'),
-                    $this->buildAddUrl($folder)
-                );
+                if ($folderRecord) {
+                    $buttons[] = $this->createLink(
+                        $this->sL('clickmenu.folderpermissions'),
+                        $this->sL('clickmenu.folderpermissions'),
+                        $this->getIcon('folder'),
+                        $this->buildEditUrl($folderRecord['uid'])
+                    );
+                } else {
+                    $buttons[] = $this->createLink(
+                        $this->sL('clickmenu.folderpermissions'),
+                        $this->sL('clickmenu.folderpermissions'),
+                        $this->getIcon('folder'),
+                        $this->buildAddUrl($folder)
+                    );
+                }
             }
         }
 
