@@ -100,6 +100,10 @@ class CheckPermissions implements SingletonInterface
 
         $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         foreach ($backendUser->getFileMountRecords() as $fileMountRecord) {
+            if (!str_contains(':', $fileMountRecord['identifier'])) {
+                continue;
+            }
+
             [$base, $path] = GeneralUtility::trimExplode(':', $fileMountRecord['identifier']);
             if ((int)$base !== $resourceStorage->getUid()) {
                 continue;
