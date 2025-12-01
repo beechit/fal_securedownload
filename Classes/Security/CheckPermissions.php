@@ -39,6 +39,7 @@ use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 
 /**
  * Utility functions to check permissions
@@ -98,9 +99,8 @@ class CheckPermissions implements SingletonInterface
             );
         }
 
-        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         foreach ($backendUser->getFileMountRecords() as $fileMountRecord) {
-            if (!str_contains(':', $fileMountRecord['identifier'])) {
+            if (!str_contains($fileMountRecord['identifier'], ':')) {
                 continue;
             }
 
