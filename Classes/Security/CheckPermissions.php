@@ -34,7 +34,6 @@ use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\FolderInterface;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
 use TYPO3\CMS\Core\Resource\ResourceInterface;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ArrayUtility;
@@ -98,9 +97,8 @@ class CheckPermissions implements SingletonInterface
             );
         }
 
-        $resourceFactory = GeneralUtility::makeInstance(ResourceFactory::class);
         foreach ($backendUser->getFileMountRecords() as $fileMountRecord) {
-            if (!str_contains(':', $fileMountRecord['identifier'])) {
+            if (!str_contains($fileMountRecord['identifier'], ':')) {
                 continue;
             }
 
