@@ -53,7 +53,7 @@ class LeafStateViewHelper extends AbstractConditionViewHelper
 
         /** @var LeafStateService $leafStateService */
         $leafStateService = GeneralUtility::makeInstance(LeafStateService::class);
-        $feUser = !empty($GLOBALS['TSFE']) ? $GLOBALS['TSFE']->fe_user : false;
+        $feUser = $GLOBALS['TYPO3_REQUEST']?->getAttribute('frontend.user') ?? false;
 
         return $feUser && $leafStateService->getLeafStateForUser($feUser, $folder->getCombinedIdentifier());
     }
