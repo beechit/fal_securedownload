@@ -242,13 +242,29 @@ class CheckPermissions implements SingletonInterface
                     if ($folderRecord['fe_groups']) {
                         $feGroups = ArrayUtility::keepItemsInArray($feGroups, $folderRecord['fe_groups']);
                     }
-                    break;
+                    if (count($feGroups)) {
+                        // only stop searching if something was found
+                        $parentGroups = $this->fetchParentGroupsRecursive($feGroups);
+                        $feGroups = array_merge($feGroups, $parentGroups);
+                        break;
+                    }
                 }
             }
         } catch (FolderDoesNotExistException) {
         }
         if ($resource instanceof FileInterface && $resource->getProperty('fe_groups')) {
-            $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resource->getProperty('fe_groups'));
+            $resourceGroups = GeneralUtility::trimExplode(',', $resource->getProperty('fe_groups'));
+            $resourceParentGroups = $this->fetchParentGroupsRecursive($resourceGroups);
+            $resourceGroups = array_merge($resourceGroups, $resourceParentGroups);
+            
+            if (count($feGroups)) {
+                $feGroups = ArrayUtility::keepItemsInArray($feGroups, $resourceGroups);
+                // @todo: if $feGroups is empty now and was not before, ensure nobody has access
+                // But solrfal will kick out any nonexisting group. So we leave as it is for now
+            } else {
+                // if no frontend groups were found in rootline overtake file properties
+                $feGroups = $resourceGroups;
+            }
         }
         $resource->getStorage()->setEvaluatePermissions($currentPermissionsCheck);
         return implode(',', $feGroups);
@@ -325,4 +341,64 @@ class CheckPermissions implements SingletonInterface
 
         return false;
     }
+    
+    /**
+     * Load a list of group uids, and take into account if groups have been loaded before as part of recursive detection.
+     * This method very is similar to that in \TYPO3\CMS\Core\Authentication\GroupResolver, but that one is protected
+     *
+     * @param int[] $groupIds a list of groups to find THEIR ancestors
+     * @param array $processedGroupIds helper function to avoid recursive detection
+     * @return array a list of parent groups and thus, grand grand parent groups as well
+     */
+    protected function fetchParentGroupsRecursive(array $groupIds, array $processedGroupIds = []): array
+    {
+        if (empty($groupIds)) {
+            return [];
+        }
+        $parentGroups = $this->fetchParentGroupsFromDatabase($groupIds);
+        $validParentGroupIds = [];
+        foreach ($parentGroups as $parentGroup) {
+            $parentGroupId = (int)$parentGroup['uid'];
+            // Record was already processed, continue to avoid adding this group again
+            if (in_array($parentGroupId, $processedGroupIds, true)) {
+                continue;
+            }
+            $processedGroupIds[] = $parentGroupId;
+            $validParentGroupIds[] = $parentGroupId;
+        }
+
+        $grandParentGroups = $this->fetchParentGroupsRecursive($validParentGroupIds, $processedGroupIds);
+        return array_merge($validParentGroupIds, $grandParentGroups);
+    }
+
+    /**
+     * Find all groups that have a FIND_IN_SET(subgroups, [$subgroupIds]) => the parent groups
+     * via one SQL query.
+     * This method very is similar to that in \TYPO3\CMS\Core\Authentication\GroupResolver, but that one is protected
+     */
+    protected function fetchParentGroupsFromDatabase(array $subgroupIds): array
+    {
+        $queryBuilder = GeneralUtility::makeInstance(\TYPO3\CMS\Core\Database\ConnectionPool::class)->getQueryBuilderForTable('fe_groups');
+        $queryBuilder
+            ->select('*')
+            ->from('fe_groups');
+
+        $constraints = [];
+        foreach ($subgroupIds as $subgroupId) {
+            $constraints[] = $queryBuilder->expr()->inSet('subgroup', (string)$subgroupId);
+        }
+
+        $result = $queryBuilder
+            ->where(
+                $queryBuilder->expr()->or(...$constraints)
+            )
+            ->executeQuery();
+
+        $groups = [];
+        while ($row = $result->fetchAssociative()) {
+            $groups[(int)$row['uid']] = $row;
+        }
+        return $groups;
+    }
+
 }
