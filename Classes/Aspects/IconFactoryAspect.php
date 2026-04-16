@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace BeechIt\FalSecuredownload\Aspects;
 
 use BeechIt\FalSecuredownload\Security\CheckPermissions;
+use TYPO3\CMS\Core\Imaging\IconSize;
 use TYPO3\CMS\Core\Resource\Exception\FolderDoesNotExistException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
@@ -46,7 +47,7 @@ class IconFactoryAspect implements SingletonInterface
 
     public function buildIconForResource(
         ResourceInterface $resource,
-        string $size,
+        IconSize $size,
         array $options,
         string $iconIdentifier,
         ?string $overlayIdentifier

@@ -9,10 +9,6 @@ use BeechIt\FalSecuredownload\Hooks\CmsLayout;
 use BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook;
 use BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook;
 use BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook;
-use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
-use TYPO3\CMS\Core\Imaging\IconRegistry;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 defined('TYPO3') or die();
@@ -62,16 +58,3 @@ if (ExtensionConfiguration::trackDownloads()) {
         'class' => DownloadStatistics::class,
     ];
 }
-
-/** @var IconRegistry $iconRegistry */
-$iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
-$iconRegistry->registerIcon(
-    'action-folder',
-    SvgIconProvider::class,
-    ['source' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.svg']
-);
-$iconRegistry->registerIcon(
-    'overlay-inherited-permissions',
-    SvgIconProvider::class,
-    ['source' => 'EXT:fal_securedownload/Resources/Public/Icons/overlay-inherited-permissions.svg']
-);
