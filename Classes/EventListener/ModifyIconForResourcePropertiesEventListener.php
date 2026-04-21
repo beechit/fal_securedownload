@@ -45,7 +45,7 @@ class ModifyIconForResourcePropertiesEventListener
         [, , , $iconIdentifier, $overlayIdentifier]
             = $iconFactoryAspect->buildIconForResource(
                 $event->getResource(),
-                $event->getSize(),
+                $event->getIconSize(),
                 $event->getOptions(),
                 $event->getIconIdentifier(),
                 $event->getOverlayIdentifier()
