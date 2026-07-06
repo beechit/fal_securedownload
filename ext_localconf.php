@@ -1,18 +1,11 @@
 <?php
 
 use BeechIt\FalSecuredownload\Configuration\ExtensionConfiguration;
-use BeechIt\FalSecuredownload\ContextMenu\ItemProvider;
 use BeechIt\FalSecuredownload\Controller\FileTreeController;
 use BeechIt\FalSecuredownload\Controller\FileTreeStateController;
 use BeechIt\FalSecuredownload\FormEngine\DownloadStatistics;
-use BeechIt\FalSecuredownload\Hooks\CmsLayout;
-use BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook;
 use BeechIt\FalSecuredownload\Hooks\KeSearchFilesHook;
 use BeechIt\FalSecuredownload\Hooks\ProcessDatamapHook;
-use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
-use TYPO3\CMS\Core\Imaging\IconRegistry;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\SignalSlot\Dispatcher;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 
 defined('TYPO3') or die();
@@ -26,29 +19,15 @@ ExtensionUtility::configurePlugin(
     // non-cacheable actions
     [
         FileTreeController::class => 'tree',
-    ],
-    \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT
+    ]
 );
 
 // FE FileTree leaf open/close state dispatcher
 $GLOBALS['TYPO3_CONF_VARS']['FE']['eID_include']['FalSecuredownloadFileTreeState'] = FileTreeStateController::class . '::saveLeafState';
 
-// Page module hook
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['cms/layout/class.tx_cms_layout.php']['list_type_Info']['falsecuredownload_filetree']['fal_securedownload']
-    = CmsLayout::class . '->getExtensionSummary';
-
-// Add FolderPermission button to docheader of filelist
-$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['Backend\Template\Components\ButtonBar']['getButtonsHook']['FalSecuredownload']
-    = DocHeaderButtonsHook::class . '->getButtons';
-
-// Context menu
-// Only needed for TYPO3 v11
-// https://docs.typo3.org/c/typo3/cms-core/12.4/en-us/Changelog/12.0/Breaking-96333-AutoConfigurationOfContextMenuItemProviders.html
-$GLOBALS['TYPO3_CONF_VARS']['BE']['ContextMenu']['ItemProviders'][1547242135] = ItemProvider::class;
-
 // refresh file tree after change in tx_falsecuredownload_folder record
-$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = ProcessDatamapHook::class;
-$GLOBALS ['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = ProcessDatamapHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processDatamapClass'][] = ProcessDatamapHook::class;
+$GLOBALS['TYPO3_CONF_VARS']['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['processCmdmapClass'][] = ProcessDatamapHook::class;
 
 // ext:ke_search custom indexer hook
 $GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['ke_search']['modifyFileIndexEntryFromContentIndexer'][] = KeSearchFilesHook::class;
@@ -62,16 +41,3 @@ if (ExtensionConfiguration::trackDownloads()) {
         'class' => DownloadStatistics::class,
     ];
 }
-
-/** @var IconRegistry $iconRegistry */
-$iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
-$iconRegistry->registerIcon(
-    'action-folder',
-    SvgIconProvider::class,
-    ['source' => 'EXT:fal_securedownload/Resources/Public/Icons/folder.svg']
-);
-$iconRegistry->registerIcon(
-    'overlay-inherited-permissions',
-    SvgIconProvider::class,
-    ['source' => 'EXT:fal_securedownload/Resources/Public/Icons/overlay-inherited-permissions.svg']
-);

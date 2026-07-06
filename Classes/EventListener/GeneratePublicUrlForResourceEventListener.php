@@ -47,13 +47,15 @@ class GeneratePublicUrlForResourceEventListener
     {
         if (!Environment::isCli()) {
             $publicUrlAspect = GeneralUtility::makeInstance(PublicUrlAspect::class);
+            $urlData = ['publicUrl' => $event->getPublicUrl()];
             $publicUrlAspect->generatePublicUrl(
                 $event->getStorage(),
                 $event->getDriver(),
                 $event->getResource(),
                 false,
-                ['publicUrl' => $event->getPublicUrl()]
+                $urlData
             );
+            $event->setPublicUrl($urlData['publicUrl']);
         }
     }
 }

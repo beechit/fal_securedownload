@@ -1,6 +1,5 @@
 <?php
 
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 
 defined('TYPO3') or die();
@@ -30,13 +29,6 @@ $additionalColumns = [
         ],
     ],
 ];
-
-$typo3Version = new Typo3Version();
-if ($typo3Version->getMajorVersion() === 11) {
-    foreach ($additionalColumns['fe_groups']['config']['items'] as &$item) {
-        $item = array_values($item);
-    }
-}
 
 ExtensionManagementUtility::addTCAcolumns('sys_file_metadata', $additionalColumns);
 ExtensionManagementUtility::addToAllTCAtypes('sys_file_metadata', 'fe_groups');

@@ -27,11 +27,11 @@ declare(strict_types=1);
 
 namespace BeechIt\FalSecuredownload\ViewHelpers;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Crypto\HashService;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\FileInterface;
 use TYPO3\CMS\Core\Resource\ProcessedFile;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3Fluid\Fluid\Core\ViewHelper\AbstractTagBasedViewHelper;
 
 /**
@@ -46,6 +46,11 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
      */
     protected $tagName = 'a';
 
+    public function __construct(private readonly HashService $hashService)
+    {
+        parent::__construct();
+    }
+
     /**
      * Initialize arguments
      *
@@ -54,11 +59,6 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
     public function initializeArguments(): void
     {
         parent::initializeArguments();
-        $this->registerUniversalTagAttributes();
-        $this->registerTagAttribute('name', 'string', 'Specifies the name of an anchor');
-        $this->registerTagAttribute('rel', 'string', 'Specifies the relationship between the current document and the linked document');
-        $this->registerTagAttribute('rev', 'string', 'Specifies the relationship between the linked document and the current document');
-        $this->registerTagAttribute('target', 'string', 'Specifies where to open the linked document');
         $this->registerArgument('file', 'object', '', true);
         $this->registerArgument('uriOnly', 'bool', '', false, false);
     }
@@ -82,14 +82,12 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
             $queryParameterArray['t'] = 'p';
         }
 
-        $queryParameterArray['token'] = GeneralUtility::makeInstance(HashService::class)->hmac(implode('|', $queryParameterArray), 'resourceStorageDumpFile');
+        $queryParameterArray['token'] = $this->hashService->hmac(implode('|', $queryParameterArray), 'resourceStorageDumpFile');
         $queryParameterArray['download'] = '';
         $uri = 'index.php?' . str_replace('+', '%20', http_build_query($queryParameterArray));
 
         // Add absRefPrefix
-        if (!empty($GLOBALS['TSFE'])) {
-            $uri = $GLOBALS['TSFE']->absRefPrefix . $uri;
-        }
+        $uri = $this->getUrlPrefix() . $uri;
 
         if ($this->arguments['uriOnly']) {
             return $uri;
@@ -100,5 +98,26 @@ class DownloadLinkViewHelper extends AbstractTagBasedViewHelper
         $this->tag->forceClosingTag(true);
 
         return $this->tag->render();
+    }
+
+    /**
+     * Determine "config.absRefPrefix" from the TypoScript of the current frontend request
+     */
+    protected function getUrlPrefix(): string
+    {
+        if (!$this->renderingContext->hasAttribute(ServerRequestInterface::class)) {
+            return '';
+        }
+        $request = $this->renderingContext->getAttribute(ServerRequestInterface::class);
+        try {
+            $typoScriptConfigArray = $request->getAttribute('frontend.typoscript')?->getConfigArray() ?? [];
+        } catch (\RuntimeException) {
+            return '';
+        }
+        $absRefPrefix = trim($typoScriptConfigArray['absRefPrefix'] ?? '');
+        if ($absRefPrefix === 'auto') {
+            $absRefPrefix = $request->getAttribute('normalizedParams')?->getSitePath() ?? '';
+        }
+        return $absRefPrefix;
     }
 }

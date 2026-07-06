@@ -98,7 +98,7 @@ class CheckPermissions implements SingletonInterface
         }
 
         foreach ($backendUser->getFileMountRecords() as $fileMountRecord) {
-            if (!str_contains($fileMountRecord['identifier'], ':')) {
+            if (!str_contains((string) $fileMountRecord['identifier'], ':')) {
                 continue;
             }
 
@@ -316,13 +316,6 @@ class CheckPermissions implements SingletonInterface
         if (!is_array($userFeGroups)) {
             return false;
         }
-
-        foreach (explode(',', $groups) as $feGroupUid) {
-            if (in_array(trim($feGroupUid), $userFeGroups)) {
-                return true;
-            }
-        }
-
-        return false;
+        return array_any(explode(',', $groups), fn($feGroupUid) => in_array(trim((string) $feGroupUid), $userFeGroups));
     }
 }

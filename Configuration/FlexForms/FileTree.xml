@@ -19,7 +19,6 @@
                         <config>
                             <type>select</type>
                             <renderType>selectSingle</renderType>
-                            <internal_type>db</internal_type>
                             <size>1</size>
                             <maxitems>1</maxitems>
                             <minitems>1</minitems>

@@ -12,7 +12,6 @@ namespace BeechIt\FalSecuredownload\ContextMenu;
 
 use BeechIt\FalSecuredownload\Service\Utility;
 use TYPO3\CMS\Backend\ContextMenu\ItemProviders\AbstractProvider;
-use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Resource\Exception\ResourceDoesNotExistException;
 use TYPO3\CMS\Core\Resource\Folder;
 use TYPO3\CMS\Core\Resource\ResourceFactory;
@@ -20,22 +19,11 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class ItemProvider extends AbstractProvider
 {
-    protected ResourceFactory $resourceFactory;
     protected ?Folder $folder = null;
 
-    /**
-     * Constructor arguments are only needed for TYPO3 v11
-     * @see https://docs.typo3.org/c/typo3/cms-core/12.4/en-us/Changelog/12.0/Breaking-96333-AutoConfigurationOfContextMenuItemProviders.html
-     *
-     * @param string $table
-     * @param string $identifier
-     * @param string $context
-     * @param ResourceFactory|null $resourceFactory
-     */
-    public function __construct(string $table, string $identifier, string $context = '', ?ResourceFactory $resourceFactory = null)
+    public function __construct(protected readonly ResourceFactory $resourceFactory)
     {
-        $this->resourceFactory = $resourceFactory ?? GeneralUtility::makeInstance(ResourceFactory::class);
-        parent::__construct($table, $identifier, $context);
+        parent::__construct();
     }
 
     public function getPriority(): int
@@ -103,16 +91,8 @@ class ItemProvider extends AbstractProvider
         $utility = GeneralUtility::makeInstance(Utility::class);
         $folderRecord = $utility->getFolderRecord($this->folder);
 
-        $typo3Version = new Typo3Version();
-        if ($typo3Version->getMajorVersion() > 11) {
-            $dataCallbackModule = '@beechit/fal-securedownload/context-menu-actions';
-        } else {
-            // keep RequireJs for TYPO3 below v12.0
-            $dataCallbackModule = 'TYPO3/CMS/FalSecuredownload/ContextMenuActions';
-        }
-
         return [
-            'data-callback-module' => $dataCallbackModule,
+            'data-callback-module' => '@beechit/fal-securedownload/context-menu-actions',
             'data-folder-record-uid' => $folderRecord['uid'] ?? 0,
             'data-storage' => $this->folder->getStorage()->getUid(),
             'data-folder' => $this->folder->getIdentifier(),

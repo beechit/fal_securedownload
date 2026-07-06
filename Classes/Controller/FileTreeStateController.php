@@ -61,7 +61,7 @@ class FileTreeStateController
     {
         $folder = $request->getParsedBody()['folder'] ?? $request->getQueryParams()['folder'] ?? null;
         if (empty($folder)) {
-            return (new Response())->withStatus(404);
+            return new Response()->withStatus(404);
         }
 
         $open = (bool)($request->getParsedBody()['open'] ?? $request->getQueryParams()['open'] ?? false);

@@ -25,74 +25,70 @@ declare(strict_types=1);
  *  This copyright notice MUST APPEAR in all copies of the script!
  */
 
-namespace BeechIt\FalSecuredownload\Hooks;
+namespace BeechIt\FalSecuredownload\EventListener;
 
 use Exception;
+use TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Hook to display verbose information about fileTree plugin in Web>Page module
+ * Displays verbose information about the fileTree plugin in the Web>Page module
+ *
+ * EventListener is registered in Services.yaml
+ *
+ * @noinspection PhpUnused
  */
-class CmsLayout
+class PageContentPreviewRenderingEventListener
 {
-    protected ResourceFactory $resourceFactory;
-
-    public function __construct(ResourceFactory $resourceFactory)
-    {
-        $this->resourceFactory = $resourceFactory;
-    }
-
     /**
      * Flexform information
      */
-    public array $flexformData = [];
+    protected array $flexformData = [];
 
-    /**
-     * Returns information about this extension's pi1 plugin
-     *
-     * Registered as "Page module hook" in ext_localconf.php
-     *
-     * @param array $params Parameters to the hook
-     * @return string Information about pi1 plugin
-     * @noinspection PhpUnused
-     */
-    public function getExtensionSummary(array $params): string
+    public function __construct(protected readonly StorageRepository $storageRepository) {}
+
+    public function __invoke(PageContentPreviewRenderingEvent $event): void
     {
+        if ($event->getTable() !== 'tt_content'
+            || $event->getRecordType() !== 'falsecuredownload_filetree'
+        ) {
+            return;
+        }
+
         $tableData = [];
         $result = '<u><strong>' . $this->sL('plugin.title') . '</strong></u>';
 
-        if ($params['row']['list_type'] === 'falsecuredownload_filetree') {
-            $this->flexformData = GeneralUtility::xml2array($params['row']['pi_flexform']);
+        $this->flexformData = GeneralUtility::xml2array((string)($event->getRecord()->getRawRecord()?->get('pi_flexform') ?? ''));
 
-            // Storage
-            $storageName = '';
-            try {
-                $storageUid = $this->getFieldFromFlexform('settings.storage');
-                $storageName = $this->resourceFactory->getStorageObject($storageUid)->getName();
-            } catch (Exception) {
-            }
-
-            if ($storageName) {
-                $tableData[] = [
-                    $this->sL('flexform.storage'),
-                    $storageName,
-                ];
-            }
-
-            // Folder
-            $folder = $this->getFieldFromFlexform('settings.folder');
-            $tableData[] = [
-                $this->sL('flexform.folder'),
-                $folder,
-            ];
-
-            $result .= $this->renderSettingsAsTable($tableData);
-            $result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';
+        // Storage
+        $storageName = '';
+        try {
+            $storageUid = $this->getFieldFromFlexform('settings.storage');
+            $storage = $this->storageRepository->findByUid((int)$storageUid);
+            $storageName = $storage !== null ? $storage->getName() : '';
+        } catch (Exception) {
         }
 
-        return $result;
+        if ($storageName) {
+            $tableData[] = [
+                $this->sL('flexform.storage'),
+                $storageName,
+            ];
+        }
+
+        // Folder
+        $folder = $this->getFieldFromFlexform('settings.folder');
+        $tableData[] = [
+            $this->sL('flexform.folder'),
+            $folder,
+        ];
+
+        $result .= $this->renderSettingsAsTable($tableData);
+        $result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';
+
+        $event->setPreviewContent($result);
     }
 
     /**
