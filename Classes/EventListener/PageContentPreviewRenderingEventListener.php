@@ -60,7 +60,9 @@ class PageContentPreviewRenderingEventListener
         $tableData = [];
         $result = '<u><strong>' . $this->sL('plugin.title') . '</strong></u>';
 
-        $this->flexformData = GeneralUtility::xml2array((string)($event->getRecord()->getRawRecord()?->get('pi_flexform') ?? ''));
+        // xml2array() returns an error string for empty/invalid flexform XML
+        $flexformData = GeneralUtility::xml2array((string)($event->getRecord()->getRawRecord()?->get('pi_flexform') ?? ''));
+        $this->flexformData = is_array($flexformData) ? $flexformData : [];
 
         // Storage
         $storageName = '';
@@ -119,16 +121,8 @@ class PageContentPreviewRenderingEventListener
      */
     protected function getFieldFromFlexform(string $key, string $sheet = 'sDEF'): ?string
     {
-        $flexform = $this->flexformData;
-        if (isset($flexform['data'])) {
-            $flexform = $flexform['data'];
-            if (is_array($flexform) && is_array($flexform[$sheet]) && is_array($flexform[$sheet]['lDEF'])
-                && is_array($flexform[$sheet]['lDEF'][$key]) && isset($flexform[$sheet]['lDEF'][$key]['vDEF'])
-            ) {
-                return $flexform[$sheet]['lDEF'][$key]['vDEF'];
-            }
-        }
-        return null;
+        $value = $this->flexformData['data'][$sheet]['lDEF'][$key]['vDEF'] ?? null;
+        return is_string($value) ? $value : null;
     }
 
     /**

@@ -17,8 +17,8 @@ return RectorConfig::configure()
         __DIR__ . '/Classes',
         __DIR__ . '/Configuration',
     ])
-    ->withPhpSets(php84: true)
-    ->withPhpVersion(PhpVersion::PHP_84)
+    ->withPhpSets(php82: true)
+    ->withPhpVersion(PhpVersion::PHP_82)
     ->withSets([
         Typo3SetList::CODE_QUALITY,
         Typo3SetList::GENERAL,

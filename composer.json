@@ -36,7 +36,7 @@
         "source": "https://github.com/beechit/fal_securedownload"
     },
     "require": {
-        "php": "^8.4",
+        "php": "^8.2",
         "typo3/cms-core": "^14.3",
         "typo3/cms-extbase": "^14.3",
         "typo3/cms-backend": "^14.3",

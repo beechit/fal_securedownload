@@ -28,8 +28,9 @@ declare(strict_types=1);
 namespace BeechIt\FalSecuredownload\EventListener;
 
 use BeechIt\FalSecuredownload\Aspects\PublicUrlAspect;
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Routing\Exception\RouteNotFoundException;
-use TYPO3\CMS\Core\Core\Environment;
+use TYPO3\CMS\Core\Http\ApplicationType;
 use TYPO3\CMS\Core\Resource\Event\GeneratePublicUrlForResourceEvent;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -45,17 +46,25 @@ class GeneratePublicUrlForResourceEventListener
      */
     public function __invoke(GeneratePublicUrlForResourceEvent $event): void
     {
-        if (!Environment::isCli()) {
-            $publicUrlAspect = GeneralUtility::makeInstance(PublicUrlAspect::class);
-            $urlData = ['publicUrl' => $event->getPublicUrl()];
-            $publicUrlAspect->generatePublicUrl(
-                $event->getStorage(),
-                $event->getDriver(),
-                $event->getResource(),
-                false,
-                $urlData
-            );
-            $event->setPublicUrl($urlData['publicUrl']);
+        // Rewrite public urls to the BE dump_file route in backend context only.
+        // In frontend context no url is set here, so the TYPO3 core generates the
+        // eID=dumpFile url whose access is checked by the ModifyFileDumpEventListener.
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        if (!$request instanceof ServerRequestInterface
+            || !ApplicationType::fromRequest($request)->isBackend()
+        ) {
+            return;
         }
+
+        $publicUrlAspect = GeneralUtility::makeInstance(PublicUrlAspect::class);
+        $urlData = ['publicUrl' => $event->getPublicUrl()];
+        $publicUrlAspect->generatePublicUrl(
+            $event->getStorage(),
+            $event->getDriver(),
+            $event->getResource(),
+            false,
+            $urlData
+        );
+        $event->setPublicUrl($urlData['publicUrl']);
     }
 }
