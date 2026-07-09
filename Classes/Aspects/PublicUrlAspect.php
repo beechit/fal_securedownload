@@ -45,6 +45,9 @@ class PublicUrlAspect implements SingletonInterface
      * Flag to en-/disable rendering of BE user link instead of FE link
      */
     protected bool $enabled = true;
+    public function __construct(private readonly \TYPO3\CMS\Core\Crypto\HashService $hashService, private readonly \TYPO3\CMS\Backend\Routing\UriBuilder $uriBuilder)
+    {
+    }
 
     public function getEnabled(): bool
     {
@@ -63,7 +66,7 @@ class PublicUrlAspect implements SingletonInterface
      * @param DriverInterface $driver
      * @param ResourceInterface $resourceObject
      * @param mixed $relativeToCurrentScript Deprecated. Will be removed in a future version
-     * @param array $urlData
+     * @param array $urlData Passed by reference, generated URL is set as $urlData['publicUrl']
      * @throws RouteNotFoundException
      */
     public function generatePublicUrl(
@@ -71,7 +74,7 @@ class PublicUrlAspect implements SingletonInterface
         DriverInterface $driver,
         ResourceInterface $resourceObject,
         $relativeToCurrentScript,
-        array $urlData
+        array &$urlData
     ): void {
         // We only render special links for non-public files
         if ($this->enabled && $resourceObject instanceof FileInterface && !$storage->isPublic()) {
@@ -83,10 +86,10 @@ class PublicUrlAspect implements SingletonInterface
                 $queryParameterArray['p'] = $resourceObject->getUid();
                 $queryParameterArray['t'] = 'p';
             }
-            $queryParameterArray['fal_token'] = GeneralUtility::makeInstance(HashService::class)->hmac(implode('|', $queryParameterArray), 'BeResourceStorageDumpFile');
+            $queryParameterArray['fal_token'] = $this->hashService->hmac(implode('|', $queryParameterArray), 'BeResourceStorageDumpFile');
 
             /** @var UriBuilder $uriBuilder */
-            $uriBuilder = GeneralUtility::makeInstance(UriBuilder::class);
+            $uriBuilder = $this->uriBuilder;
 
             /**
              * $urlData['publicUrl'] is passed by reference, so we can change that here and the value will be taken into account

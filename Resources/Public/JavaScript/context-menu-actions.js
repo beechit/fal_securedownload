@@ -1,8 +1,5 @@
-import $ from 'jquery';
-
 /**
  * JavaScript to handle the click action of the "FalSecuredownload" context menu item
- * Used in TYPO3 >= v12
  */
 class ContextMenuActions {
   getReturnUrl() {

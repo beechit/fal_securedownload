@@ -7,13 +7,6 @@ services:
   BeechIt\FalSecuredownload\:
     resource: '../Classes/*'
 
-  BeechIt\FalSecuredownload\ContextMenu\ItemProvider:
-    public: true
-    arguments:
-      $table: ''
-      $identifier: ''
-      $context: ''
-
   BeechIt\FalSecuredownload\Controller\BePublicUrlController:
     public: true
 
@@ -21,12 +14,6 @@ services:
     public: true
 
   BeechIt\FalSecuredownload\Controller\FileTreeStateController:
-    public: true
-
-  BeechIt\FalSecuredownload\Hooks\CmsLayout:
-    public: true
-
-  BeechIt\FalSecuredownload\Hooks\DocHeaderButtonsHook:
     public: true
 
   BeechIt\FalSecuredownload\Service\LeafStateService:
@@ -74,3 +61,13 @@ services:
     tags:
       - name: event.listener
         event: ApacheSolrForTypo3\Solrfal\Event\Indexing\AfterFileMetaDataHasBeenRetrievedEvent
+
+  BeechIt\FalSecuredownload\EventListener\ModifyButtonBarEventListener:
+    tags:
+      - name: event.listener
+        event: TYPO3\CMS\Backend\Template\Components\ModifyButtonBarEvent
+
+  BeechIt\FalSecuredownload\EventListener\PageContentPreviewRenderingEventListener:
+    tags:
+      - name: event.listener
+        event: TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent

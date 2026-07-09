@@ -25,74 +25,72 @@ declare(strict_types=1);
  *  This copyright notice MUST APPEAR in all copies of the script!
  */
 
-namespace BeechIt\FalSecuredownload\Hooks;
+namespace BeechIt\FalSecuredownload\EventListener;
 
 use Exception;
+use TYPO3\CMS\Backend\View\Event\PageContentPreviewRenderingEvent;
 use TYPO3\CMS\Core\Localization\LanguageService;
-use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Resource\StorageRepository;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Hook to display verbose information about fileTree plugin in Web>Page module
+ * Displays verbose information about the fileTree plugin in the Web>Page module
+ *
+ * EventListener is registered in Services.yaml
+ *
+ * @noinspection PhpUnused
  */
-class CmsLayout
+class PageContentPreviewRenderingEventListener
 {
-    protected ResourceFactory $resourceFactory;
-
-    public function __construct(ResourceFactory $resourceFactory)
-    {
-        $this->resourceFactory = $resourceFactory;
-    }
-
     /**
      * Flexform information
      */
-    public array $flexformData = [];
+    protected array $flexformData = [];
 
-    /**
-     * Returns information about this extension's pi1 plugin
-     *
-     * Registered as "Page module hook" in ext_localconf.php
-     *
-     * @param array $params Parameters to the hook
-     * @return string Information about pi1 plugin
-     * @noinspection PhpUnused
-     */
-    public function getExtensionSummary(array $params): string
+    public function __construct(protected readonly StorageRepository $storageRepository) {}
+
+    public function __invoke(PageContentPreviewRenderingEvent $event): void
     {
+        if ($event->getTable() !== 'tt_content'
+            || $event->getRecordType() !== 'falsecuredownload_filetree'
+        ) {
+            return;
+        }
+
         $tableData = [];
         $result = '<u><strong>' . $this->sL('plugin.title') . '</strong></u>';
 
-        if ($params['row']['list_type'] === 'falsecuredownload_filetree') {
-            $this->flexformData = GeneralUtility::xml2array($params['row']['pi_flexform']);
+        // xml2array() returns an error string for empty/invalid flexform XML
+        $flexformData = GeneralUtility::xml2array((string)($event->getRecord()->getRawRecord()?->get('pi_flexform') ?? ''));
+        $this->flexformData = is_array($flexformData) ? $flexformData : [];
 
-            // Storage
-            $storageName = '';
-            try {
-                $storageUid = $this->getFieldFromFlexform('settings.storage');
-                $storageName = $this->resourceFactory->getStorageObject($storageUid)->getName();
-            } catch (Exception) {
-            }
-
-            if ($storageName) {
-                $tableData[] = [
-                    $this->sL('flexform.storage'),
-                    $storageName,
-                ];
-            }
-
-            // Folder
-            $folder = $this->getFieldFromFlexform('settings.folder');
-            $tableData[] = [
-                $this->sL('flexform.folder'),
-                $folder,
-            ];
-
-            $result .= $this->renderSettingsAsTable($tableData);
-            $result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';
+        // Storage
+        $storageName = '';
+        try {
+            $storageUid = $this->getFieldFromFlexform('settings.storage');
+            $storage = $this->storageRepository->findByUid((int)$storageUid);
+            $storageName = $storage !== null ? $storage->getName() : '';
+        } catch (Exception) {
         }
 
-        return $result;
+        if ($storageName) {
+            $tableData[] = [
+                $this->sL('flexform.storage'),
+                $storageName,
+            ];
+        }
+
+        // Folder
+        $folder = $this->getFieldFromFlexform('settings.folder');
+        $tableData[] = [
+            $this->sL('flexform.folder'),
+            $folder,
+        ];
+
+        $result .= $this->renderSettingsAsTable($tableData);
+        $result = '<div style="background-color:#f1f1f1; padding:8px; margin-top:8px" class="t3-page-ce-info">' . $result . '</div>';
+
+        $event->setPreviewContent($result);
     }
 
     /**
@@ -123,16 +121,8 @@ class CmsLayout
      */
     protected function getFieldFromFlexform(string $key, string $sheet = 'sDEF'): ?string
     {
-        $flexform = $this->flexformData;
-        if (isset($flexform['data'])) {
-            $flexform = $flexform['data'];
-            if (is_array($flexform) && is_array($flexform[$sheet]) && is_array($flexform[$sheet]['lDEF'])
-                && is_array($flexform[$sheet]['lDEF'][$key]) && isset($flexform[$sheet]['lDEF'][$key]['vDEF'])
-            ) {
-                return $flexform[$sheet]['lDEF'][$key]['vDEF'];
-            }
-        }
-        return null;
+        $value = $this->flexformData['data'][$sheet]['lDEF'][$key]['vDEF'] ?? null;
+        return is_string($value) ? $value : null;
     }
 
     /**

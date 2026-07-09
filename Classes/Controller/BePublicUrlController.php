@@ -27,16 +27,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class BePublicUrlController extends AbstractApplication
 {
     protected ResourceFactory $resourceFactory;
-    protected ResponseFactoryInterface $responseFactory;
     private readonly ProcessedFileRepository $processedFileRepository;
 
     public function __construct(
         ResourceFactory $resourceFactory,
-        ResponseFactoryInterface $responseFactory,
-        ProcessedFileRepository $processedFileRepository
+        protected ResponseFactoryInterface $responseFactory,
+        ProcessedFileRepository $processedFileRepository,
+        private readonly \TYPO3\CMS\Core\Crypto\HashService $hashService
     ) {
         $this->resourceFactory = $resourceFactory;
-        $this->responseFactory = $responseFactory;
         $this->processedFileRepository = $processedFileRepository;
     }
 
@@ -57,7 +56,7 @@ class BePublicUrlController extends AbstractApplication
         }
 
         if (
-            GeneralUtility::makeInstance(HashService::class)->hmac(implode('|', $parameters), 'BeResourceStorageDumpFile') === ($GLOBALS['TYPO3_REQUEST']->getParsedBody()['fal_token'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['fal_token'] ?? null)
+            $this->hashService->hmac(implode('|', $parameters), 'BeResourceStorageDumpFile') === ($GLOBALS['TYPO3_REQUEST']->getParsedBody()['fal_token'] ?? $GLOBALS['TYPO3_REQUEST']->getQueryParams()['fal_token'] ?? null)
         ) {
             if (isset($parameters['f'])) {
                 try {

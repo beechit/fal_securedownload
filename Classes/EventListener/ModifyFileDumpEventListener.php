@@ -64,7 +64,7 @@ class ModifyFileDumpEventListener
     private readonly EventDispatcherInterface $eventDispatcher;
     private ModifyFileDumpEvent $event;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher, private readonly ConnectionPool $connectionPool)
+    public function __construct(EventDispatcherInterface $eventDispatcher, private readonly ConnectionPool $connectionPool, private readonly \TYPO3\CMS\Core\LinkHandling\LinkService $linkService)
     {
         $this->context = GeneralUtility::makeInstance(Context::class);
 
@@ -365,7 +365,7 @@ class ModifyFileDumpEventListener
     protected function resolveUrl(string $url): string
     {
         try {
-            $urlParameters = GeneralUtility::makeInstance(LinkService::class)->resolve($url);
+            $urlParameters = $this->linkService->resolve($url);
         } catch (UnknownLinkHandlerException) {
             throw new InvalidArgumentException(
                 'Redirects URL can only handle TYPO3 urls of types "page" or "url".',
@@ -384,7 +384,8 @@ class ModifyFileDumpEventListener
             $uri = $urlParameters['url'];
         } else {
             /** @var ContentObjectRenderer $contentObject */
-            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class, null);
+            $contentObject = GeneralUtility::makeInstance(ContentObjectRenderer::class);
+            $contentObject->setRequest($this->event->getRequest());
             $contentObject->start([], '');
 
             $uri = $contentObject->typoLink_URL([
@@ -413,7 +414,7 @@ class ModifyFileDumpEventListener
         if (!$range || $range === '-') {
             return [0, $fileSize - 1];
         }
-        if (!preg_match('/^bytes=(\d*)-(\d*)$/', $range, $matches)) {
+        if (!preg_match('/^bytes=(\d*)-(\d*)$/', (string) $range, $matches)) {
             return [];
         }
         if ($matches[1] === '') {
